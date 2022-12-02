@@ -17,7 +17,7 @@ public class BloemistUIApplication extends Application {
   @Override
   public void init() throws Exception {
     super.init();
-    applicationContext = new SpringApplicationBuilder(BloemistUIApplication.class).run();
+    applicationContext = new SpringApplicationBuilder(BloemistApplication.class).run();
   }
 
   @Override
@@ -32,7 +32,7 @@ public class BloemistUIApplication extends Application {
     applicationContext.publishEvent(new StageReadyEvent(stage));
   }
 
-  static class StageReadyEvent extends ApplicationEvent {
+  public static class StageReadyEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 1L;
 
