@@ -14,7 +14,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <CheckBox layoutX="80.0" layoutY="235.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Lưu ID" />
+      <CheckBox layoutX="80.0" layoutY="232.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Lưu ID" />
       <TextField fx:id="User_ID" layoutX="80.0" layoutY="148.0" promptText="Tên đăng nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
       <PasswordField fx:id="User_password" layoutX="80.0" layoutY="189.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu" style="-fx-background-radius: 0;" />
       <ImageView fx:id="Logo_img" fitHeight="99.0" fitWidth="200.0" layoutX="60.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
