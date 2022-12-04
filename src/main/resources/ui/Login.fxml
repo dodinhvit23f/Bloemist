@@ -7,25 +7,22 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="305.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button graphicTextGap="3.0" layoutX="123.0" layoutY="268.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Đăng nhập" textAlignment="CENTER" textFill="#fffefe" textOverrun="LEADING_ELLIPSIS">
+      <Button graphicTextGap="3.0" layoutX="77.0" layoutY="267.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Đăng nhập" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <CheckBox layoutX="126.0" layoutY="214.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Lưu ID" />
-      <TextField fx:id="User_ID" layoutX="126.0" layoutY="127.0" promptText="Tên đăng nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
-      <PasswordField fx:id="User_password" layoutX="126.0" layoutY="168.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu" style="-fx-background-radius: 0;" />
-      <Button layoutX="123.0" layoutY="316.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" text="Quên mật khẩu" textFill="#e47171" textOverrun="LEADING_ELLIPSIS">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Button>
-      <ImageView fx:id="Logo_img" fitHeight="99.0" fitWidth="200.0" layoutX="101.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+      <CheckBox layoutX="80.0" layoutY="235.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Lưu ID" />
+      <TextField fx:id="User_ID" layoutX="80.0" layoutY="148.0" promptText="Tên đăng nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
+      <PasswordField fx:id="User_password" layoutX="80.0" layoutY="189.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu" style="-fx-background-radius: 0;" />
+      <ImageView fx:id="Logo_img" fitHeight="99.0" fitWidth="200.0" layoutX="60.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../Img/logo.png" />
          </image>
       </ImageView>
+      <Hyperlink layoutX="77.0" layoutY="310.0" prefHeight="23.0" prefWidth="149.0" text="Tạo tài khoản mới" />
+      <Hyperlink layoutX="77.0" layoutY="341.0" prefHeight="23.0" prefWidth="149.0" text="Quên mật khẩu" />
    </children>
 </AnchorPane>
