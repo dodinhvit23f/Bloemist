@@ -22,7 +22,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <ImageView fitHeight="99.0" fitWidth="200.0" layoutX="101.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="Logo_img" fitHeight="99.0" fitWidth="200.0" layoutX="101.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../Img/logo.png" />
          </image>
