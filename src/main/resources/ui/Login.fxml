@@ -8,13 +8,18 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button graphicTextGap="3.0" layoutX="123.0" layoutY="268.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Login" textAlignment="CENTER" textFill="#fffefe" textOverrun="LEADING_ELLIPSIS">
+      <Button graphicTextGap="3.0" layoutX="123.0" layoutY="268.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Đăng nhập" textAlignment="CENTER" textFill="#fffefe" textOverrun="LEADING_ELLIPSIS">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <CheckBox layoutX="126.0" layoutY="214.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Remember" />
-      <TextField layoutX="126.0" layoutY="127.0" promptText="Đăng Nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
-      <PasswordField layoutX="126.0" layoutY="168.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật Khẩu" style="-fx-background-radius: 0;" />
+      <CheckBox layoutX="126.0" layoutY="214.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Lưu ID" />
+      <TextField fx:id="User_ID" layoutX="126.0" layoutY="127.0" promptText="Tên đăng nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
+      <PasswordField fx:id="User_password" layoutX="126.0" layoutY="168.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu" style="-fx-background-radius: 0;" />
+      <Button layoutX="123.0" layoutY="316.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" text="Quên mật khẩu" textFill="#e47171" textOverrun="LEADING_ELLIPSIS">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>
