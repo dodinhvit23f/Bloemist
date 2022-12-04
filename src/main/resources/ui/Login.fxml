@@ -22,7 +22,7 @@
             <Image url="@../Img/logo.png" />
          </image>
       </ImageView>
-      <Hyperlink layoutX="77.0" layoutY="310.0" prefHeight="23.0" prefWidth="149.0" text="Tạo tài khoản mới" />
-      <Hyperlink layoutX="77.0" layoutY="341.0" prefHeight="23.0" prefWidth="149.0" text="Quên mật khẩu" />
+      <Hyperlink layoutX="77.0" layoutY="310.0" prefHeight="23.0" prefWidth="149.0" text="Tạo tài khoản mới" underline="true" />
+      <Hyperlink layoutX="77.0" layoutY="341.0" prefHeight="23.0" prefWidth="149.0" text="Quên mật khẩu" underline="true" />
    </children>
 </AnchorPane>
