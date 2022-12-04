@@ -15,6 +15,6 @@
       </Button>
       <CheckBox layoutX="126.0" layoutY="214.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Remember" />
       <TextField layoutX="126.0" layoutY="127.0" promptText="Đăng Nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
-      <PasswordField layoutX="126.0" layoutY="168.0" prefHeight="25.0" prefWidth="149.0" promptText="Password" style="-fx-background-radius: 0;" />
+      <PasswordField layoutX="126.0" layoutY="168.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật Khẩu" style="-fx-background-radius: 0;" />
    </children>
 </AnchorPane>
