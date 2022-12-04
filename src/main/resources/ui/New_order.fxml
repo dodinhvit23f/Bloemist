@@ -7,10 +7,34 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="657.0" prefWidth="497.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="657.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label layoutX="37.0" layoutY="86.0" prefHeight="17.0" prefWidth="133.0" text="Label" />
-      <TextField layoutX="29.0" layoutY="103.0" />
+      <TextField layoutX="26.0" layoutY="47.0" prefHeight="25.0" prefWidth="222.0" promptText="Tên người đặt + link FB/Insta nếu có" />
+      <TextField layoutX="26.0" layoutY="85.0" prefHeight="25.0" prefWidth="222.0" promptText="SĐT người đặt hoa" />
+      <TextField layoutX="272.0" layoutY="47.0" prefHeight="25.0" prefWidth="222.0" promptText="Địa chỉ nhận hoa" />
+      <TextField layoutX="272.0" layoutY="196.0" prefHeight="25.0" prefWidth="222.0" promptText="Người nhận hoa" />
+      <TextField layoutX="272.0" layoutY="233.0" prefHeight="25.0" prefWidth="222.0" promptText="SĐT người nhận hoa" />
+      <TextField layoutX="272.0" layoutY="85.0" prefHeight="25.0" prefWidth="222.0" promptText="Giờ nhận hoa" />
+      <CheckBox layoutX="272.0" layoutY="164.0" mnemonicParsing="false" text="Người đặt nhận hoa" textFill="#aba8a8" />
+      <ComboBox editable="true" layoutX="26.0" layoutY="195.0" prefHeight="25.0" prefWidth="222.0" promptText="Nguồn khách" />
+      <TextField layoutX="26.0" layoutY="424.0" prefHeight="25.0" prefWidth="222.0" promptText="Giá niêm yết" />
+      <Label layoutX="25.0" layoutY="18.0" text="Thông tin đặt hàng" />
+      <Label layoutX="25.0" layoutY="396.0" text="Thông tin thanh toán" />
+      <ComboBox editable="true" layoutX="26.0" layoutY="462.0" prefHeight="25.0" prefWidth="222.0" promptText="Chiết khấu" />
+      <TextArea layoutX="25.0" layoutY="272.0" prefHeight="50.0" prefWidth="469.0" promptText="Chi tiết đơn hàng" />
+      <TextArea layoutX="26.0" layoutY="335.0" prefHeight="50.0" prefWidth="469.0" promptText="Nội dung Banner (nếu có)" />
+      <TextArea layoutX="26.0" layoutY="123.0" prefHeight="62.0" prefWidth="222.0" promptText="Ghi chú khi giao hoa (nếu có)" />
+      <TextField layoutX="272.0" layoutY="424.0" prefHeight="25.0" prefWidth="222.0" promptText="Phí giao hoa" />
+      <CheckBox layoutX="272.0" layoutY="466.0" mnemonicParsing="false" text="Miễn phí giao hoa" textFill="#aba8a8" />
+      <DatePicker layoutX="272.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Ngày nhận hoa" />
+      <DatePicker layoutX="26.0" layoutY="233.0" prefHeight="25.0" prefWidth="222.0" promptText="Ngày đặt hoa" />
+      <Label layoutX="28.0" layoutY="500.0" text="Giá bán: ......." />
+      <Label layoutX="272.0" layoutY="500.0" text="Tổng giá trị đơn hàng: ......." />
+      <Button layoutX="403.0" layoutY="577.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="92.0" text="Đơn tiếp" textAlignment="CENTER" />
+      <Button layoutX="296.0" layoutY="577.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="92.0" text="Hoàn thành" textAlignment="CENTER" />
+      <Button layoutX="190.0" layoutY="577.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="92.0" text="Hủy" textAlignment="CENTER" />
+      <Hyperlink layoutX="26.0" layoutY="578.0" text="Chèn link ảnh" underline="true" />
+      <TextField layoutX="26.0" layoutY="529.0" prefHeight="25.0" prefWidth="222.0" promptText="Số tiền khách đặt cọc" />
+      <Label layoutX="272.0" layoutY="533.0" text="Số tiền còn lại: ......." />
    </children>
 </Pane>
