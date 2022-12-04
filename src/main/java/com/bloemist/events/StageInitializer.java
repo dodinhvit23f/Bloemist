@@ -21,7 +21,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StageInitializer implements ApplicationListener<StageReadyEvent> {
   
-  @Value("classpath:ui/Home.fxml")
+  @Value("classpath:ui/Login.fxml")
   Resource homeResoure;
 
   @Override
@@ -31,7 +31,7 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
       Parent parent = fxmlLoader.load();
       
       var stage = (Stage) event.getSource();
-      Scene scene = new Scene(parent, 400, 400);
+      Scene scene = new Scene(parent);
       stage.setScene(scene);
       stage.show();
     } catch (IOException e) {
