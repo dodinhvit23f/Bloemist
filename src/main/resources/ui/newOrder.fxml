@@ -21,7 +21,7 @@
       <Label layoutX="25.0" layoutY="18.0" text="Thông tin đặt hàng" />
       <Label layoutX="25.0" layoutY="400.0" text="Thông tin thanh toán" />
       <ComboBox fx:id="discountRate" editable="true" layoutX="26.0" layoutY="466.0" prefHeight="25.0" prefWidth="222.0" promptText="Chiết khấu" />
-      <TextArea fx:id="orderDescription" layoutX="25.0" layoutY="276.0" prefHeight="50.0" prefWidth="274.0" promptText="Mô tả đơn hàng" />
+      <TextArea fx:id="orderDescription" layoutX="25.0" layoutY="276.0" prefHeight="50.0" prefWidth="279.0" promptText="Mô tả đơn hàng" />
       <TextArea fx:id="bannerContent" layoutX="25.0" layoutY="339.0" prefHeight="50.0" prefWidth="469.0" promptText="Nội dung Banner (nếu có)" />
       <TextArea fx:id="customerRemark" layoutX="325.0" layoutY="276.0" prefHeight="50.0" prefWidth="169.0" promptText="Ghi chú (xuất VAT, khi giao hoa ...)" />
       <TextField fx:id="deliveryFee" layoutX="272.0" layoutY="428.0" prefHeight="25.0" prefWidth="222.0" promptText="Phí giao hoa" />
