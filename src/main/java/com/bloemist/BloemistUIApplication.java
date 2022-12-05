@@ -1,9 +1,12 @@
 package com.bloemist;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
@@ -13,11 +16,26 @@ import lombok.experimental.FieldDefaults;
 public class BloemistUIApplication extends Application {
 
   ConfigurableApplicationContext applicationContext;
+ 
 
   @Override
   public void init() throws Exception {
     super.init();
-    applicationContext = new SpringApplicationBuilder(BloemistApplication.class).run();
+    
+    ApplicationContextInitializer<GenericApplicationContext> initializer = new ApplicationContextInitializer<GenericApplicationContext>() {
+      
+      @Override
+      public void initialize(GenericApplicationContext applicationContext) {
+        applicationContext.registerBean(Application.class, () -> BloemistUIApplication.this);
+        applicationContext.registerBean(HostServices.class,BloemistUIApplication.this::getHostServices);
+        applicationContext.registerBean(Parameters.class, BloemistUIApplication.this::getParameters);
+      }
+    };
+    
+    applicationContext = new SpringApplicationBuilder()
+        .sources(BloemistApplication.class)
+        .initializers(initializer)
+        .run(getParameters().getRaw().toArray(new String[0]));
   }
 
   @Override
@@ -32,7 +50,7 @@ public class BloemistUIApplication extends Application {
     applicationContext.publishEvent(new StageReadyEvent(stage));
   }
 
-  public static class StageReadyEvent extends ApplicationEvent {
+  public class StageReadyEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 1L;
 

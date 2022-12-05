@@ -12,3 +12,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
       ddl-auto: update
+
+application:
+  image-url: Img/icon.ico

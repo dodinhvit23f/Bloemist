@@ -1,7 +1,6 @@
 package com.bloemist.services;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -23,16 +22,11 @@ public class UserService implements UserServiceI {
 
   final UserRepository userRepository;
 
-  static final String SALT = "bloemist";
+  static final String SALT = "BLOEMIST";
 
-  /**
-   * 
-   * @param username Username
-   * @param password Raw password
-   * @return User role or empty string
-   */
 
-  public Account isUser(String username, String password) {
+  @Override
+  public Account login(String username, String password) {
 
     if (ObjectUtils.isEmpty(username) || ObjectUtils.isEmpty(password)) {
       return Account.builder().role("").build();
@@ -50,7 +44,7 @@ public class UserService implements UserServiceI {
     User user = searchedUser.get();
     
     String hashPassword = Hashing.sha256()
-        .hashString(String.join(password, SALT), StandardCharsets.UTF_8)
+        .hashString(String.join("",password, SALT), StandardCharsets.UTF_8)
         .toString();
 
     if (!user.getUserName().equals(username) || !user.getPassword().equals(hashPassword)) {
@@ -59,9 +53,11 @@ public class UserService implements UserServiceI {
           .user(username).build();
     }
 
-
     return Account.builder()
-        .role(user.getRoles().stream().map(Role::getName).collect(Collectors.joining(",")))
+        .role(user.getRoles()
+            .stream()
+            .map(Role::getName)
+            .collect(Collectors.joining(",")))
         .user(username)
         .build();
   }
