@@ -17,12 +17,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users",
     indexes = {@Index(columnList = "user_name", name = "ux_username", unique = true)},
     uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "uk_email")})
