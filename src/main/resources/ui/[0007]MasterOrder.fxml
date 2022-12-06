@@ -5,10 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="872.0" prefWidth="1847.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="872.0" prefWidth="1926.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TableView editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1801.0">
+      <TableView editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1877.0">
         <columns>
           <TableColumn prefWidth="76.0" text="Trạng thái đơn hàng" />
             <TableColumn prefWidth="88.0" text="Số thứ tự đơn" />
@@ -50,6 +49,7 @@
                </columns>
             </TableColumn>
             <TableColumn prefWidth="75.0" text="Code" />
+            <TableColumn prefWidth="75.0" text="Update" />
         </columns>
       </TableView>
       <ScrollBar layoutX="7.0" layoutY="100.0" orientation="VERTICAL" prefHeight="752.0" prefWidth="14.0" />
