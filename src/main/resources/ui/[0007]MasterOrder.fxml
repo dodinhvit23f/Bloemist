@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="872.0" prefWidth="1847.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TableView editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1801.0">
+        <columns>
+          <TableColumn prefWidth="76.0" text="Trạng thái đơn hàng" />
+            <TableColumn prefWidth="88.0" text="Số thứ tự đơn" />
+            <TableColumn prefWidth="75.0" text="Thông tin đơn hoa">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="Mô tả đơn hoa" />
+                  <TableColumn prefWidth="75.0" text="Nội dung Banner" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="75.0" text="Thông tin nhận hoa">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="Người nhận" />
+                  <TableColumn prefWidth="75.0" text="SĐT người nhận" />
+                  <TableColumn prefWidth="75.0" text="Địa chỉ giao" />
+                  <TableColumn prefWidth="75.0" text="Giờ nhận" />
+                  <TableColumn prefWidth="75.0" text="Ngày nhận" />
+                  <TableColumn prefWidth="75.0" text="Ghi chú" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="75.0" text="Thông tin người đặt">
+               <columns>
+                <TableColumn prefWidth="61.0" text="Tên người đặt" />
+                  <TableColumn prefWidth="75.0" text="Số điện thoại người đặt" />
+                  <TableColumn prefWidth="75.0" text="Link FB/ Insta" />
+                  <TableColumn prefWidth="75.0" text="Nguồn khách" />
+                  <TableColumn prefWidth="75.0" text="Ngày đặt hoa" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="75.0" text="Thông tin thanh toán">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="Giá niêm yết" />
+                  <TableColumn prefWidth="75.0" text="Chiết khấu" />
+                  <TableColumn prefWidth="75.0" text="Giá bán" />
+                  <TableColumn prefWidth="75.0" text="Phí giao hoa khách trả" />
+                  <TableColumn prefWidth="75.0" text="Phí giao hoa thực tế" />
+                  <TableColumn prefWidth="75.0" text="Đặt cọc" />
+                  <TableColumn prefWidth="75.0" text="Còn phải trả" />
+                  <TableColumn prefWidth="75.0" text="Doanh thu" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="75.0" text="Code" />
+        </columns>
+      </TableView>
+      <ScrollBar layoutX="7.0" layoutY="100.0" orientation="VERTICAL" prefHeight="752.0" prefWidth="14.0" />
+   </children>
+</Pane>
