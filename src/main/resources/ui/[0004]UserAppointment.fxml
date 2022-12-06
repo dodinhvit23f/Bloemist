@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="305.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="applyAppointment" graphicTextGap="3.0" layoutX="78.0" layoutY="352.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Bổ nhiệm" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="60.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Img/logo.png" />
+         </image>
+      </ImageView>
+      <ComboBox fx:id="pickUser" layoutX="79.0" layoutY="147.0" prefWidth="150.0" promptText="Chọn tài khoản" />
+      <PasswordField fx:id="newSalary" layoutX="78.0" layoutY="266.0" prefHeight="25.0" prefWidth="149.0" promptText="Mức lương cơ bản mới" style="-fx-background-radius: 0;" />
+      <ComboBox fx:id="pickLevel" layoutX="79.0" layoutY="187.0" prefWidth="150.0" promptText="Cấp bậc" />
+      <Button fx:id="cancelAppointment" graphicTextGap="3.0" layoutX="78.0" layoutY="308.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Hủy" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <ComboBox fx:id="pickDivision" layoutX="79.0" layoutY="227.0" prefWidth="150.0" promptText="Bộ phận" />
+   </children>
+</AnchorPane>
