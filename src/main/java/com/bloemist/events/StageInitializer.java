@@ -37,7 +37,7 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
       var stage = (Stage) event.getSource();
       Scene scene = new Scene(parent);
       stage.setScene(scene);
-      stage.setTitle("Tiêu đề ghi tại StageInitializer sẽ đổi");
+      stage.setTitle("Tiêu đề ghi tại StageInitializer sẽ đổi tự động");
       stage.getIcons().add(new Image(imageResoure.getURL().getFile().substring(1)));
       stage.show();
     } catch (IOException e) {
