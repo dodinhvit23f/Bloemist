@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="531.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="70.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
@@ -20,10 +19,7 @@
       <PasswordField fx:id="userPassword" layoutX="90.0" layoutY="199.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu" style="-fx-background-radius: 0;" />
       <TextField fx:id="userIdentify" layoutX="90.0" layoutY="158.0" promptText="Tên đăng nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
       <PasswordField fx:id="confirmPassword" layoutX="90.0" layoutY="239.0" prefHeight="25.0" prefWidth="149.0" promptText="Xác nhân mật khẩu" style="-fx-background-radius: 0;" />
-      <PasswordField fx:id="userEmail" layoutX="90.0" layoutY="278.0" prefHeight="25.0" prefWidth="149.0" promptText="Địa chỉ Email" style="-fx-background-radius: 0;" />
       <DatePicker fx:id="userDob" layoutX="297.0" layoutY="158.0" promptText="Ngày, tháng, năm sinh" />
-      <PasswordField fx:id="userAddress" layoutX="298.0" layoutY="278.0" prefHeight="25.0" prefWidth="149.0" promptText="Địa chỉ" style="-fx-background-radius: 0;" />
-      <PasswordField fx:id="userPhone" layoutX="297.0" layoutY="239.0" prefHeight="25.0" prefWidth="149.0" promptText="Số điện thoại" style="-fx-background-radius: 0;" />
       <ComboBox fx:id="userGender" layoutX="297.0" layoutY="199.0" prefWidth="150.0" promptText="Giới tính" />
       <Button fx:id="cancelReg" graphicTextGap="3.0" layoutX="90.0" layoutY="320.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Hủy" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
          <font>
@@ -35,5 +31,8 @@
             <Font size="14.0" />
          </font>
       </Button>
+      <TextField fx:id="userEmail" layoutX="90.0" layoutY="278.0" promptText="Địa chỉ Email" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
+      <TextField fx:id="userPhone" layoutX="298.0" layoutY="239.0" promptText="Số điện thoại" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
+      <TextField fx:id="userAddress" layoutX="298.0" layoutY="278.0" promptText="Địa chỉ" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
    </children>
 </AnchorPane>
