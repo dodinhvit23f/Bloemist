@@ -22,10 +22,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StageInitializer implements ApplicationListener<StageReadyEvent> {
   
-  @Value("classpath:ui/[0001]Login.fxml")
+  @Value("classpath:ui/[0007]MasterOrder.fxml")
   Resource homeResoure;
   
-  @Value("classpath:Img/logo.png")
+  @Value("classpath:Img/ICON.png")
   Resource imageResoure;
 
   @Override
