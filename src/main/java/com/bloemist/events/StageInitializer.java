@@ -9,6 +9,7 @@ import com.bloemist.BloemistUIApplication.StageReadyEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -21,8 +22,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StageInitializer implements ApplicationListener<StageReadyEvent> {
   
-  @Value("classpath:ui/Login.fxml")
+  @Value("classpath:ui/[0001]Login.fxml")
   Resource homeResoure;
+  
+  @Value("classpath:Img/logo.png")
+  Resource imageResoure;
 
   @Override
   public void onApplicationEvent(StageReadyEvent event) {
@@ -33,6 +37,8 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
       var stage = (Stage) event.getSource();
       Scene scene = new Scene(parent);
       stage.setScene(scene);
+      stage.setTitle("Tiêu đề ghi tại StageInitializer sẽ đổi");
+      stage.getIcons().add(new Image(imageResoure.getURL().getFile().substring(1)));
       stage.show();
     } catch (IOException e) {
       e.printStackTrace();
