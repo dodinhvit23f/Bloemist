@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
@@ -17,20 +18,60 @@
                   <Image url="@../Img/logo.png" />
                </image>
             </ImageView>
-            <Label layoutX="230.0" layoutY="14.0" text="TIỆM HOA BLOEMIST">
+            <Label layoutX="231.0" layoutY="27.0" text="TIỆM HOA BLOEMIST">
                <font>
                   <Font name="Times New Roman Bold" size="9.0" />
                </font>
             </Label>
-            <Label layoutX="230.0" layoutY="26.0" text="FLOWER JUST FOR YOU">
+            <Label layoutX="231.0" layoutY="39.0" text="FLOWER JUST FOR YOU">
                <font>
                   <Font name="Times New Roman" size="9.0" />
                </font></Label>
-            <Label layoutX="230.0" layoutY="38.0" text="Hotline: 086 86 4 28 28">
+            <Label layoutX="231.0" layoutY="51.0" text="Hotline: 086 86 4 28 28">
                <font>
-                  <Font name="Times New Roman" size="9.0" />
+                  <Font name="Times New Roman" size="8.0" />
                </font>
             </Label>
+            <Line endX="50.0" layoutX="335.0" layoutY="79.0" rotate="90.0" />
+            <Label layoutX="231.0" layoutY="61.0" prefHeight="10.0" prefWidth="116.0" text="ĐC: 69 Kim Mã - Ba Đình - Hà Nội">
+               <font>
+                  <Font name="Times New Roman" size="8.0" />
+               </font>
+            </Label>
+            <Label layoutX="231.0" layoutY="71.0" text="FB: Tiệm hoa Bloemist">
+               <font>
+                  <Font name="Times New Roman Bold" size="8.0" />
+               </font></Label>
+            <Label layoutX="231.0" layoutY="81.0" text="Email: tiemhoabloemist@gmail.com">
+               <font>
+                  <Font name="Times New Roman Bold" size="8.0" />
+               </font>
+            </Label>
+            <Label layoutX="231.0" layoutY="91.0" text="Web: tiemhoabloemist.com">
+               <font>
+                  <Font name="Times New Roman Bold" size="8.0" />
+               </font>
+            </Label>
+            <Label layoutX="367.0" layoutY="51.0" text="TK giao dịch: Đỗ Thị Hạnh">
+               <font>
+                  <Font name="Times New Roman Bold" size="8.0" />
+               </font>
+            </Label>       
+            <Label layoutX="367.0" layoutY="61.0" text="NH TMCP Tiên Phong (TP)">
+               <font>
+                  <Font name="Times New Roman Bold" size="8.0" />
+               </font>
+            </Label>
+            <Label layoutX="367.0" layoutY="71.0" text="STK: 01504925001">
+               <font>
+                  <Font name="Times New Roman Bold" size="8.0" />
+               </font>
+            </Label>
+            <Label layoutX="167.0" layoutY="130.0" text="HÓA ĐƠN BÁN HÀNG">
+               <font>
+                  <Font name="Times New Roman Bold" size="16.0" />
+               </font>
+            </Label>                                         
          </children></AnchorPane>
   </items>
 </SplitPane>
