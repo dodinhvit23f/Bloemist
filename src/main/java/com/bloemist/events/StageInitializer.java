@@ -1,9 +1,11 @@
 package com.bloemist.events;
 
 import com.bloemist.manager.StageManager;
+import java.io.FileInputStream;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,7 @@ public class StageInitializer implements ApplicationListener<StageEvent> {
       Scene scene = new Scene(panel);
       stage.setScene(scene);
       stage.setTitle(manager.getStageTitle());
-      stage.getIcons().add(new Image(iconResoure.getURL().getFile().substring(1)));
+      stage.getIcons().add(new Image(new FileInputStream(iconResoure.getURL().getFile())));
       stage.setMinHeight(panel.getPrefHeight());
       stage.setMinWidth(panel.getPrefWidth());
       stage.show();

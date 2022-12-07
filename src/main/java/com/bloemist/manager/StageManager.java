@@ -1,5 +1,7 @@
 package com.bloemist.manager;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import javafx.stage.Stage;
@@ -35,7 +37,12 @@ public class StageManager {
   }
 
   public URL getUrlFxmlFile() {
-    return this.getClass().getResource(String.join("/",path, urlFxmlFile));
+    try {
+      return new File(String.join("/", path, urlFxmlFile)).toURI().toURL();
+    } catch (MalformedURLException e) {
+      System.exit(0);
+    }
+    return null;
   }
 
   public String getStageTitle() {
