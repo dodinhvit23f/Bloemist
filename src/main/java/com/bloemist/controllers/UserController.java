@@ -24,10 +24,8 @@ public class UserController {
 
   @Autowired
   UserServiceI userService;
-
   @FXML
   TextField userID;
-
   @FXML
   TextField userPassword;
 
