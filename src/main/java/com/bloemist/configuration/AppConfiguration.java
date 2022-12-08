@@ -30,7 +30,7 @@ public class AppConfiguration {
     return StageManager.builder()
         .messageSource(getMessageSource())
         .stage(stage)
-        .urlFxmlFile("ui/Login.fxml")
+        .urlFxmlFile("ui/[0001]Login.fxml")
         .path(classpathEntries[0])
         .build();
   }
