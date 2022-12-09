@@ -1,4 +1,4 @@
-package com.bloemist.events;
+package com.bloemist.listener;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import com.bloemist.events.StageEvent;
 import com.bloemist.manager.StageManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

@@ -1,15 +1,16 @@
 package com.bloemist.controllers;
 
-import javafx.scene.control.CheckBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import com.bloemist.dto.Account;
+import com.bloemist.events.StageEvent;
 import com.bloemist.services.interfaces.UserServiceI;
-
+import com.constant.Constants;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.experimental.FieldDefaults;
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = false)
 @NoArgsConstructor
-public class UserController {
+public class LoginController extends BaseController {
 
   @Autowired
   UserServiceI userService;
@@ -34,24 +35,33 @@ public class UserController {
     String username = userIdentify.getText();
     String password = userPassword.getText();
     userPassword.setText("");
-    Alert alert;
 
     if (ObjectUtils.isEmpty(username) || ObjectUtils.isEmpty(password)) {
-      alert = new Alert(AlertType.WARNING, "Tên đăng nhập hoặc mật khẩu không được để trống");
-      alert.show();
+      showDialog(AlertType.WARNING, messageSource.getMessage(Constants.ERR_LOGIN_002));
       return;
     }
 
     Account account = userService.login(username, password);
 
     if (ObjectUtils.isEmpty(account.getRole())) {
-      alert = new Alert(AlertType.ERROR, "Tên đăng nhập hoặc mật khẩu sai");
-      alert.show();
+      showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_LOGIN_001));
       userPassword.setText("");
       return;
     }
 
-    alert = new Alert(AlertType.CONFIRMATION, "Đăng nhập thành công");
+    showDialog(AlertType.ERROR, messageSource.getMessage(Constants.SUSS_LOGIN_001));
+  }
+
+  private void showDialog(AlertType alertType, String message) {
+    Alert alert = new Alert(alertType, message);
     alert.show();
+  }
+
+  public void registerAccount() {
+     publisher.publishEvent(new StageEvent(this.stageManager, null));
+  }
+
+  public void restoreAccount() {
+
   }
 }

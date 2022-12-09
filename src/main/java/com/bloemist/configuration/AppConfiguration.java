@@ -1,6 +1,8 @@
 package com.bloemist.configuration;
 
 import com.bloemist.manager.StageManager;
+import com.bloemist.message.Message;
+import com.constant.ApplicationView;
 import java.io.File;
 import javafx.stage.Stage;
 import org.springframework.context.MessageSource;
@@ -14,24 +16,31 @@ public class AppConfiguration {
 
   @Bean(name = "messageResource")
   public MessageSource getMessageSource() {
-    ReloadableResourceBundleMessageSource messageResource = new ReloadableResourceBundleMessageSource();
+    ReloadableResourceBundleMessageSource messageResource =
+        new ReloadableResourceBundleMessageSource();
     messageResource.setBasename("classpath:messages");
     messageResource.setDefaultEncoding("UTF-8");
     messageResource.setUseCodeAsDefaultMessage(true);
     return messageResource;
   }
+
+  @Bean
+  Message getMessage() {
+    return Message.builder()
+        .messageSource(getMessageSource())
+        .build();
+  }
+
   @Lazy
   @Bean
-  StageManager stageManager(Stage stage){
+  StageManager stageManager(Stage stage) {
 
     String classpath = System.getProperty("java.class.path");
     String[] classpathEntries = classpath.split(File.pathSeparator);
 
-    return StageManager.builder()
-        .messageSource(getMessageSource())
-        .stage(stage)
-        .urlFxmlFile("ui/[0001]Login.fxml")
-        .path(classpathEntries[0])
-        .build();
+    return StageManager.builder().stage(stage)
+        .view(ApplicationView.LOGIN)
+        .message(getMessage())
+        .path(classpathEntries[0]).build();
   }
 }

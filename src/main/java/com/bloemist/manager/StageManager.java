@@ -1,44 +1,41 @@
 package com.bloemist.manager;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
+import com.bloemist.message.Message;
+import com.constant.ApplicationView;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.context.MessageSource;
 
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StageManager {
+@NoArgsConstructor
+@AllArgsConstructor
+public class StageManager implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+  
   Stage stage;
-  private static final String SUFFIX_TITLE = "title";
-  private MessageSource messageSource;
-  private String urlFxmlFile;
-  private String path;
-
-  public StageManager() {
-  }
+  Message message;
+  ApplicationView view;
+  String path;
 
 
-  public StageManager(Stage stage, MessageSource messageSource, String urlFxmlFile, String path) {
-    this.stage = stage;
-    this.messageSource = messageSource;
-    this.urlFxmlFile = urlFxmlFile;
-    this.path = path;
-  }
-
-  public void setUrlFxmlFile(String urlFxmlFile) {
-    this.urlFxmlFile = urlFxmlFile;
+  public void setView(ApplicationView view) {
+    this.view = view;
   }
 
   public URL getUrlFxmlFile() {
     try {
-      return new File(String.join("/", path, urlFxmlFile)).toURI().toURL();
+      return new File(String.join("/", path, view.getUrl())).toURI().toURL();
     } catch (MalformedURLException e) {
       System.exit(0);
     }
@@ -46,10 +43,6 @@ public class StageManager {
   }
 
   public String getStageTitle() {
-    return messageSource.getMessage(
-        String.join("-",
-            urlFxmlFile.replace("ui/","")
-                .split("\\.")[0],
-            SUFFIX_TITLE), null, Locale.US);
+    return message.getMessage(view.getTitle());
   }
 }
