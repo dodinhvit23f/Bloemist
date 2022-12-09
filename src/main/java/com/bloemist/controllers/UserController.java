@@ -10,7 +10,12 @@ import com.google.common.hash.Hashing;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,23 +25,30 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 public class UserController {
 
-  private static Account accountLogin;
-
   @Autowired
   UserServiceI userService;
 
   @FXML
-  TextField userID;
-
+  TextField userIdentify;
   @FXML
-  TextField userPassword;
+  PasswordField userPassword;
+  @FXML
+  CheckBox saveId;
+  @FXML
+  Button loginButton;
+  @FXML
+  Hyperlink createLink;
+  @FXML
+  Hyperlink forgotPassword;
+  @FXML
+  ImageView logoImg;
 
   public void login() {
     Hashing.sha256().hashString("qwe123", StandardCharsets.UTF_8).toString();
   }
 
   public void onClicked() {
-    String username = userID.getText();
+    String username = userIdentify.getText();
     String password = userPassword.getText();
     userPassword.setText("");
     Alert alert;
@@ -58,6 +70,6 @@ public class UserController {
 
     alert = new Alert(AlertType.CONFIRMATION, "Đăng nhập thành công");
     alert.show();
-    
+
   }
 }
