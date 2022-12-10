@@ -13,10 +13,6 @@ public class StageEvent extends ApplicationEvent {
   private static Account accountLogin;
   private StageManager manager;
 
-  public StageEvent(Stage stage) {
-    super(stage);
-  }
-
   public StageEvent(StageManager manager, Account account) {
     super(manager);
     this.manager = manager;
@@ -28,12 +24,17 @@ public class StageEvent extends ApplicationEvent {
     manager = null;
   }
 
-  public Stage getStage() {
-    return manager.getStage();
-  }
-  
+
   public void setView(ApplicationView view) {
     manager.setView(view);
+  }
+
+  public void setAccount(Account account) {
+    accountLogin = account;
+  }
+
+  public Stage getStage() {
+    return manager.getStage();
   }
 
   public Account getAccount() {

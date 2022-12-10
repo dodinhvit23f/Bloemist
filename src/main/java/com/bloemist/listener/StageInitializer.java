@@ -14,7 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -23,16 +22,17 @@ import lombok.experimental.FieldDefaults;
  */
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor
 public class StageInitializer implements ApplicationListener<StageEvent> {
-
-  @Value("classpath:ui/[0001]Login.fxml")
-  Resource homeResoure;
-
+  
+  final ApplicationContext context;
+  
   @Value("${application.image-url}")
   Resource iconResoure;
-
-  final ApplicationContext context;
+  
+  public StageInitializer( ApplicationContext context) {
+    this.context = context;
+  }
+  
 
   @Override
   public void onApplicationEvent(StageEvent event) {
@@ -48,7 +48,7 @@ public class StageInitializer implements ApplicationListener<StageEvent> {
       Scene scene = new Scene(panel);
       stage.setScene(scene);
       stage.setTitle(manager.getStageTitle());
-      stage.getIcons().add(new Image(new FileInputStream(iconResoure.getURL().getFile())));
+      stage.getIcons().add(new Image(new FileInputStream(iconResoure.getFile())));
       stage.setMinHeight(panel.getPrefHeight());
       stage.setMinWidth(panel.getPrefWidth());
       stage.show();

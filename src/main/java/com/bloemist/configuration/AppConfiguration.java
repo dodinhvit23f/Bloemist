@@ -30,6 +30,7 @@ public class AppConfiguration {
         .messageSource(getMessageSource())
         .build();
   }
+  
 
   @Lazy
   @Bean
@@ -38,7 +39,8 @@ public class AppConfiguration {
     String classpath = System.getProperty("java.class.path");
     String[] classpathEntries = classpath.split(File.pathSeparator);
 
-    return StageManager.builder().stage(stage)
+    return StageManager.builder()
+        .stage(stage)
         .view(ApplicationView.LOGIN)
         .message(getMessage())
         .path(classpathEntries[0]).build();

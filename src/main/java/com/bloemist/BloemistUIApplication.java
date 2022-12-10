@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class BloemistUIApplication extends Application {
 
   ConfigurableApplicationContext applicationContext;
+  StageManager manager;
  
 
   @Override
@@ -35,8 +36,8 @@ public class BloemistUIApplication extends Application {
   @Override
   public void start(Stage stage) throws Exception {
 
-    StageManager stageManager = applicationContext.getBean(StageManager.class, new Stage());
-    applicationContext.publishEvent(new StageEvent(stageManager));
+    manager = applicationContext.getBean(StageManager.class, new Stage());
+    applicationContext.publishEvent(new StageEvent(manager));
   }
 
 

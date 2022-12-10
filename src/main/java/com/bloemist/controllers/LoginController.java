@@ -1,10 +1,11 @@
 package com.bloemist.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import com.bloemist.dto.Account;
-import com.bloemist.events.StageEvent;
+import com.bloemist.message.Message;
 import com.bloemist.services.interfaces.UserServiceI;
 import com.constant.Constants;
 import javafx.fxml.FXML;
@@ -13,22 +14,28 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = false)
-@NoArgsConstructor
 public class LoginController extends BaseController {
 
-  @Autowired
   UserServiceI userService;
+  
   @FXML
   TextField userIdentify;
   @FXML
   TextField userPassword;
   @FXML
   CheckBox saveId;
+  
+  
+  @Autowired
+  public LoginController(Message messageSource, ApplicationEventPublisher publisher
+, UserServiceI userService) {
+    super(messageSource, publisher);
+    this.userService = userService;
+  }
 
   public void login() {
 
@@ -58,7 +65,7 @@ public class LoginController extends BaseController {
   }
 
   public void registerAccount() {
-     publisher.publishEvent(new StageEvent(this.stageManager, null));
+     //publisher.publishEvent(new StageEvent(this.stageManager, null));
   }
 
   public void restoreAccount() {
