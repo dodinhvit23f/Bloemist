@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public final class StageManager implements Serializable {
+public class StageManager implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -23,6 +23,18 @@ public final class StageManager implements Serializable {
   Stage stage;
   ApplicationView view;
   String path;
+  
+  public StageManager(Message message, Stage stage, ApplicationView view, String path) {
+    super();
+    this.message = message;
+    this.stage = stage;
+    this.view = view;
+    this.path = path;
+  }
+  
+  public StageManager() {
+    
+  }
 
   public void setView(ApplicationView view) {
     this.view = view;
@@ -44,4 +56,6 @@ public final class StageManager implements Serializable {
   public String getStageTitle() {
     return message.getMessage(view.getTitle());
   }
+
+
 }

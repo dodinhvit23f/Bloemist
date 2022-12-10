@@ -9,7 +9,7 @@ public enum ApplicationView {
   LOGIN {
     @Override
     public String getTitle() {
-      return Constants.LOGIN_TITLE;
+      return Constants.Title.LOGIN_TITLE;
     }
 
     @Override
@@ -20,7 +20,7 @@ public enum ApplicationView {
   REGISTRATOR {
     @Override
     public String getTitle() {
-      return Constants.ID_REGISTRATION_TITLE;
+      return Constants.Title.ID_REGISTRATION_TITLE;
     }
 
     @Override
@@ -37,7 +37,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.NEW_ORDER_TITLE;
+      return Constants.Title.NEW_ORDER_TITLE;
     }
   },
   USER_APPOINTMENT {
@@ -49,7 +49,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.USER_APPOINTMENT_TITLE;
+      return Constants.Title.USER_APPOINTMENT_TITLE;
     }
 
   },
@@ -61,7 +61,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.CHANGE_PASSWORD_TITLE;
+      return Constants.Title.CHANGE_PASSWORD_TITLE;
     }
 
   },
@@ -73,7 +73,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.RECOVER_PASSWORD_TITLE;
+      return Constants.Title.RECOVER_PASSWORD_TITLE;
     }
 
   },
@@ -85,7 +85,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.MASTER_ORDER_TITLE;
+      return Constants.Title.MASTER_ORDER_TITLE;
     }
 
   },
@@ -97,7 +97,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.INQUIRY_ORDER;
+      return Constants.Title.INQUIRY_ORDER;
     }
 
   };

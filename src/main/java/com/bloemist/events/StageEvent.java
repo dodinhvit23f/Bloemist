@@ -4,9 +4,11 @@ import com.bloemist.dto.Account;
 import com.bloemist.manager.StageManager;
 import com.constant.ApplicationView;
 import javafx.stage.Stage;
+import lombok.Builder;
 import org.springframework.context.ApplicationEvent;
 
 
+@Builder
 public class StageEvent extends ApplicationEvent {
 
   private static final long serialVersionUID = 1L;
