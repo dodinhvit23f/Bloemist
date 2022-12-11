@@ -34,5 +34,6 @@
       <TextField fx:id="userEmail" layoutX="90.0" layoutY="278.0" promptText="Địa chỉ Email" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
       <TextField fx:id="userPhone" layoutX="298.0" layoutY="239.0" promptText="Số điện thoại" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
       <TextField fx:id="userAddress" layoutX="298.0" layoutY="278.0" promptText="Địa chỉ" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
+      <TextField fx:id="empName" layoutX="298.0" layoutY="119.0" promptText="Họ và tên" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
    </children>
 </AnchorPane>
