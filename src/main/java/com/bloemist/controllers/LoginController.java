@@ -1,11 +1,12 @@
 package com.bloemist.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import com.bloemist.dto.Account;
-import com.bloemist.events.StageEvent;
 import com.bloemist.message.Message;
 import com.bloemist.message.MessageUtils;
 import com.bloemist.services.UserServiceI;
@@ -62,11 +63,15 @@ public final class LoginController extends BaseController {
 
 
   public void registerAccount() {
-    stageManager.setView(ApplicationView.REGISTRATOR);
-    publisher.publishEvent(new StageEvent(stageManager, null));
+    swichScence(ApplicationView.REGISTRATOR);
   }
 
   public void restoreAccount() {
+    swichScence(ApplicationView.RECOVER_PASSWORD);
+  }
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+   
   }
 }

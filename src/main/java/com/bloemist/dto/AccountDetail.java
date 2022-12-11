@@ -11,10 +11,11 @@ import lombok.Setter;
 @Builder
 public class AccountDetail{
   
-  private String userName;
+  private String username;
   private String phoneNumber;
   private String gender;
   private Date dob;
   private String password;
   private String email;
+  private String address;
 }

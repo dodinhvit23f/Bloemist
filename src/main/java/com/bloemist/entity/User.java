@@ -27,9 +27,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users",
-    indexes = {@Index(columnList = "user_name", name = "ux_username", unique = true)},
-    uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "uk_email")})
+@Table(name = "users", indexes = {@Index(columnList = "user_name", name = "ux_username")},
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"email", "user_name"}, name = "uk_email")})
 public class User {
 
   @Id
@@ -49,10 +49,23 @@ public class User {
   private Date createDate;
 
   @Temporal(TemporalType.DATE)
+  @Column(name = "dob")
+  private Date dob;
+
+  @Column(name = "phone_number", length = 11)
+  private String phoneNumber;
+
+  @Column(name = "gender", length = 5)
+  private String gender;
+
+  @Temporal(TemporalType.DATE)
   @Column(name = "update_date")
   private Date updateDate;
 
-  private String description;
+  private String address;
+  
+  @Column(name = "opt", length = 5)
+  private String otp;
 
   private boolean isDeleted;
 

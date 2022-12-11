@@ -11,8 +11,10 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @Builder
 public class Message {
+
   MessageSource messageSource;
-  
+
+
   public String getMessage(String code) {
     return messageSource.getMessage(code, null, Locale.ENGLISH);
   }

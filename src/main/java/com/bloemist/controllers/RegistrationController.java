@@ -1,20 +1,22 @@
 package com.bloemist.controllers;
 
 import java.math.BigInteger;
+import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.ResourceBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import com.bloemist.dto.AccountDetail;
-import com.bloemist.events.StageEvent;
 import com.bloemist.message.Message;
 import com.bloemist.message.MessageUtils;
 import com.bloemist.services.UserServiceI;
 import com.constant.ApplicationView;
 import com.constant.Constants;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
@@ -54,8 +56,7 @@ public final class RegistrationController extends BaseController {
   ComboBox<String> userGender;
 
   public void cancel() {
-    stageManager.setView(ApplicationView.LOGIN);
-    publisher.publishEvent(StageEvent.builder().manager(stageManager).build());
+   swichScence(ApplicationView.LOGIN);
   }
 
   public void createAccount() {
@@ -64,40 +65,52 @@ public final class RegistrationController extends BaseController {
     String phoneNumber = userPhone.getText();
     String gender = userGender.getValue();
     String password = userPassword.getText();
-    String comfirmPassword = userPassword.getText();
+    String comfirmPassword = confirmPassword.getText();
     String email = userEmail.getText();
+    String address = userAddress.getText();
     Date dob = Date.from(userDob.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     if (ObjectUtils.isEmpty(userName) || ObjectUtils.isEmpty(phoneNumber)
         || ObjectUtils.isEmpty(gender) || ObjectUtils.isEmpty(password)
         || ObjectUtils.isEmpty(comfirmPassword) || ObjectUtils.isEmpty(email)
-        || ObjectUtils.isEmpty(dob)) {
-      MessageUtils.showDialog(AlertType.ERROR, Constants.ERR_REGISRATOR_001);
+        || ObjectUtils.isEmpty(dob)
+        || ObjectUtils.isEmpty(address)) {
+      MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_REGISRATOR_001));
       return;
     }
 
     if (dob.compareTo(Date.from(Instant.now())) >= BigInteger.ZERO.intValue()) {
-      MessageUtils.showDialog(AlertType.ERROR, Constants.ERR_REGISRATOR_002);
+      MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_REGISRATOR_002));
       return;
     }
     
     if(comfirmPassword.contentEquals(password)) {
       String code = userService.createAccount( AccountDetail.builder()
-          .userName(userName)
+          .username(userName)
           .phoneNumber(phoneNumber)
           .gender(gender)
           .password(comfirmPassword)
           .email(email)
           .dob(dob)
           .build());
+      if(ObjectUtils.isEmpty(code)) {
+        MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(code));
+        return;
+      }
       
-      MessageUtils.showDialog(AlertType.ERROR, code);
+      MessageUtils.showDialog(AlertType.INFORMATION, messageSource.getMessage(code));
+     
       return;
     }
-    
-    MessageUtils.showDialog(AlertType.ERROR, Constants.ERR_REGISRATOR_003);
+     
+    MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_REGISRATOR_003));
     
    
+  }
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    userGender.setItems(FXCollections.observableArrayList("Nam", "Nữ"));
   }
 
 }

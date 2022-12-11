@@ -22,6 +22,17 @@ public interface UserServiceI {
    * @param account detail account
    * @return MessageCode in {@link Constants}
    */
-  @Transactional(readOnly = true)
+  @Transactional
   String createAccount(AccountDetail account);
+  
+  /**
+   * 
+   * @param account
+   * @return
+   */
+  @Transactional
+  String sendOTP(AccountDetail account);
+  
+  @Transactional
+  String resetPassword(AccountDetail account);
 }

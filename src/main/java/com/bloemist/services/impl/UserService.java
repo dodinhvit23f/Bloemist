@@ -16,6 +16,7 @@ import com.bloemist.repositories.UserRepository;
 import com.bloemist.services.UserServiceI;
 import com.constant.Constants;
 import com.google.common.hash.Hashing;
+import com.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,10 +26,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService implements UserServiceI {
 
-  final UserRepository userRepository;
+  UserRepository userRepository;
 
   static final String SALT = "BLOEMIST";
 
+  private String hashPassword(String password) {
+    return Hashing.sha256().hashString(String.join("", password, SALT), StandardCharsets.UTF_8)
+        .toString();
+  }
 
   @Override
   public Account login(String username, String password) {
@@ -45,10 +50,13 @@ public class UserService implements UserServiceI {
 
     User user = searchedUser.get();
 
-    String hashPassword = Hashing.sha256()
-        .hashString(String.join("", password, SALT), StandardCharsets.UTF_8).toString();
+    String hashPassword = hashPassword(password);
 
     if (!user.getUserName().equals(username) || !user.getPassword().equals(hashPassword)) {
+      return Account.builder().role("").user(username).build();
+    }
+    
+    if(CollectionUtils.isEmpty(user.getRoles())) {
       return Account.builder().role("").user(username).build();
     }
 
@@ -57,17 +65,16 @@ public class UserService implements UserServiceI {
         .user(username).build();
   }
 
-
   @Override
   public String createAccount(AccountDetail account) {
 
     Set<User> users =
-        userRepository.findByUserNameOrEmail(account.getUserName(), account.getEmail());
+        userRepository.findByUserNameOrEmail(account.getUsername(), account.getEmail());
 
     if (!CollectionUtils.isEmpty(users)) {
 
       var errors = users.stream().map(user -> {
-        if (user.getUserName().equals(account.getUserName())) {
+        if (user.getUserName().equals(account.getUsername())) {
           return Constants.ERR_REGISRATOR_004;
         }
         return Constants.ERR_REGISRATOR_005;
@@ -79,9 +86,48 @@ public class UserService implements UserServiceI {
       return errors.get(BigInteger.ZERO.intValue());
     }
 
+    String hashPassword = hashPassword(account.getPassword());
 
-    return Constants.SUSS_LOGIN_001;
+    var user = User.builder().userName(account.getUsername()).password(hashPassword)
+        .address(account.getAddress()).email(account.getEmail()).dob(account.getDob())
+        .phoneNumber(account.getPhoneNumber()).gender(account.getGender()).build();
+
+    userRepository.save(user);
+    return Constants.SUSS_REGISRATOR_001;
   }
 
+  @Override
+  public String sendOTP(AccountDetail account) {
+
+    Optional<User> userOptional =
+        userRepository.findByUserNameAndEmail(account.getUsername(), account.getEmail());
+
+    if (userOptional.isEmpty()) {
+      return "";
+    }
+    
+    String otp = Utils.genarateOTP(Constants.OTP_LENGTH);
+    User user = userOptional.get();
+    user.setOtp(otp);
+    userRepository.save(user);
+    
+    return otp;
+  }
+  
+  @Override
+  public String resetPassword(AccountDetail account) {
+    String newPassword = Utils.genarateOTP(Constants.OTP_LENGTH);
+    Optional<User> userOptional = userRepository.findUserByUserName(account.getUsername());
+    
+    userOptional.ifPresent(user -> {
+      user.setPassword(hashPassword(newPassword));
+      userRepository.save(user);
+    });
+    
+    
+
+    return newPassword;
+  }
+  
 
 }
