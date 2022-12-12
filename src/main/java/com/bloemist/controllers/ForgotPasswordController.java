@@ -48,10 +48,11 @@ public class ForgotPasswordController extends BaseController {
         String password = userService
             .resetPassword(AccountDetail.builder().username(userIdentify.getText()).build());
 
-        sendMail(messageSource.getMessage(Constants.CONT_REST_PASSWORD_SUBJECT),
+        sendMail(messageSource.getMessage(Constants.CONT_REST_PASSWORD_SUBJECT_001),
             userEmail.getText(),
             String.format(messageSource.getMessage(Constants.CONT_REST_PASSWORD), password));
-
+        MessageUtils.showDialog(AlertType.INFORMATION,
+            messageSource.getMessage(Constants.SUSS_REST_PASSWORD_001));
         swichScence(ApplicationView.LOGIN);
         return;
       }
@@ -86,7 +87,6 @@ public class ForgotPasswordController extends BaseController {
     userEmail.setEditable(Boolean.FALSE);
 
   }
-
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {

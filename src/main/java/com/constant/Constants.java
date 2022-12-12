@@ -23,6 +23,7 @@ public final class Constants {
   public static final String CONT_REST_PASSWORD_OTP = "CONT_REST_PASSWORD_OTP";
   public static final String CONT_REST_PASSWORD_SUBJECT = "CONT_REST_PASSWORD_SUBJECT";
   public static final String CONT_REST_PASSWORD = "CONT_REST_PASSWORD";
+  public static final String CONT_REST_PASSWORD_SUBJECT_001 = "CONT_REST_PASSWORD_SUBJECT_001";
   
   public static final int OTP_LENGTH = 5;
 
