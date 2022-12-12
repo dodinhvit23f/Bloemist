@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="616.0" prefWidth="1070.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <TableView layoutX="17.0" layoutY="111.0" prefHeight="475.0" prefWidth="1033.0">
+        <columns>
+            <TableColumn prefWidth="75.0" text="Thông tin đăng nhập">
+               <columns>
+                <TableColumn prefWidth="75.0" text="ID" />
+                <TableColumn prefWidth="75.0" text="Mật khẩu" />
+                  <TableColumn prefWidth="75.0" text="Địa chỉ Email" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="75.0" text="Thông tin người lao động">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="Họ và tên" />
+                  <TableColumn prefWidth="132.0" text="Ngày tháng năm sinh" />
+                  <TableColumn prefWidth="75.0" text="Giới tính" />
+                  <TableColumn prefWidth="75.0" text="Số điện thoại" />
+                  <TableColumn prefWidth="75.0" text="Địa chỉ" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="75.0" text="Thông tin chức danh công việc">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="Cấp bậc" />
+                  <TableColumn prefWidth="75.0" text="Bộ phận" />
+                  <TableColumn prefWidth="75.0" text="Lương cơ bản" />
+                  <TableColumn prefWidth="75.0" text="Ngày vào làm" />
+                  <TableColumn prefWidth="75.0" text="Ngày nghỉ việc" />
+               </columns>
+            </TableColumn>
+        </columns>
+      </TableView>
+      <Button layoutX="99.0" layoutY="24.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: CORNSILK;" text="Cập nhật" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="35.0" layoutY="24.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất dữ liệu" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <TextArea layoutX="173.0" layoutY="24.0" prefHeight="69.0" prefWidth="877.0" />
+   </children>
+</AnchorPane>
