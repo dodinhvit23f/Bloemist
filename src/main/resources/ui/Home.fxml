@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="792.0" style="-fx-background-color: PAPAYAWHIP;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="792.0" style="-fx-background-color: SEASHELL;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <MenuBar layoutX="214.0" layoutY="13.0" prefHeight="25.0" prefWidth="325.0" style="-fx-background-color: PAPAYAWHIP;">
+      <MenuBar layoutX="214.0" layoutY="13.0" prefHeight="25.0" prefWidth="325.0" style="-fx-background-color: SEASHELL;">
         <menus>
           <Menu mnemonicParsing="false" text="Tài khoản">
             <items>
@@ -46,8 +46,8 @@
             <Image url="@../Img/logo.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="566.0" fitWidth="803.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true" />
-      <TextField layoutX="620.0" layoutY="13.0" prefHeight="25.0" prefWidth="121.0" promptText="Tìm kiếm màn hình" />
+      <ImageView fitHeight="512.0" fitWidth="781.0" layoutX="5.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true" />
+      <TextField layoutX="620.0" layoutY="13.0" prefHeight="25.0" prefWidth="121.0" promptText="Mã màn hình" />
       <Button layoutX="745.0" layoutY="13.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="36.0" text="Go" />
    </children>
 </AnchorPane>
