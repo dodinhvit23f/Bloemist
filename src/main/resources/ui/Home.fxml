@@ -1,8 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="792.0" style="-fx-background-color: MOCCASIN;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar layoutX="214.0" layoutY="13.0" prefHeight="25.0" prefWidth="575.0" style="-fx-background-color: MOCCASIN;">
+        <menus>
+          <Menu mnemonicParsing="false" text="Tài khoản">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="Sửa thông tin cá nhân" />
+              <MenuItem mnemonicParsing="false" text="Đổi mật khẩu" />
+                  <MenuItem mnemonicParsing="false" text="Đăng ký nghỉ phép/ OT" />
+                  <MenuItem mnemonicParsing="false" text="Thông tin chấm công" />
+                  <MenuItem mnemonicParsing="false" text="Bảng lương" />
+                  <MenuItem mnemonicParsing="false" text="Đăng xuất" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Báo cáo">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Báo cáo doanh số" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Hỗ trợ">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="Thông tin bản quyền" />
+                  <MenuItem mnemonicParsing="false" text="Thông tin phần mềm" />
+              <MenuItem mnemonicParsing="false" text="Hướng dẫn sử dụng" />
+                  <MenuItem mnemonicParsing="false" text="Báo lỗi" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Img/logo.png" />
+         </image>
+      </ImageView>
+   </children>
 </AnchorPane>
-
