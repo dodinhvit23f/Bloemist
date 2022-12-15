@@ -10,6 +10,7 @@ import com.bloemist.dto.Account;
 import com.bloemist.message.Message;
 import com.bloemist.message.MessageUtils;
 import com.bloemist.services.UserServiceI;
+import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import javafx.fxml.FXML;
@@ -51,6 +52,8 @@ public final class LoginController extends BaseController {
     }
 
     Account account = userService.login(username, password);
+    
+    ApplicationVariable.setUser(account);
 
     if (ObjectUtils.isEmpty(account.getRole())) {
       MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_LOGIN_001));

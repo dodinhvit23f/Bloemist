@@ -30,6 +30,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = false)
 public final class RegistrationController extends BaseController {
 
+
   @Autowired
   UserServiceI userService;
 
@@ -45,7 +46,6 @@ public final class RegistrationController extends BaseController {
   TextField userPhone;
   @FXML
   TextField userAddress;
-
   @FXML
   PasswordField userPassword;
   @FXML
@@ -56,11 +56,11 @@ public final class RegistrationController extends BaseController {
   ComboBox<String> userGender;
 
   public void cancel() {
-   swichScence(ApplicationView.LOGIN);
+    swichScence(ApplicationView.LOGIN);
   }
 
   public void createAccount() {
-    
+
     String userName = userIdentify.getText();
     String phoneNumber = userPhone.getText();
     String gender = userGender.getValue();
@@ -73,44 +73,46 @@ public final class RegistrationController extends BaseController {
     if (ObjectUtils.isEmpty(userName) || ObjectUtils.isEmpty(phoneNumber)
         || ObjectUtils.isEmpty(gender) || ObjectUtils.isEmpty(password)
         || ObjectUtils.isEmpty(comfirmPassword) || ObjectUtils.isEmpty(email)
-        || ObjectUtils.isEmpty(dob)
-        || ObjectUtils.isEmpty(address)) {
-      MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_REGISRATOR_001));
+        || ObjectUtils.isEmpty(dob) || ObjectUtils.isEmpty(address)) {
+      MessageUtils.showDialog(AlertType.ERROR,
+          messageSource.getMessage(Constants.ERR_REGISRATOR_001));
       return;
     }
 
     if (dob.compareTo(Date.from(Instant.now())) >= BigInteger.ZERO.intValue()) {
-      MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_REGISRATOR_002));
+      MessageUtils.showDialog(AlertType.ERROR,
+          messageSource.getMessage(Constants.ERR_REGISRATOR_002));
       return;
     }
-    
-    if(comfirmPassword.contentEquals(password)) {
-      String code = userService.createAccount( AccountDetail.builder()
-          .username(userName)
-          .phoneNumber(phoneNumber)
-          .gender(gender)
-          .password(comfirmPassword)
-          .email(email)
-          .dob(dob)
-          .build());
-      if(ObjectUtils.isEmpty(code)) {
+
+    if (comfirmPassword.contentEquals(password)) {
+      String code = userService
+          .createAccount(AccountDetail.builder()
+              .username(userName)
+              .phoneNumber(phoneNumber)
+              .gender(gender)
+              .password(comfirmPassword)
+              .email(email)
+              .dob(dob)
+              .build());
+      if (ObjectUtils.isEmpty(code)) {
         MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(code));
         return;
       }
-      
+
       MessageUtils.showDialog(AlertType.INFORMATION, messageSource.getMessage(code));
-     
+
       return;
     }
-     
-    MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.ERR_REGISRATOR_003));
-    
-   
+
+    MessageUtils.showDialog(AlertType.ERROR,
+        messageSource.getMessage(Constants.ERR_REGISRATOR_003));
+
   }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    userGender.setItems(FXCollections.observableArrayList("Nam", "Nữ"));
+    userGender.setItems(FXCollections.observableArrayList(Constants.MALE, Constants.FEMALE));
   }
 
 }

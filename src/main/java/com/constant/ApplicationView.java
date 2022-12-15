@@ -9,23 +9,33 @@ public enum ApplicationView {
   LOGIN {
     @Override
     public String getTitle() {
-      return Constants.Title.LOGIN_TITLE;
+      return TitleConstants.LOGIN_TITLE;
     }
 
     @Override
     public String getUrl() {
       return "ui/[0001]Login.fxml";
     }
+
+    @Override
+    public String getCode() {
+      return "0001";
+    }
   },
   REGISTRATOR {
     @Override
     public String getTitle() {
-      return Constants.Title.ID_REGISTRATION_TITLE;
+      return TitleConstants.ID_REGISTRATION_TITLE;
     }
 
     @Override
     public String getUrl() {
       return "ui/[0002]IDRegistration.fxml";
+    }
+
+    @Override
+    public String getCode() {
+      return "0002";
     }
   },
   CREATE_ORDER {
@@ -37,7 +47,12 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.Title.NEW_ORDER_TITLE;
+      return TitleConstants.NEW_ORDER_TITLE;
+    }
+
+    @Override
+    public String getCode() {
+      return "0003";
     }
   },
   USER_APPOINTMENT {
@@ -49,9 +64,13 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.Title.USER_APPOINTMENT_TITLE;
+      return TitleConstants.USER_APPOINTMENT_TITLE;
     }
 
+    @Override
+    public String getCode() {
+      return "0004";
+    }
   },
   CHANGE_PASSWORD {
     @Override
@@ -61,9 +80,13 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.Title.CHANGE_PASSWORD_TITLE;
+      return TitleConstants.CHANGE_PASSWORD_TITLE;
     }
 
+    @Override
+    public String getCode() {
+      return "0005";
+    }
   },
   RECOVER_PASSWORD {
     @Override
@@ -73,38 +96,83 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return Constants.Title.RECOVER_PASSWORD_TITLE;
+      return TitleConstants.RECOVER_PASSWORD_TITLE;
     }
-
+    @Override
+    public String getCode() {
+      return "0006";
+    }
   },
   MASTER_ORDER {
     @Override
     public String getUrl() {
-      return "ui/[0007]MasterOrder.fxml.fxml";
+      return "ui/[0007]TotalOrdersReport.fxml";
     }
 
     @Override
     public String getTitle() {
-      return Constants.Title.MASTER_ORDER_TITLE;
+      return TitleConstants.MASTER_ORDER_TITLE;
     }
-
+    
+    @Override
+    public String getCode() {
+      return "0007";
+    }
   },
   INQUIRY_ORDER {
     @Override
     public String getUrl() {
-      return "ui/[0008]InquiryOrder.fxml";
+      return "ui/[0008]OrdersReport.fxml";
     }
 
     @Override
     public String getTitle() {
-      return Constants.Title.INQUIRY_ORDER;
+      return TitleConstants.INQUIRY_ORDER;
     }
 
+    @Override
+    public String getCode() {
+      return "0008";
+    }
+  },
+  EMPLOYEES_MANAGEMENT {
+    @Override
+    public String getUrl() {
+      return "ui/[0009]EmployeesManagement.fxml";
+    }
+    
+    @Override
+    public String getTitle() {
+      return TitleConstants.INQUIRY_ORDER;
+    }
+    
+    @Override
+    public String getCode() {
+      return "0008";
+    }
+  },
+  HOME {
+    @Override
+    public String getUrl() {
+      return "ui/Home.fxml";
+    }
+    
+    @Override
+    public String getTitle() {
+      return TitleConstants.INQUIRY_ORDER;
+    }
+    
+    @Override
+    public String getCode() {
+      return "0000";
+    }
   };
 
   public abstract String getUrl();
 
   public abstract String getTitle();
+
+  public abstract String getCode();
 
 
 }
