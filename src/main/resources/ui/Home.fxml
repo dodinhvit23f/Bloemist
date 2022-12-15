@@ -7,18 +7,18 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:controller="com.bloemist.controllers.HomeController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="792.0" style="-fx-background-color: SEASHELL;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="792.0" style="-fx-background-color: SEASHELL;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.HomeController">
    <children>
       <MenuBar layoutX="214.0" layoutY="13.0" prefHeight="25.0" prefWidth="325.0" style="-fx-background-color: SEASHELL;">
         <menus>
           <Menu mnemonicParsing="false" text="Tài khoản">
             <items>
-                  <MenuItem mnemonicParsing="false" text="Sửa thông tin cá nhân" />
-              <MenuItem mnemonicParsing="false" text="Đổi mật khẩu" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeUserInformation" text="Sửa thông tin cá nhân" />
+              <MenuItem mnemonicParsing="false" onAction="#changePassword" text="Đổi mật khẩu" />
                   <MenuItem mnemonicParsing="false" text="Đăng ký nghỉ phép/ OT" />
                   <MenuItem mnemonicParsing="false" text="Thông tin chấm công" />
                   <MenuItem mnemonicParsing="false" text="Bảng lương" />
-                  <MenuItem mnemonicParsing="false" text="Đăng xuất" />
+                  <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Danh mục màn hình">

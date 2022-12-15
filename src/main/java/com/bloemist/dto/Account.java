@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Account {
-  protected String role;
-  protected String user;
+  private String role;
+  private String user;
+  private String password;
+  private String email;
 }

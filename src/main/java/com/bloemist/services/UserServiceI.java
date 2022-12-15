@@ -9,13 +9,14 @@ public interface UserServiceI {
 
   /**
    * Check user is registered or not
+   * 
    * @param username username
    * @param password Raw password
    * @return Account with role or empty string
    */
   @Transactional(readOnly = true)
   Account login(String username, String password);
-  
+
   /**
    * Create user account
    * 
@@ -24,15 +25,29 @@ public interface UserServiceI {
    */
   @Transactional
   String createAccount(AccountDetail account);
-  
+
+  /**
+   * 
+   * @param account
+   * @return
+   */
+  @Transactional(readOnly = true)
+  String sendOTP(AccountDetail account);
+
   /**
    * 
    * @param account
    * @return
    */
   @Transactional
-  String sendOTP(AccountDetail account);
-  
-  @Transactional
   String resetPassword(AccountDetail account);
+  
+  /**
+   * 
+   * @param account
+   * @param newPassword
+   * @return
+   */
+  @Transactional
+  Account changeUserPassword(Account account, String newPassword);
 }

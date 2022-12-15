@@ -24,9 +24,17 @@ public final class Constants {
   public static final String CONT_REST_PASSWORD_SUBJECT = "CONT_REST_PASSWORD_SUBJECT";
   public static final String CONT_REST_PASSWORD = "CONT_REST_PASSWORD";
   public static final String CONT_REST_PASSWORD_SUBJECT_001 = "CONT_REST_PASSWORD_SUBJECT_001";
+  //Change Password
+  public static final String ERR_CHANGE_PASSWORD_001 = "ERR_CHANGE_PASSWORD_001";
+  public static final String ERR_CHANGE_PASSWORD_002 = "ERR_CHANGE_PASSWORD_002";
+  public static final String ERR_CHANGE_PASSWORD_003 = "ERR_CHANGE_PASSWORD_003";
+  public static final String ERR_CHANGE_PASSWORD_004 = "ERR_CHANGE_PASSWORD_004";
+  public static final String SUSS_CHANGE_PASSWORD_001 = "SUSS_CHANGE_PASSWORD_001";
+  public static final String CONT_CHANGE_PASSWORD_001 = "CONT_CHANGE_PASSWORD_001";
+  public static final String SUB_CHANGE_PASSWORD_001 = "SUB_CHANGE_PASSWORD_001";
   
   public static final int OTP_LENGTH = 5;
- 
   public static final String FEMALE = "Nữ";
   public static final String MALE = "Nam";
+  public static final String SALT = "BLOEMIST";
 }

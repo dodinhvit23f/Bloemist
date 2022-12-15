@@ -1,7 +1,8 @@
 package com.bloemist.services.impl;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,7 +16,6 @@ import com.bloemist.entity.User;
 import com.bloemist.repositories.UserRepository;
 import com.bloemist.services.UserServiceI;
 import com.constant.Constants;
-import com.google.common.hash.Hashing;
 import com.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +27,6 @@ import lombok.experimental.FieldDefaults;
 public class UserService implements UserServiceI {
 
   UserRepository userRepository;
-
-  static final String SALT = "BLOEMIST";
-
-  private String hashPassword(String password) {
-    return Hashing.sha256().hashString(String.join("", password, SALT), StandardCharsets.UTF_8)
-        .toString();
-  }
 
   @Override
   public Account login(String username, String password) {
@@ -50,7 +43,7 @@ public class UserService implements UserServiceI {
 
     User user = searchedUser.get();
 
-    String hashPassword = hashPassword(password);
+    String hashPassword = Utils.hashPassword(password);
 
     if (!user.getUserName().equals(username) || !user.getPassword().equals(hashPassword)) {
       return Account.builder().role("").user(username).build();
@@ -61,8 +54,14 @@ public class UserService implements UserServiceI {
     }
 
     return Account.builder()
-        .role(user.getRoles().stream().map(Role::getName).collect(Collectors.joining(",")))
-        .user(username).build();
+        .role(user.getRoles()
+            .stream()
+            .map(Role::getName)
+            .collect(Collectors.joining(",")))
+        .user(username)
+        .password(hashPassword)
+        .email(user.getEmail())
+        .build();
   }
 
   @Override
@@ -86,7 +85,7 @@ public class UserService implements UserServiceI {
       return errors.get(BigInteger.ZERO.intValue());
     }
 
-    String hashPassword = hashPassword(account.getPassword());
+    String hashPassword = Utils.hashPassword(account.getPassword());
 
     var user = User.builder().userName(account.getUsername()).password(hashPassword)
         .address(account.getAddress()).email(account.getEmail()).dob(account.getDob())
@@ -120,7 +119,8 @@ public class UserService implements UserServiceI {
     Optional<User> userOptional = userRepository.findUserByUserName(account.getUsername());
     
     userOptional.ifPresent(user -> {
-      user.setPassword(hashPassword(newPassword));
+      user.setPassword(Utils.hashPassword(newPassword));
+      user.setUpdateDate(Date.from(Instant.now()));
       userRepository.save(user);
     });
     
@@ -129,5 +129,21 @@ public class UserService implements UserServiceI {
     return newPassword;
   }
   
+  @Override
+  public Account changeUserPassword(Account account, String newPassword) {
+    String hashPassword = Utils.hashPassword(newPassword);
+    account.setPassword(hashPassword);
+
+    Optional<User> userOptional = userRepository.findUserByUserName(account.getUser());
+
+    userOptional.ifPresentOrElse(user -> {
+      user.setUpdateDate(Date.from(Instant.now()));
+      user.setPassword(hashPassword);
+      userRepository.save(user);
+    }, () -> 
+      System.exit(0)
+    );
+    return account;
+  }
 
 }

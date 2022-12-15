@@ -1,6 +1,9 @@
 package com.utils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
+import com.constant.Constants;
+import com.google.common.hash.Hashing;
 
 public final class Utils {
 
@@ -19,4 +22,10 @@ public final class Utils {
         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
         .toString();
   }
+  
+  public static String hashPassword(String password) {
+    return Hashing.sha256().hashString(String.join("", password, Constants.SALT), StandardCharsets.UTF_8)
+        .toString();
+  }
+
 }
