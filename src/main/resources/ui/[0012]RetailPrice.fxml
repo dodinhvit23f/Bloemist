@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="556.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextArea layoutX="221.0" layoutY="14.0" prefHeight="69.0" prefWidth="311.0" promptText="On click hiển thị text ở đây" />
+      <Button layoutX="25.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất dữ liệu" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="89.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: CORNSILK;" text="Điều chỉnh giá" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="152.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="In bảng giá" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="25.0" layoutY="861.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTCYAN;" text="Màn hình báo đơn">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <TabPane layoutX="25.0" layoutY="102.0" prefHeight="748.0" prefWidth="506.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab closable="false" text="Giá ngày thường">
+               <content>
+                  <TableView editable="true" prefHeight="719.0" prefWidth="525.0">
+                     <columns>
+                        <TableColumn prefWidth="75.0" text="Trạng thái" />
+                        <TableColumn prefWidth="75.0" text="STT" />
+                        <TableColumn prefWidth="100.0" text="Nhóm hàng" />
+                        <TableColumn prefWidth="75.0" text="Đơn vị tính" />
+                        <TableColumn prefWidth="75.0" text="Đơn giá" />
+                        <TableColumn prefWidth="75.0" text="Code" />
+                        <TableColumn prefWidth="32.0" text="Chọn" />
+                     </columns>
+                  </TableView>
+               </content>
+          </Tab>
+          <Tab text="Giá ngày lễ">
+               <content>
+                  <TableView editable="true" prefHeight="719.0" prefWidth="525.0">
+                     <columns>
+                        <TableColumn prefWidth="75.0" text="Trạng thái" />
+                        <TableColumn prefWidth="75.0" text="STT" />
+                        <TableColumn prefWidth="100.0" text="Nhóm hàng" />
+                        <TableColumn prefWidth="75.0" text="Đơn vị tính" />
+                        <TableColumn prefWidth="75.0" text="Đơn giá" />
+                        <TableColumn prefWidth="75.0" text="Code" />
+                        <TableColumn prefWidth="32.0" text="Chọn" />
+                     </columns>
+                  </TableView>
+               </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <ScrollBar layoutX="535.0" layoutY="102.0" orientation="VERTICAL" prefHeight="790.0" prefWidth="14.0" />
+   </children>
+</Pane>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="1338.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TableView editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1283.0">
+         <columns>
+            <TableColumn prefWidth="75.0" text="Trạng thái" />
+            <TableColumn prefWidth="75.0" text="STT" />
+            <TableColumn prefWidth="75.0" text="Mã hàng" />
+            <TableColumn prefWidth="100.0" text="Tên hàng hóa" />
+            <TableColumn prefWidth="100.0" text="Nhóm hàng" />
+            <TableColumn prefWidth="75.0" text="Tồn kho" />
+            <TableColumn prefWidth="75.0" text="Đơn vị tính" />
+            <TableColumn prefWidth="100.0" text="Số lượng nhập" />
+            <TableColumn prefWidth="75.0" text="Đơn giá" />
+            <TableColumn prefWidth="75.0" text="Thành tiền" />
+            <TableColumn prefWidth="100.0" text="Ngày nhập" />
+            <TableColumn prefWidth="75.0" text="Nguồn nhập" />
+            <TableColumn prefWidth="75.0" text="Số hóa đơn" />
+            <TableColumn prefWidth="100.0" text="Người nhập kho" />
+            <TableColumn prefWidth="75.0" text="Code" />
+            <TableColumn prefWidth="32.0" text="Chọn" />
+         </columns>
+      </TableView>
+      <TextArea layoutX="279.0" layoutY="14.0" prefHeight="69.0" prefWidth="1030.0" promptText="On click hiển thị text ở đây" />
+      <Button layoutX="25.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất dữ liệu" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="89.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: CORNSILK;" text="Sửa thông tin" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="152.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="Nhập kho" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="25.0" layoutY="861.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTCYAN;" text="Màn hình báo đơn">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button layoutX="215.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: SEASHELL;" text="Xuất kho" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+   </children>
+</Pane>

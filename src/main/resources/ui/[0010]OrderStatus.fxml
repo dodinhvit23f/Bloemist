@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="305.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="53.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Img/logo.png" />
+         </image>
+      </ImageView>
+      <TextArea fx:id="customerRemark" layoutX="13.0" layoutY="212.0" prefHeight="62.0" prefWidth="280.0" promptText="Cập nhật ghi chú (nếu có)" />
+      <ComboBox fx:id="changeStatus" layoutX="14.0" layoutY="125.0" prefHeight="25.0" prefWidth="280.0" promptText="Chuyển trạng thái đơn hàng" />
+      <TextField fx:id="actualDeliveryfee" layoutX="14.0" layoutY="169.0" prefHeight="25.0" prefWidth="280.0" promptText="Phí giao hoa thực tế" />
+      <Label layoutX="14.0" layoutY="274.0" prefHeight="71.0" prefWidth="280.0" text="Phí giao hoa thực tế bắt buộc phải nhập với trường hợp chuyển trạng thái đơn hàng sang &quot;Đã giao&quot; / &quot;Hoàn thành&quot;. Bỏ trống trong trường hợp chuyển sang trạng thái khác." textAlignment="JUSTIFY" wrapText="true" />
+      <Button fx:id="cancelStatus" layoutX="38.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="98.0" text="Hủy" />
+      <Button fx:id="applyStatus" layoutX="174.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="98.0" text="Cập nhật" />
+   </children>
+</AnchorPane>
