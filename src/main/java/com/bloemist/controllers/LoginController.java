@@ -61,7 +61,8 @@ public final class LoginController extends BaseController {
       return;
     }
 
-    MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(Constants.SUSS_LOGIN_001));
+    MessageUtils.showDialog(AlertType.CONFIRMATION, messageSource.getMessage(Constants.SUSS_LOGIN_001));
+    swichScence(ApplicationView.HOME);
   }
 
 

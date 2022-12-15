@@ -14,4 +14,5 @@ public final class TitleConstants {
   public static final String USER_APPOINTMENT_TITLE = "USER_APPOINTMENT_TITLE";
   public static final String RECOVER_PASSWORD_TITLE = "RECOVER_PASSWORD_TITLE";
   public static final String INQUIRY_ORDER = "INQUIRY_ORDER_TITLE";
+  public static final String HOME = "HOME_TITLE";
 }

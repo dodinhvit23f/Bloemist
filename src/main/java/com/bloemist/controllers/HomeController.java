@@ -3,8 +3,10 @@ package com.bloemist.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import com.bloemist.message.Message;
 
+@Component
 public class HomeController extends BaseController {
 
   protected HomeController(Message messageSource, ApplicationEventPublisher publisher) {

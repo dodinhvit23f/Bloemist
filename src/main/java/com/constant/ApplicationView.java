@@ -159,7 +159,7 @@ public enum ApplicationView {
     
     @Override
     public String getTitle() {
-      return TitleConstants.INQUIRY_ORDER;
+      return TitleConstants.HOME;
     }
     
     @Override

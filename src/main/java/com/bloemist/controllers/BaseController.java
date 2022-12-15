@@ -29,7 +29,7 @@ public abstract class BaseController implements Initializable{
   
   protected void swichScence(ApplicationView view) {
     stageManager.setView(view);
-    publisher.publishEvent(new StageEvent(stageManager, null));
+    publisher.publishEvent(new StageEvent(stageManager));
   }
   
   protected void sendMail(String subject, String to, String text) {

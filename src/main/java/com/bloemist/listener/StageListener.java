@@ -22,14 +22,14 @@ import lombok.experimental.FieldDefaults;
  */
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StageInitializer implements ApplicationListener<StageEvent> {
+public class StageListener implements ApplicationListener<StageEvent> {
   
   final ApplicationContext context;
   
   @Value("${application.image-url}")
   Resource iconResoure;
   
-  public StageInitializer( ApplicationContext context) {
+  public StageListener( ApplicationContext context) {
     this.context = context;
   }
   

@@ -13,8 +13,8 @@ public final class ApplicationVariable {
     return user;
   }
 
-  public static void setUser(Account user) {
-    user = lOGIN_USER;
+  public static void setUser(Account loginUser) {
+    user = loginUser;
   }
 
 }
