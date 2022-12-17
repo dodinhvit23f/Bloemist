@@ -27,7 +27,7 @@ public abstract class BaseController implements Initializable{
     this.publisher = publisher;
   }
   
-  protected void swichScence(ApplicationView view) {
+  protected void switchScence(ApplicationView view) {
     stageManager.setView(view);
     publisher.publishEvent(new StageEvent(stageManager));
   }

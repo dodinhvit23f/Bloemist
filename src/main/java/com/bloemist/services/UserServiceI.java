@@ -1,7 +1,9 @@
 package com.bloemist.services;
 
+import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import com.bloemist.dto.Account;
+import com.bloemist.dto.AccountApprovement;
 import com.bloemist.dto.AccountDetail;
 import com.constant.Constants;
 
@@ -50,4 +52,19 @@ public interface UserServiceI {
    */
   @Transactional
   Account changeUserPassword(Account account, String newPassword);
+  
+  /**
+   * 
+   * @return
+   */
+  @Transactional(readOnly = true)
+  List<Account> findApprovableUser();
+  
+  /**
+   * 
+   * @param approvement
+   * @return
+   */
+  @Transactional
+  String approveUserRole(AccountApprovement approvement);
 }

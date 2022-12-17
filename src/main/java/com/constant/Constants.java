@@ -32,9 +32,22 @@ public final class Constants {
   public static final String SUSS_CHANGE_PASSWORD_001 = "SUSS_CHANGE_PASSWORD_001";
   public static final String CONT_CHANGE_PASSWORD_001 = "CONT_CHANGE_PASSWORD_001";
   public static final String SUB_CHANGE_PASSWORD_001 = "SUB_CHANGE_PASSWORD_001";
+  //USER APPROVEMENT
+  public static final String ERR_USER_APPROVEMENT_001 = "ERR_USER_APPROVEMENT_001";
+  public static final String ERR_USER_APPROVEMENT_002 = "ERR_USER_APPROVEMENT_002";
+  public static final String ERR_USER_APPROVEMENT_003 = "ERR_USER_APPROVEMENT_003";
+  public static final String ERR_USER_APPROVEMENT_004 = "ERR_USER_APPROVEMENT_004";
+  public static final String ERR_USER_APPROVEMENT_005 = "ERR_USER_APPROVEMENT_005";
+  public static final String SUSS_USER_APPROVEMENT = "SUSS_USER_APPROVEMENT";
+  
+  
   
   public static final int OTP_LENGTH = 5;
   public static final String FEMALE = "Nữ";
   public static final String MALE = "Nam";
   public static final String SALT = "BLOEMIST";
+  
+  public static final String STAFF = "staff";
+  public static final String SUPERVISOR = "supervisor";
+  public static final String MANAGER = "manager";
 }

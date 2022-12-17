@@ -29,7 +29,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "users", indexes = {@Index(columnList = "user_name", name = "ux_username")},
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"email", "user_name"}, name = "uk_email")})
+        @UniqueConstraint(columnNames = {"email", "user_name"}, name = "uk_email"),
+        @UniqueConstraint(columnNames = {"phone_number"}, name = "uk_phone")})
 public class User {
 
   @Id
@@ -68,6 +69,7 @@ public class User {
   private String otp;
 
   private boolean isDeleted;
+  
 
   @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", table = "users"),

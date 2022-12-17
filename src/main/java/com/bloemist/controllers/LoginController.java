@@ -62,16 +62,16 @@ public final class LoginController extends BaseController {
     }
 
     MessageUtils.showDialog(AlertType.CONFIRMATION, messageSource.getMessage(Constants.SUSS_LOGIN_001));
-    swichScence(ApplicationView.HOME);
+    switchScence(ApplicationView.HOME);
   }
 
 
   public void registerAccount() {
-    swichScence(ApplicationView.REGISTRATOR);
+    switchScence(ApplicationView.REGISTRATOR);
   }
 
   public void restoreAccount() {
-    swichScence(ApplicationView.RECOVER_PASSWORD);
+    switchScence(ApplicationView.RECOVER_PASSWORD);
   }
 
   @Override

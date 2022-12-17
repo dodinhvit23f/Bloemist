@@ -18,7 +18,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.PasswordField;
 
 @Component
-public class ChangePasswordController extends BaseController {
+public final class ChangePasswordController extends BaseController {
 
   @FXML
   PasswordField userPassword;
@@ -79,7 +79,7 @@ public class ChangePasswordController extends BaseController {
   }
 
   public void cancel() {
-    swichScence(ApplicationView.HOME);
+    switchScence(ApplicationView.HOME);
   }
 
   @Override

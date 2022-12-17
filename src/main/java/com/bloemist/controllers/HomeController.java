@@ -9,19 +9,19 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 
 @Component
-public class HomeController extends BaseController {
+public final class HomeController extends BaseController {
 
   protected HomeController(Message messageSource, ApplicationEventPublisher publisher) {
     super(messageSource, publisher);
   }
 
   public void changePassword() {
-    swichScence(ApplicationView.CHANGE_PASSWORD);
+    switchScence(ApplicationView.CHANGE_PASSWORD);
   }
   
   public void logout() {
     ApplicationVariable.setUser(null);
-    swichScence(ApplicationView.LOGIN);
+    switchScence(ApplicationView.LOGIN);
   }
   
   public void changeUserInformation() {

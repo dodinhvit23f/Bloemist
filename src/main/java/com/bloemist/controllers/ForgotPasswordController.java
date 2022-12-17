@@ -20,7 +20,7 @@ import lombok.experimental.FieldDefaults;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ForgotPasswordController extends BaseController {
+public final class ForgotPasswordController extends BaseController {
 
   @FXML
   TextField userEmail;
@@ -39,7 +39,7 @@ public class ForgotPasswordController extends BaseController {
   }
 
   public void cancel() {
-    swichScence(ApplicationView.LOGIN);
+    switchScence(ApplicationView.LOGIN);
   }
 
   public void verifyOTP() {
@@ -53,7 +53,7 @@ public class ForgotPasswordController extends BaseController {
             String.format(messageSource.getMessage(Constants.CONT_REST_PASSWORD), password));
         MessageUtils.showDialog(AlertType.INFORMATION,
             messageSource.getMessage(Constants.SUSS_REST_PASSWORD_001));
-        swichScence(ApplicationView.LOGIN);
+        switchScence(ApplicationView.LOGIN);
         return;
       }
 

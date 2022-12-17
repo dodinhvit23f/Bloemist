@@ -56,7 +56,7 @@ public final class RegistrationController extends BaseController {
   ComboBox<String> userGender;
 
   public void cancel() {
-    swichScence(ApplicationView.LOGIN);
+    switchScence(ApplicationView.LOGIN);
   }
 
   public void createAccount() {
@@ -93,6 +93,7 @@ public final class RegistrationController extends BaseController {
               .gender(gender)
               .password(comfirmPassword)
               .email(email)
+              .address(address)
               .dob(dob)
               .build());
       if (ObjectUtils.isEmpty(code)) {
