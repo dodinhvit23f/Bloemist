@@ -30,7 +30,7 @@
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>
-            <Button layoutX="202.0" layoutY="21.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: GREENYELLOW;" text="Cập nhật">
+            <Button layoutX="396.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: GREENYELLOW;" text="Xuất bảng">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>
@@ -38,25 +38,27 @@
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>
-            <Button layoutX="114.0" layoutY="62.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: LAVENDER;" text="In phiếu">
+            <Button layoutX="202.0" layoutY="62.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: LAVENDER;" text="In phiếu">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>
-            <Button layoutX="114.0" layoutY="21.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: PALETURQUOISE;" text="Ảnh mẫu" textAlignment="CENTER" wrapText="true">
+            <Button layoutX="202.0" layoutY="21.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: PALETURQUOISE;" text="Ảnh mẫu" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button layoutX="202.0" layoutY="62.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: LIGHTCORAL;" text="Chuyển TT">
+            <Button layoutX="114.0" layoutY="21.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: LIGHTCORAL;" text="Chuyển TT">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button layoutX="25.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTSEAGREEN;" text="Thống kê chi tiết">
+            <Button layoutX="537.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTSEAGREEN;" text="Thống kê chi tiết">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
+            <DatePicker layoutX="25.0" layoutY="730.0" promptText="Từ ngày" />
+            <DatePicker layoutX="209.0" layoutY="730.0" promptText="Đến ngày" />
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="769.0" prefWidth="496.0" SplitPane.resizableWithParent="false">
          <children>
@@ -172,32 +174,32 @@
                </font>
             </Label>
             <DatePicker fx:id="deliveryDate" layoutX="188.0" layoutY="490.0" promptText="Ngày giao hoa" />
-            <Label fx:id="actualPrice" layoutX="311.0" layoutY="524.0" text="Giá trị đơn hàng:">
+            <Label layoutX="24.0" layoutY="538.0" text="Giá trị đơn hàng:">
                <font>
                   <Font name="Times New Roman" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="discountRate" layoutX="311.0" layoutY="547.0" text="Khuyến mãi:">
+            <Label layoutX="24.0" layoutY="569.0" text="Khuyến mãi:">
                <font>
                   <Font name="Times New Roman" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="deliveryFee" layoutX="311.0" layoutY="570.0" text="Phí vận chuyển:">
+            <Label layoutX="282.0" layoutY="538.0" text="Phí vận chuyển:">
                <font>
                   <Font name="Times New Roman" size="12.0" />
                </font>
             </Label>
-            <Label layoutX="311.0" layoutY="593.0" text="Tổng cộng:">
+            <Label layoutX="24.0" layoutY="600.0" text="Tổng cộng:">
                <font>
                   <Font name="Times New Roman Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="depositAmount" layoutX="311.0" layoutY="616.0" text="Khách đặt cọc:">
+            <Label layoutX="282.0" layoutY="600.0" text="Khách đặt cọc:">
                <font>
                   <Font name="Times New Roman" size="12.0" />
                </font>
             </Label>
-            <Label layoutX="311.0" layoutY="639.0" text="Số tiền còn lại:">
+            <Label layoutX="24.0" layoutY="631.0" text="Số tiền còn lại:">
                <font>
                   <Font name="Times New Roman Bold" size="12.0" />
                </font>
@@ -217,7 +219,19 @@
                   <Font name="Times New Roman Bold" size="12.0" />
                </font>
             </Label>
-            <TextField fx:id="empName" layoutX="325.0" layoutY="730.0" promptText="Tên NV thực hiện" />                                         
+            <TextField fx:id="empName" layoutX="325.0" layoutY="730.0" promptText="Tên NV thực hiện" />
+            <TextField fx:id="actualPrice" layoutX="106.0" layoutY="533.0" prefHeight="25.0" prefWidth="102.0" />
+            <TextField fx:id="discountRate" layoutX="106.0" layoutY="564.0" prefHeight="25.0" prefWidth="102.0" />
+            <TextField fx:id="deliveryFee" layoutX="364.0" layoutY="533.0" prefHeight="25.0" prefWidth="102.0" />
+            <TextField fx:id="totalAmount" layoutX="106.0" layoutY="595.0" prefHeight="25.0" prefWidth="102.0" />
+            <TextField fx:id="depositAmount" layoutX="364.0" layoutY="595.0" prefHeight="25.0" prefWidth="102.0" />
+            <TextField fx:id="outstandingBalance" layoutX="106.0" layoutY="626.0" prefHeight="25.0" prefWidth="102.0" />
+            <TextField fx:id="vatFee" layoutX="364.0" layoutY="564.0" prefHeight="25.0" prefWidth="102.0" />
+            <Label layoutX="282.0" layoutY="569.0" text="Phí VAT:">
+               <font>
+                  <Font name="Times New Roman" size="12.0" />
+               </font>
+            </Label>                                         
          </children></AnchorPane>
   </items>
 </SplitPane>
