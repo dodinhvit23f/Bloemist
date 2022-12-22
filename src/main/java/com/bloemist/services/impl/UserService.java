@@ -195,6 +195,7 @@ public class UserService implements UserServiceI {
         return Constants.ERR_USER_APPROVEMENT_005;
       }
     }
+    approvedUser.setApproveBy(approvement.getApprover().getUser());
     
     userRepository.save(approvedUser);
 

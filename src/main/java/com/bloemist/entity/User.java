@@ -1,5 +1,6 @@
 package com.bloemist.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -27,10 +28,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users", indexes = {@Index(columnList = "user_name", name = "ux_username")},
+@Table(name = "users",
+    indexes = {@Index(columnList = "user_name , email", name = "idx_username")},
     uniqueConstraints = {
         @UniqueConstraint(columnNames = {"email", "user_name"}, name = "uk_email"),
-        @UniqueConstraint(columnNames = {"phone_number"}, name = "uk_phone")})
+        @UniqueConstraint(columnNames = {"phone_number"}, name = "uk_phone")
+        })
 public class User {
 
   @Id
@@ -64,12 +67,17 @@ public class User {
   private Date updateDate;
 
   private String address;
-  
+
   @Column(name = "opt", length = 5)
   private String otp;
 
+  @Column(name = "approve_by", length = 30)
+  private String approveBy;
+
+  private BigDecimal salary;
+
   private boolean isDeleted;
-  
+
 
   @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", table = "users"),
