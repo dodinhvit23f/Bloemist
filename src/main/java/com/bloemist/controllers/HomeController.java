@@ -25,7 +25,7 @@ public final class HomeController extends BaseController {
   }
   
   public void changeUserInformation() {
-    
+    switchScence(ApplicationView.CHANGE_USER_INFO);
   }
   
   @Override

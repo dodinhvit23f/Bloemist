@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="531.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="531.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.ChangeUserInformationController">
    <children>
       <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="70.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -17,12 +17,12 @@
       <PasswordField fx:id="userPassword" layoutX="298.0" layoutY="240.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu xác nhận" style="-fx-background-radius: 0;" />
       <DatePicker fx:id="newUserdob" layoutX="298.0" layoutY="199.0" promptText="Ngày, tháng, năm sinh" />
       <ComboBox fx:id="newUsergender" layoutX="298.0" layoutY="158.0" prefWidth="150.0" promptText="Giới tính" />
-      <Button fx:id="cancelChange" graphicTextGap="3.0" layoutX="90.0" layoutY="320.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Hủy" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
+      <Button fx:id="cancelChange" graphicTextGap="3.0" layoutX="90.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#cancel" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Hủy" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="applyChange" graphicTextGap="3.0" layoutX="298.0" layoutY="320.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Thay đổi" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
+      <Button fx:id="applyChange" graphicTextGap="3.0" layoutX="298.0" layoutY="320.0" mnemonicParsing="false" onMouseClicked="#changeInfomation" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Thay đổi" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
          <font>
             <Font size="14.0" />
          </font>

@@ -39,7 +39,11 @@ public final class Constants {
   public static final String ERR_USER_APPROVEMENT_004 = "ERR_USER_APPROVEMENT_004";
   public static final String ERR_USER_APPROVEMENT_005 = "ERR_USER_APPROVEMENT_005";
   public static final String SUSS_USER_APPROVEMENT = "SUSS_USER_APPROVEMENT";
-  
+  //Change User Info
+  public static final String ERR_USER_INFO_001 = "ERR_USER_INFO_001";
+  public static final String ERR_USER_INFO_002 = "ERR_USER_INFO_002";
+  public static final String ERR_USER_INFO_003 = "ERR_USER_INFO_003";
+  public static final String SUSS_USER_INFO_001 = "SUSS_USER_INFO_001";
   
   
   public static final int OTP_LENGTH = 5;

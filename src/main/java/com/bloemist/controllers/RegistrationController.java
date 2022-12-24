@@ -47,6 +47,8 @@ public final class RegistrationController extends BaseController {
   @FXML
   TextField userAddress;
   @FXML
+  TextField empName;
+  @FXML
   PasswordField userPassword;
   @FXML
   PasswordField confirmPassword;
@@ -68,12 +70,15 @@ public final class RegistrationController extends BaseController {
     String comfirmPassword = confirmPassword.getText();
     String email = userEmail.getText();
     String address = userAddress.getText();
+    String fullName = empName.getText();
+    
     Date dob = Date.from(userDob.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     if (ObjectUtils.isEmpty(userName) || ObjectUtils.isEmpty(phoneNumber)
         || ObjectUtils.isEmpty(gender) || ObjectUtils.isEmpty(password)
         || ObjectUtils.isEmpty(comfirmPassword) || ObjectUtils.isEmpty(email)
-        || ObjectUtils.isEmpty(dob) || ObjectUtils.isEmpty(address)) {
+        || ObjectUtils.isEmpty(dob) || ObjectUtils.isEmpty(address)
+        || ObjectUtils.isArray(fullName)) {
       MessageUtils.showDialog(AlertType.ERROR,
           messageSource.getMessage(Constants.ERR_REGISRATOR_001));
       return;
@@ -95,6 +100,7 @@ public final class RegistrationController extends BaseController {
               .email(email)
               .address(address)
               .dob(dob)
+              .fullName(fullName)
               .build());
       if (ObjectUtils.isEmpty(code)) {
         MessageUtils.showDialog(AlertType.ERROR, messageSource.getMessage(code));

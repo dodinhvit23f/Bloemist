@@ -32,21 +32,23 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService implements UserServiceI {
 
+  private static final String EMPTY = "";
+
   UserRepository userRepository;
-  
+
   RoleRepository roleRepository;
 
   @Override
-  public Account login(String username, String password) {
+  public AccountDetail login(String username, String password) {
 
     if (ObjectUtils.isEmpty(username) || ObjectUtils.isEmpty(password)) {
-      return Account.builder().role("").build();
+      return AccountDetail.builder().role(EMPTY).build();
     }
 
     Optional<User> searchedUser = userRepository.findByUserName(username);
 
     if (searchedUser.isEmpty()) {
-      return Account.builder().role("").user(username).build();
+      return AccountDetail.builder().role(EMPTY).username(username).build();
     }
 
     User user = searchedUser.get();
@@ -54,16 +56,53 @@ public class UserService implements UserServiceI {
     String hashPassword = Utils.hashPassword(password);
 
     if (!user.getUserName().equals(username) || !user.getPassword().equals(hashPassword)) {
-      return Account.builder().role("").user(username).build();
+      return AccountDetail.builder().role(EMPTY).username(username).build();
     }
 
     if (CollectionUtils.isEmpty(user.getRoles())) {
-      return Account.builder().role("").user(username).build();
+      return AccountDetail.builder().role(EMPTY).username(username).build();
     }
 
-    return Account.builder()
+    return AccountDetail.builder()
         .role(user.getRoles().stream().map(Role::getName).collect(Collectors.joining(",")))
-        .user(username).password(hashPassword).email(user.getEmail()).build();
+        .username(username)
+        .fullName(user.getFullName())
+        .address(user.getAddress())
+        .dob(user.getDob())
+        .phoneNumber(user.getPhoneNumber())
+        .gender(user.getGender())
+        .password(user.getPassword())
+        .build();
+  }
+
+  @Override
+  public Account changeUserPassword(Account account, String newPassword) {
+    String hashPassword = Utils.hashPassword(newPassword);
+    account.setPassword(hashPassword);
+
+    Optional<User> userOptional = userRepository.findByUserName(account.getUsername());
+
+    userOptional.ifPresentOrElse(user -> {
+      user.setUpdateDate(Date.from(Instant.now()));
+      user.setPassword(hashPassword);
+      userRepository.save(user);
+    }, () -> System.exit(0));
+
+    return account;
+  }
+
+  @Override
+  public List<Account> findApprovableUser() {
+
+    List<User> users = userRepository.findApprovableUser(Constants.MANAGER);
+
+    if (CollectionUtils.isEmpty(users)) {
+      return Collections.emptyList();
+    }
+
+    return users.stream().map(user -> Account.builder().username(user.getUserName()).build())
+        .collect(Collectors.toList());
+
   }
 
   @Override
@@ -89,10 +128,17 @@ public class UserService implements UserServiceI {
 
     String hashPassword = Utils.hashPassword(account.getPassword());
 
-    var user = User.builder().userName(account.getUsername()).password(hashPassword)
-        .address(account.getAddress()).email(account.getEmail()).dob(account.getDob())
-        .phoneNumber(account.getPhoneNumber()).gender(account.getGender())
-        .createDate(Date.from(Instant.now())).build();
+    var user = User.builder()
+        .userName(account.getUsername())
+        .password(hashPassword)
+        .address(account.getAddress())
+        .email(account.getEmail())
+        .dob(account.getDob())
+        .phoneNumber(account.getPhoneNumber())
+        .gender(account.getGender())
+        .fullName(account.getFullName())
+        .createDate(Date.from(Instant.now()))
+        .build();
 
     userRepository.save(user);
     return Constants.SUSS_REGISRATOR_001;
@@ -105,7 +151,7 @@ public class UserService implements UserServiceI {
         userRepository.findByUserNameAndEmail(account.getUsername(), account.getEmail());
 
     if (userOptional.isEmpty()) {
-      return "";
+      return EMPTY;
     }
 
     String otp = Utils.genarateOTP(Constants.OTP_LENGTH);
@@ -131,36 +177,6 @@ public class UserService implements UserServiceI {
   }
 
   @Override
-  public Account changeUserPassword(Account account, String newPassword) {
-    String hashPassword = Utils.hashPassword(newPassword);
-    account.setPassword(hashPassword);
-
-    Optional<User> userOptional = userRepository.findByUserName(account.getUser());
-
-    userOptional.ifPresentOrElse(user -> {
-      user.setUpdateDate(Date.from(Instant.now()));
-      user.setPassword(hashPassword);
-      userRepository.save(user);
-    }, () -> System.exit(0));
-
-    return account;
-  }
-
-  @Override
-  public List<Account> findApprovableUser() {
-
-    List<User> users = userRepository.findApprovableUser(Constants.MANAGER);
-
-    if (CollectionUtils.isEmpty(users)) {
-      return Collections.emptyList();
-    }
-
-    return users.stream().map(user -> Account.builder().user(user.getUserName()).build())
-        .collect(Collectors.toList());
-
-  }
-
-  @Override
   public String approveUserRole(AccountApprovement approvement) {
     if (Objects.isNull(approvement.getApprovedUser())
         || Objects.isNull(approvement.getApprover())) {
@@ -172,33 +188,85 @@ public class UserService implements UserServiceI {
     }
 
     Optional<User> userOptional =
-        userRepository.findByUserName(approvement.getApprovedUser().getUser());
+        userRepository.findByUserName(approvement.getApprovedUser().getUsername());
 
     if (userOptional.isEmpty()) {
       return Constants.ERR_USER_APPROVEMENT_003;
     }
-    
+
     User approvedUser = userOptional.get();
-    
-    Optional<Role> roleOptional = roleRepository.findByName(approvement.getApprovedUser().getRole());
-    
-    if(roleOptional.isEmpty()) {
+
+    Optional<Role> roleOptional =
+        roleRepository.findByName(approvement.getApprovedUser().getRole());
+
+    if (roleOptional.isEmpty()) {
       return Constants.ERR_USER_APPROVEMENT_004;
     }
-    
-    if(CollectionUtils.isEmpty(approvedUser.getRoles())) {
+
+    if (CollectionUtils.isEmpty(approvedUser.getRoles())) {
       Set<Role> roles = new HashSet<>();
       roles.add(roleOptional.get());
       approvedUser.setRoles(roles);
-    }else{
-      if(!approvedUser.getRoles().add(roleOptional.get())){
+    } else {
+      if (!approvedUser.getRoles().add(roleOptional.get())) {
         return Constants.ERR_USER_APPROVEMENT_005;
       }
     }
-    approvedUser.setApproveBy(approvement.getApprover().getUser());
-    
+    approvedUser.setApproveBy(approvement.getApprover().getUsername());
+
     userRepository.save(approvedUser);
 
     return Constants.SUSS_USER_APPROVEMENT;
   }
+  
+  @Override
+  public AccountDetail getUserInformation(String username) {
+    Optional<User> userOptional = userRepository.findByUserName(username);
+    if (userOptional.isEmpty()) {
+      return AccountDetail.builder().build();
+    }
+
+    var user = userOptional.get();
+    
+    return  AccountDetail.builder()
+        .username(username)
+        .fullName(user.getFullName())
+        .address(user.getAddress())
+        .dob(user.getDob())
+        .phoneNumber(user.getPhoneNumber())
+        .gender(user.getGender())
+        .password(user.getPassword())
+        .build();
+  }
+  @Override
+  
+  public String updateUserInformation(AccountDetail detail) {
+    Optional<User> userOptional = userRepository.findByUserName(detail.getUsername());
+    
+    if (userOptional.isEmpty()) {
+      return Constants.ERR_USER_INFO_001;
+    }
+    
+    User user = userOptional.get();
+    
+    if(Objects.nonNull(detail.getDob())) {
+      user.setDob(detail.getDob());
+    }
+    if(Objects.nonNull(detail.getAddress())) {
+      user.setAddress(detail.getAddress());
+    }
+    if(Objects.nonNull(detail.getGender())) {
+      user.setGender(detail.getGender());
+    }
+    if(Objects.nonNull(detail.getFullName())) {
+      user.setFullName(detail.getFullName());
+    }
+    
+    if(Objects.nonNull(detail.getPhoneNumber())) {
+      user.setFullName(detail.getPhoneNumber());
+    }
+   
+    userRepository.save(user);
+    return Constants.SUSS_USER_INFO_001;
+  } 
 }

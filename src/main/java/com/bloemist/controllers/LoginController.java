@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import com.bloemist.dto.Account;
+import com.bloemist.dto.AccountDetail;
 import com.bloemist.message.Message;
 import com.bloemist.message.MessageUtils;
 import com.bloemist.services.UserServiceI;
@@ -51,7 +51,7 @@ public final class LoginController extends BaseController {
       return;
     }
 
-    Account account = userService.login(username, password);
+    AccountDetail account = userService.login(username, password);
     
     ApplicationVariable.setUser(account);
 

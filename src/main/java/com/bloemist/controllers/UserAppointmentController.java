@@ -48,7 +48,7 @@ public final class UserAppointmentController extends BaseController {
     pickUser.setItems(FXCollections.observableArrayList(
         userService.findApprovableUser()
         .stream()
-        .map(Account::getUser)
+        .map(Account::getUsername)
         .collect(Collectors.toList())));
     
   }
@@ -74,7 +74,7 @@ public final class UserAppointmentController extends BaseController {
         .builder()
         .approver(ApplicationVariable.getUser())
         .approvedUser(Account.builder()
-            .user(userName)
+            .username(userName)
             .role(role)
             .build())
         .build());

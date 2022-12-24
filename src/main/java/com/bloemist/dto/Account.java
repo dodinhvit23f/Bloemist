@@ -1,15 +1,19 @@
 package com.bloemist.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Account {
-  private String role;
-  private String user;
-  private String password;
-  private String email;
+  protected String role;
+  protected String username;
+  protected String password;
+  protected String email;
 }

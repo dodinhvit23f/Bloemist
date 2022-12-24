@@ -1,21 +1,19 @@
 package com.bloemist.dto;
 
 import java.util.Date;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
 @Getter
 @Setter
-@Builder
-public class AccountDetail{
+@SuperBuilder
+public class AccountDetail extends Account{
   
-  private String username;
   private String phoneNumber;
   private String gender;
   private Date dob;
-  private String password;
-  private String email;
   private String address;
+  private String fullName;
 }

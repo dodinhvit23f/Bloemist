@@ -13,6 +13,8 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,6 +28,7 @@ public class ProductAnalysis {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   
+  @Temporal(TemporalType.TIMESTAMP)
   private Date date;
   
   @Column(name = "sale_price", precision = 20, scale = 0)

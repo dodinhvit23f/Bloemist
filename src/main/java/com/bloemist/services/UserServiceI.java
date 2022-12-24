@@ -17,7 +17,7 @@ public interface UserServiceI {
    * @return Account with role or empty string
    */
   @Transactional(readOnly = true)
-  Account login(String username, String password);
+  AccountDetail login(String username, String password);
 
   /**
    * Create user account
@@ -67,4 +67,20 @@ public interface UserServiceI {
    */
   @Transactional
   String approveUserRole(AccountApprovement approvement);
+  
+  /**
+   * 
+   * @param username
+   * @return
+   */
+  @Transactional(readOnly = true)
+  AccountDetail getUserInformation(String username);
+  
+  /**
+   * 
+   * @param detail
+   * @return
+   */
+  @Transactional
+  String updateUserInformation(AccountDetail detail);
 }

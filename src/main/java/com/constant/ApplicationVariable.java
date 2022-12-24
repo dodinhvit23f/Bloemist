@@ -1,19 +1,19 @@
 package com.constant;
 
-import com.bloemist.dto.Account;
+import com.bloemist.dto.AccountDetail;
 
 public final class ApplicationVariable {
   private ApplicationVariable() {
 
   }
 
-  private static Account user;
+  private static AccountDetail user;
 
-  public static Account getUser() {
+  public static AccountDetail getUser() {
     return user;
   }
 
-  public static void setUser(Account loginUser) {
+  public static void setUser(AccountDetail loginUser) {
     user = loginUser;
   }
 

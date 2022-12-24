@@ -45,14 +45,17 @@ public class User {
 
   @Column(length = 400)
   private String password;
+  
+  @Column(name = "full_name",length = 100)
+  private String fullName;
 
   private String email;
 
-  @Temporal(TemporalType.DATE)
+  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "create_date")
   private Date createDate;
 
-  @Temporal(TemporalType.DATE)
+  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "dob")
   private Date dob;
 

@@ -98,6 +98,7 @@ public enum ApplicationView {
     public String getTitle() {
       return TitleConstants.RECOVER_PASSWORD_TITLE;
     }
+
     @Override
     public String getCode() {
       return "0006";
@@ -113,7 +114,7 @@ public enum ApplicationView {
     public String getTitle() {
       return TitleConstants.MASTER_ORDER_TITLE;
     }
-    
+
     @Override
     public String getCode() {
       return "0007";
@@ -127,7 +128,7 @@ public enum ApplicationView {
 
     @Override
     public String getTitle() {
-      return TitleConstants.INQUIRY_ORDER;
+      return TitleConstants.INQUIRY_ORDER_TITLE;
     }
 
     @Override
@@ -140,12 +141,12 @@ public enum ApplicationView {
     public String getUrl() {
       return "ui/[0009]EmployeesManagement.fxml";
     }
-    
+
     @Override
     public String getTitle() {
-      return TitleConstants.INQUIRY_ORDER;
+      return TitleConstants.INQUIRY_ORDER_TITLE;
     }
-    
+
     @Override
     public String getCode() {
       return "0008";
@@ -156,15 +157,31 @@ public enum ApplicationView {
     public String getUrl() {
       return "ui/Home.fxml";
     }
-    
+
     @Override
     public String getTitle() {
-      return TitleConstants.HOME;
+      return TitleConstants.HOME_TITLE;
     }
-    
+
     @Override
     public String getCode() {
       return "0000";
+    }
+  },
+  CHANGE_USER_INFO {
+    @Override
+    public String getUrl() {
+      return "ui/[0013]ChangEmpInfo.fxml";
+    }
+
+    @Override
+    public String getTitle() {
+      return TitleConstants.CHANGE_USER_INFORMATION_TITLE;
+    }
+
+    @Override
+    public String getCode() {
+      return "0013";
     }
   };
 

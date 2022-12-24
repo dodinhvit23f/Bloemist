@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -33,6 +35,7 @@ public class Order {
   @Column(name = "source", length = 30)
   private String source;
   
+  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "order_date")
   private Date orderDate;
   
@@ -42,6 +45,7 @@ public class Order {
   @Column(name = "shipping_time")
   private Integer shippingTime;
   
+  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "shipping_date")
   private Date shippingDate;
   
