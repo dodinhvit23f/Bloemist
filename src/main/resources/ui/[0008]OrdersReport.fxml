@@ -20,9 +20,8 @@
                   <TableColumn prefWidth="75.0" text="Ngày giao" />
                   <TableColumn prefWidth="75.0" text="Tên KH" />
                   <TableColumn prefWidth="75.0" text="Link FB/ Insta" />
-                  <TableColumn prefWidth="75.0" text="Mô tả đơn" />
-                  <TableColumn prefWidth="75.0" text="KH Ghi chú" />
-                  <TableColumn prefWidth="32.0" text="Chọn" />
+                  <TableColumn prefWidth="113.0" text="Mô tả đơn" />
+                  <TableColumn prefWidth="68.0" text="KH Ghi chú" />
               </columns>
             </TableView>
             <TextArea layoutX="296.0" layoutY="22.0" prefHeight="67.0" prefWidth="361.0" promptText="On click hiển thị text ở đây" />
@@ -219,7 +218,7 @@
                   <Font name="Times New Roman Bold" size="12.0" />
                </font>
             </Label>
-            <TextField fx:id="empName" layoutX="325.0" layoutY="730.0" promptText="Tên NV thực hiện" />
+            <TextField fx:id="empName" editable="false" layoutX="325.0" layoutY="730.0" promptText="Tên NV thực hiện" />
             <TextField fx:id="actualPrice" layoutX="106.0" layoutY="533.0" prefHeight="25.0" prefWidth="102.0" />
             <TextField fx:id="discountRate" layoutX="106.0" layoutY="564.0" prefHeight="25.0" prefWidth="102.0" />
             <TextField fx:id="deliveryFee" layoutX="364.0" layoutY="533.0" prefHeight="25.0" prefWidth="102.0" />
