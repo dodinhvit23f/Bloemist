@@ -23,7 +23,9 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Danh mục màn hình">
               <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Nhập đơn mới" />
+                  <MenuItem mnemonicParsing="false" text="Theo dõi đơn hàng" />
+                  <MenuItem mnemonicParsing="false" text="Quản lý đơn hàng chung" />
               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Báo cáo">
