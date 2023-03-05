@@ -225,6 +225,7 @@ public class OrderReportController extends OrderController {
           if (Objects.nonNull(newSelection)) {
             currentOrder = newSelection;
             setOrderData();
+            ApplicationVariable.currentOrder = currentOrder;
           }
         });
   }

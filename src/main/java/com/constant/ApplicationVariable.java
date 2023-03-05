@@ -14,6 +14,8 @@ public final class ApplicationVariable {
   private static AccountDetail user;
   private static List<Order> ORDERS = new ArrayList<>();
 
+  public static Order currentOrder;
+
   public static AccountDetail getUser() {
     return user;
   }
@@ -31,4 +33,5 @@ public final class ApplicationVariable {
   public static void add(Collection<Order> orders){
     ORDERS .addAll(orders);
   }
+
 }

@@ -7,7 +7,7 @@ import com.bloemist.entity.OrderReport;
 import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.OrderReportRepository;
-import com.bloemist.services.OrderServiceI;
+import com.bloemist.services.IOrderService;
 import com.constant.Constants;
 import com.constant.OrderState;
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class OrderService implements OrderServiceI {
+public class OrderService implements IOrderService {
 
   OrderReportRepository orderReportRepository;
   ApplicationEventPublisher publisher;
@@ -94,12 +94,15 @@ public class OrderService implements OrderServiceI {
   }
 
   @Override
-  public void changeOrderState(String orderCode, OrderState state) {
-    var optionalOrderReport = orderReportRepository.findByOrderCode(orderCode);
+  public void changeOrderStateInfo(Order order) {
+    var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
 
     optionalOrderReport.ifPresentOrElse(orderReport -> {
-      orderReport.setOrderStatus(state.getState());
-      publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
+      orderReport.setOrderStatus(order.getStatus());
+      orderReport.setActualDeliveryFee(new BigDecimal(order.getActualDeliveryFee()));
+      orderReport.setRemark(order.getCustomerNote());
+
+      publisher.publishEvent(new MessageSuccess(Constants.SUS_ORDER_STATUS));
     }, () -> publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004)));
   }
 

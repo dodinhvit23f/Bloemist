@@ -3,7 +3,7 @@ package com.bloemist.controllers;
 import com.bloemist.dto.Account;
 import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
-import com.bloemist.services.UserServiceI;
+import com.bloemist.services.IUserService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
 import com.utils.Utils;
@@ -22,10 +22,10 @@ public final class ChangePasswordController extends BaseController {
   PasswordField confirmNewPassword;
   @FXML
   PasswordField newPassword;
-  UserServiceI userService;
+  IUserService userService;
 
   ChangePasswordController(ApplicationEventPublisher publisher,
-      UserServiceI userService) {
+      IUserService userService) {
     super(publisher);
     this.userService = userService;
   }

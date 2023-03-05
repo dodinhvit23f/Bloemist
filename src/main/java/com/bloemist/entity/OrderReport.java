@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.DynamicUpdate;
 
 
 /**
@@ -31,6 +32,7 @@ import org.hibernate.Hibernate;
 @AllArgsConstructor
 @Getter
 @Setter
+@DynamicUpdate
 public class OrderReport extends BaseEntity {
 
   private static final long serialVersionUID = 1L;
@@ -80,7 +82,7 @@ public class OrderReport extends BaseEntity {
   @Column(name = "materials_fee")
   private BigDecimal materialsFee;
 
-  @Column(name = "order_code", length = 18)
+  @Column(name = "order_code", length = 18, updatable = false)
   private String orderCode;
 
   @Temporal(TemporalType.TIMESTAMP)

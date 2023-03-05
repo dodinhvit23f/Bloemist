@@ -1,7 +1,7 @@
 package com.bloemist.controllers;
 
 import com.bloemist.events.MessageWarning;
-import com.bloemist.services.UserServiceI;
+import com.bloemist.services.IUserService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
 import com.utils.Utils;
@@ -29,7 +29,7 @@ import org.springframework.util.ObjectUtils;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public final class ChangeUserInformationController extends BaseController {
 
-  final UserServiceI userService;
+  final IUserService userService;
 
   @FXML
   TextField newEmpName;
@@ -50,7 +50,7 @@ public final class ChangeUserInformationController extends BaseController {
   DatePicker newUserDob;
 
    ChangeUserInformationController(ApplicationEventPublisher publisher,
-      UserServiceI userService) {
+      IUserService userService) {
     super(publisher);
     this.userService = userService;
   }

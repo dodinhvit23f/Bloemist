@@ -5,10 +5,9 @@ import com.bloemist.dto.Order;
 import com.constant.OrderState;
 import java.util.Date;
 import java.util.List;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface OrderServiceI {
+public interface IOrderService {
 
   @Transactional
   void createNewOrder(CustomerOrder order);
@@ -20,7 +19,7 @@ public interface OrderServiceI {
   void deleteOrder(String orderCode);
 
   @Transactional
-  void changeOrderState(String orderCode, OrderState state);
+  void changeOrderStateInfo(Order order);
 
   @Transactional(readOnly = true)
   List<Order> getPage(Date startTime, Date endTime);

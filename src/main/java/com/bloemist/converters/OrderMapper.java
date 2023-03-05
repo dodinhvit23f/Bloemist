@@ -86,6 +86,7 @@ public interface OrderMapper {
         .status(orderReport.getOrderStatus())
         .code(orderReport.getOrderCode())
         .customerSource(orderReport.getClientSource())
+        .actualDeliveryFee(Utils.currencyFormat(orderReport.getActualDeliveryFee().doubleValue()))
         .build();
   }
 }

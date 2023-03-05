@@ -7,7 +7,7 @@ import com.bloemist.dto.AccountApprovement;
 import com.bloemist.dto.AccountDetail;
 import com.constant.Constants;
 
-public interface UserServiceI {
+public interface IUserService {
 
   /**
    * Check user is registered or not

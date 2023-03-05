@@ -9,7 +9,7 @@ import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.JobGradeRepository;
 import com.bloemist.repositories.UserRepository;
-import com.bloemist.services.UserServiceI;
+import com.bloemist.services.IUserService;
 import com.constant.Constants;
 import com.utils.Utils;
 
@@ -35,7 +35,7 @@ import org.springframework.util.ObjectUtils;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserService implements UserServiceI {
+public class UserService implements IUserService {
 
   private static final String EMPTY = "";
   UserRepository userRepository;

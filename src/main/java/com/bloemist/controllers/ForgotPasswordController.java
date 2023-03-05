@@ -6,7 +6,7 @@ import org.springframework.util.ObjectUtils;
 import com.bloemist.dto.AccountDetail;
 import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
-import com.bloemist.services.UserServiceI;
+import com.bloemist.services.IUserService;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import javafx.fxml.FXML;
@@ -25,9 +25,9 @@ public final class ForgotPasswordController extends BaseController {
   @FXML
   TextField otp;
   private String otpConfirm;
-  final UserServiceI userService;
+  final IUserService userService;
 
-  ForgotPasswordController(ApplicationEventPublisher publisher, UserServiceI userService) {
+  ForgotPasswordController(ApplicationEventPublisher publisher, IUserService userService) {
     super(publisher);
     this.userService = userService;
   }

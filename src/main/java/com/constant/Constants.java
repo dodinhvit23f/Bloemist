@@ -59,6 +59,9 @@ public final class Constants {
   public static final String ERR_ORDER_INFO_006 = "ERR_ORDER_INFO_006";
   public static final String ERR_ORDER_INFO_007 = "ERR_ORDER_INFO_007";
   public static final String ERR_ORDER_INFO_008 = "ERR_ORDER_INFO_008";
+  // ORDER STATUS
+  public static final String SUS_ORDER_STATUS = "SUS_ORDER_STATUS";
+  public static final String ERR_ORDER_STATUS = "ERR_ORDER_STATUS";
 
   public static final String CONNECTION_FAIL = "CONNECTION_FAIL";
 

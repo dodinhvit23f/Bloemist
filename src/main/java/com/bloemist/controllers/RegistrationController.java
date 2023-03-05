@@ -2,7 +2,7 @@ package com.bloemist.controllers;
 
 import com.bloemist.dto.AccountDetail;
 import com.bloemist.events.MessageWarning;
-import com.bloemist.services.UserServiceI;
+import com.bloemist.services.IUserService;
 import com.constant.Constants;
 import java.math.BigInteger;
 import java.net.URL;
@@ -28,7 +28,7 @@ import org.springframework.util.ObjectUtils;
 public final class RegistrationController extends BaseController {
 
   @Autowired
-  UserServiceI userService;
+  IUserService userService;
 
   RegistrationController(ApplicationEventPublisher publisher) {
     super(publisher);

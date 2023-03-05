@@ -67,6 +67,7 @@ public class Order {
   String discount;
   String vatFee;
   String deliveryFee;
+  String actualDeliveryFee;
   String deposit;
   String remain;
   String total;

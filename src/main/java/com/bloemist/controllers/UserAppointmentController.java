@@ -3,7 +3,7 @@ package com.bloemist.controllers;
 import com.bloemist.dto.Account;
 import com.bloemist.dto.AccountApprovement;
 import com.bloemist.events.MessageWarning;
-import com.bloemist.services.UserServiceI;
+import com.bloemist.services.IUserService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
 import java.net.URL;
@@ -29,10 +29,10 @@ public final class UserAppointmentController extends BaseController {
   @FXML
   ComboBox<String> pickDivision;
 
-  UserServiceI userService;
+  IUserService userService;
 
   UserAppointmentController(ApplicationEventPublisher publisher,
-      UserServiceI userService) {
+      IUserService userService) {
     super(publisher);
     this.userService = userService;
   }
