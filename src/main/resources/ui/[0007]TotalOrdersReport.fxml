@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="2019.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.TotalReportController">
+
+  <TableView fx:id="orderTable" editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1969.0" tableMenuButtonVisible="true">
+    <columns>
+      <TableColumn fx:id="statusCol" prefWidth="75.0" text="Trạng thái" />
+      <TableColumn fx:id="orderStt" prefWidth="75.0" text="STT" />
+      <TableColumn prefWidth="75.0" text="Thông tin đơn hoa">
+        <columns>
+          <TableColumn fx:id="orderDescriptionCol" prefWidth="75.0" text="Mô tả đơn hoa" />
+          <TableColumn fx:id="bannerContent" prefWidth="75.0" text="Nội dung Banner" />
+        </columns>
+      </TableColumn>
+      <TableColumn prefWidth="75.0" text="Thông tin nhận hoa">
+        <columns>
+          <TableColumn fx:id="receiver" prefWidth="75.0" text="Người nhận" />
+          <TableColumn fx:id="receiverPhone" prefWidth="75.0" text="SĐT người nhận" />
+          <TableColumn fx:id="deliveryAddress" prefWidth="75.0" text="Địa chỉ giao" />
+          <TableColumn fx:id="deliveryHourCol" prefWidth="75.0" text="Giờ nhận" />
+          <TableColumn fx:id="deliveryDateCol" prefWidth="75.0" text="Ngày nhận" />
+          <TableColumn fx:id="orderRemarkCol" prefWidth="75.0" text="Ghi chú" />
+        </columns>
+      </TableColumn>
+      <TableColumn prefWidth="75.0" text="Thông tin người đặt">
+        <columns>
+          <TableColumn fx:id="customerName" prefWidth="88.0" text="Tên người đặt" />
+          <TableColumn fx:id="customerPhone" prefWidth="48.0" text="Số điện thoại người đặt" />
+          <TableColumn fx:id="customerSocialLink" prefWidth="75.0" text="Link FB/ Insta" />
+          <TableColumn fx:id="customerSource" prefWidth="75.0" text="Nguồn khách" />
+          <TableColumn fx:id="orderDate" prefWidth="75.0" text="Ngày đặt hoa" />
+        </columns>
+      </TableColumn>
+      <TableColumn prefWidth="75.0" text="Thông tin thanh toán">
+        <columns>
+          <TableColumn fx:id="truePrice" prefWidth="75.0" text="Giá niêm yết" />
+          <TableColumn fx:id="discount" prefWidth="75.0" text="Chiết khấu" />
+          <TableColumn fx:id="salePrice" prefWidth="75.0" text="Giá bán" />
+          <TableColumn fx:id="deliveryFee" prefWidth="75.0" text="Phí giao hoa khách trả" />
+          <TableColumn fx:id="vatFee" prefWidth="75.0" text="Phí viết VAT khách trả" />
+          <TableColumn fx:id="deposit" prefWidth="75.0" text="Đặt cọc" />
+          <TableColumn fx:id="remainAmount" prefWidth="75.0" text="Còn phải trả" />
+        </columns>
+      </TableColumn>
+      <TableColumn prefWidth="75.0" text="Thông tin chi phí">
+        <columns>
+          <TableColumn prefWidth="75.0" text="Chi phí nguyên liệu" />
+          <TableColumn prefWidth="75.0" text="Phí giao hoa thực tế" />
+          <TableColumn prefWidth="75.0" text="Phí viết VAT thực tế" />
+        </columns>
+      </TableColumn>
+      <TableColumn fx:id="orderCodeCol" prefWidth="75.0" text="Code" />
+      <TableColumn fx:id="checkAll" prefWidth="32.0" text="Chọn" />
+    </columns>
+  </TableView>
+  <TextArea fx:id="textArea" layoutX="484.0" layoutY="14.0" prefHeight="69.0" prefWidth="1510.0" promptText="On click hiển thị text ở đây" />
+  <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất dữ liệu" textAlignment="CENTER" wrapText="true">
+    <font>
+      <Font name="System Bold" size="12.0" />
+    </font>
+  </Button>
+  <Button layoutX="337.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: CORNSILK;" text="Sửa thông tin" textAlignment="CENTER" wrapText="true">
+    <font>
+      <Font name="System Bold" size="12.0" />
+    </font>
+  </Button>
+  <Button layoutX="277.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="Nhập dữ liệu" textAlignment="CENTER" wrapText="true">
+    <font>
+      <Font name="System Bold" size="12.0" />
+    </font>
+  </Button>
+  <Button layoutX="401.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="In hóa đơn" textAlignment="CENTER" wrapText="true">
+    <font>
+      <Font name="System Bold" size="12.0" />
+    </font>
+  </Button>
+  <Button layoutX="25.0" layoutY="861.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTCYAN;" text="Màn hình báo đơn">
+    <font>
+      <Font name="System Bold" size="12.0" />
+    </font>
+  </Button>
+  <DatePicker layoutX="25.0" layoutY="14.0" promptText="Từ ngày" />
+  <DatePicker layoutX="25.0" layoutY="58.0" promptText="Đến ngày" />
+
+</AnchorPane>

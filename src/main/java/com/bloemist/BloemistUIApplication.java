@@ -1,8 +1,10 @@
 package com.bloemist;
 
+
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
+import com.bloemist.events.StageEvent;
+import com.bloemist.manager.StageManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -13,11 +15,15 @@ import lombok.experimental.FieldDefaults;
 public class BloemistUIApplication extends Application {
 
   ConfigurableApplicationContext applicationContext;
+  StageManager manager;
 
   @Override
   public void init() throws Exception {
     super.init();
-    applicationContext = new SpringApplicationBuilder(BloemistApplication.class).run();
+    applicationContext = new SpringApplicationBuilder()
+        .sources(BloemistApplication.class)
+        .headless(false)
+        .run(getParameters().getRaw().toArray(new String[0]));
   }
 
   @Override
@@ -29,21 +35,10 @@ public class BloemistUIApplication extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    applicationContext.publishEvent(new StageReadyEvent(stage));
+
+    manager = applicationContext.getBean(StageManager.class, new Stage());
+    applicationContext.publishEvent(new StageEvent(manager));
   }
 
-  public static class StageReadyEvent extends ApplicationEvent {
-
-    private static final long serialVersionUID = 1L;
-
-    public StageReadyEvent(Stage stage) {
-      super(stage);
-    }
-    
-    public Stage getStage() {
-      return (Stage) getSource();
-    }
-
-  }
 
 }

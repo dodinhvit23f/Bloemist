@@ -2,11 +2,28 @@ spring:
   main:
     web-application-type: none
   datasource:
-      username: ${USER_NAME :postgres}
-      password: ${PASSWORD :123}
-      driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5432/postgres
+    username: ${USER_NAME :postgres}
+    password: ${PASSWORD :123}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
   jpa:
-    properties: 
+    properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        show_sql: true
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL :BloemistBot@gmail.com}
+    password: ${EMAIL_PASSWORD :x}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+application:
+  image-url: Img/icon.ico

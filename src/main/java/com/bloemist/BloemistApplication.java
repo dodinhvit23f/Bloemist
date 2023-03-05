@@ -1,11 +1,11 @@
 package com.bloemist;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 import javafx.application.Application;
 
+@EnableAsync
 @SpringBootApplication
-@ComponentScan(basePackages = "com.bloemist")
 public class BloemistApplication {
   
   public static void main(String[] args) {

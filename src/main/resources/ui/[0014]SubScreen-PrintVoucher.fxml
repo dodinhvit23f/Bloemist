@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="302.0" prefWidth="305.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="53.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Img/logo.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="cancelPrint" layoutX="37.0" layoutY="246.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="98.0" text="Hủy" />
+      <Button fx:id="applyPrint" layoutX="173.0" layoutY="246.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="98.0" text="In hóa đơn" />
+      <CheckBox layoutX="38.0" layoutY="172.0" mnemonicParsing="false" text="In bill nhiệt" />
+      <CheckBox layoutX="38.0" layoutY="200.0" mnemonicParsing="false" text="In thêm ảnh mẫu" />
+      <ChoiceBox layoutX="36.0" layoutY="124.0" prefHeight="25.0" prefWidth="235.0" />
+      <CheckBox layoutX="173.0" layoutY="172.0" mnemonicParsing="false" text="In A5" />
+   </children>
+</AnchorPane>

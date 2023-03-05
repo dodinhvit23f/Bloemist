@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="305.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.LoginController">
+   <children>
+      <Button fx:id="loginButton" graphicTextGap="3.0" layoutX="79.0" layoutY="266.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Đăng nhập" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <CheckBox fx:id="saveId" layoutX="80.0" layoutY="232.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Lưu ID" />
+      <TextField fx:id="userIdentify" layoutX="80.0" layoutY="148.0" promptText="Tên đăng nhập" style="-fx-border-style: hidden; -fx-background-radius: 0;" />
+      <PasswordField fx:id="userPassword" layoutX="80.0" layoutY="189.0" prefHeight="25.0" prefWidth="149.0" promptText="Mật khẩu" style="-fx-background-radius: 0;" />
+      <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="60.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Img/logo.png" />
+         </image>
+      </ImageView>
+      <Hyperlink fx:id="createLink" layoutX="77.0" layoutY="310.0" onMouseClicked="#registerAccount" prefHeight="23.0" prefWidth="149.0" text="Tạo tài khoản mới" underline="true" />
+      <Hyperlink fx:id="forgotPassword" layoutX="77.0" layoutY="341.0" onMouseClicked="#restoreAccount" prefHeight="23.0" prefWidth="149.0" text="Quên mật khẩu" underline="true" />
+   </children>
+</AnchorPane>
