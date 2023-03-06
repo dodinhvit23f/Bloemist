@@ -33,7 +33,7 @@
             <Font name="System Bold" size="12.0" />
           </font>
         </Button>
-        <Button layoutX="396.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: GREENYELLOW;" text="Xuất bảng">
+        <Button layoutX="396.0" layoutY="730.0" mnemonicParsing="false" onAction="#extractData" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: GREENYELLOW;" text="Xuất bảng">
           <font>
             <Font name="System Bold" size="12.0" />
           </font>
@@ -68,8 +68,8 @@
             <Font name="System Bold" size="12.0" />
           </font>
         </Button>
-        <DatePicker layoutX="25.0" layoutY="730.0" promptText="Từ ngày" />
-        <DatePicker layoutX="209.0" layoutY="730.0" promptText="Đến ngày" />
+        <DatePicker fx:id="fromDate" editable="false" layoutX="25.0" layoutY="730.0" promptText="Từ ngày" />
+        <DatePicker fx:id="toDate" editable="false" layoutX="209.0" layoutY="730.0" promptText="Đến ngày" />
 
       </Pane>
       <Pane maxHeight="1.7976931348623157E308" maxWidth="583.0" minHeight="769.0" minWidth="496.0" prefHeight="769.0" prefWidth="583.0">

@@ -44,7 +44,7 @@ public abstract class OrderController extends BaseController {
 
   public static final int INT_100 = 100;
   public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.TRUE);
-  public static final int THREE_DAYS = 3;
+  public static final int SEVEN_DAYS = 7;
   @Autowired
   IOrderService orderService;
 
@@ -129,7 +129,7 @@ public abstract class OrderController extends BaseController {
           var now = Instant.now();
           if (Objects.isNull(isNew)) {
             return orderService
-                .getPage(Date.from(now.minus(THREE_DAYS, ChronoUnit.DAYS)),
+                .getPage(Date.from(now.minus(SEVEN_DAYS, ChronoUnit.DAYS)),
                     Date.from(now));
           }
           // load new record
@@ -154,7 +154,7 @@ public abstract class OrderController extends BaseController {
                       BigInteger.ZERO.intValue(),
                       BigInteger.ZERO.intValue(),
                       BigInteger.ZERO.intValue())
-                  .minus(THREE_DAYS, ChronoUnit.DAYS)
+                  .minus(SEVEN_DAYS, ChronoUnit.DAYS)
                   .atZone(ZoneId.systemDefault()).toInstant()),
               Utils.toDate(min.getDeliveryDate()));
         });

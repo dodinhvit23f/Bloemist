@@ -10,9 +10,14 @@ import com.constant.Constants;
 import com.utils.Utils;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -21,6 +26,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
@@ -30,6 +36,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -92,6 +103,11 @@ public class OrderReportController extends OrderController {
   private TextArea deliveryAddress;
   @FXML
   private DatePicker deliveryDate;
+  @FXML
+  private DatePicker toDate;
+  @FXML
+  private DatePicker fromDate;
+
 
   private Order currentOrder;
 
@@ -126,7 +142,7 @@ public class OrderReportController extends OrderController {
     if (validateOrderInfo(
         new OrderInfo(customerName, customerPhone, currentOrder.getCustomerSocialLink(),
             deliveryAddress,
-             deliveryTime, truePrice, deliveryFee, vatFee,
+            deliveryTime, truePrice, deliveryFee, vatFee,
             Utils.currencyToNumber(currentOrder.getSalePrice()), depositAmount, remainAmount,
             totalAmount, currentOrder.getImagePath()))) {
       return;
@@ -201,21 +217,66 @@ public class OrderReportController extends OrderController {
   }
 
   @FXML
-  private void changeStatus() {
-    this.switchScene(ApplicationView.SUB_ORDER_SCREEN);
+  public void extractData() throws IOException {
+    Alert alert = confirmDialog();
+    if (alert.getResult() == ButtonType.YES) {
+      File csvFile = new File(String.join(".",
+          String.valueOf(System.currentTimeMillis()),
+          "xls"));
+
+      HSSFWorkbook workbook = new HSSFWorkbook();
+      HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
+
+      HSSFRow rowhead = sheet.createRow(BigInteger.ZERO.shortValue());
+      rowhead.createCell(0).setCellValue("Tình Trạng");
+      rowhead.createCell(1).setCellValue("Mã Đơn");
+      rowhead.createCell(2).setCellValue("Giờ Giao");
+      rowhead.createCell(3).setCellValue("Ngày Giao");
+      rowhead.createCell(4).setCellValue("Tên Khách Hàng");
+      rowhead.createCell(5).setCellValue("Link FB");
+      rowhead.createCell(6).setCellValue("Mô Tả Đơn");
+      rowhead.createCell(7).setCellValue("Ghi Chú");
+      rowhead.createCell(8).setCellValue("Số nợ");
+      rowhead.createCell(9).setCellValue("Tổng Tiền");
+
+      ApplicationVariable.getOrders().stream()
+          .filter(order -> Utils.toDate(order.getOrderDate())
+              .compareTo(
+                  Date.from(
+                      toDate.getValue()
+                          .atStartOfDay()
+                          .atZone(ZoneId.systemDefault()).toInstant()))
+              >= BigInteger.ONE.intValue())
+          .forEach(order -> {
+            HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
+            row.createCell(0).setCellValue(order.getStatus());
+            row.createCell(1).setCellValue(order.getCode());
+            row.createCell(2).setCellValue(order.getDeliveryHour());
+            row.createCell(3).setCellValue(order.getDeliveryDate());
+            row.createCell(4).setCellValue(order.getCustomerName());
+            row.createCell(5).setCellValue(order.getCustomerSocialLink());
+            row.createCell(6).setCellValue(order.getOrderDescription());
+            row.createCell(7).setCellValue(order.getCustomerNote());
+            row.createCell(8).setCellValue(order.getRemain());
+            row.createCell(9).setCellValue(order.getTotal());
+          });
+
+      workbook.write(csvFile);
+      workbook.close();
+
+      Alert confirm = new Alert(AlertType.CONFIRMATION,
+          String.join(" ",
+              "File",
+              csvFile.getName(),
+              "đã lưu lại"),
+          ButtonType.YES);
+      confirm.show();
+    }
   }
 
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    initEvent();
-    this.stageManager.getStage().setOnShown(event ->
-        onScrollFinished(this.orderTable));
-    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable);
-      return;
-    }
-    setData(this.orderTable);
-    //TODO empName.setText(ApplicationVariable.getUser().getFullName());
+  @FXML
+  private void changeStatus() {
+    this.switchScene(ApplicationView.SUB_ORDER_SCREEN);
   }
 
 
@@ -275,5 +336,24 @@ public class OrderReportController extends OrderController {
   public void initEvent() {
     setCellValueFactory();
     addTableViewListener();
+  }
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initEvent();
+    this.stageManager.getStage().setOnShown(event ->
+        onScrollFinished(this.orderTable));
+
+    var localDate = LocalDate.now();
+    fromDate.setValue(localDate);
+    toDate.setValue(localDate.minusDays(SEVEN_DAYS));
+
+    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
+      loadPageAsync(null, this.orderTable);
+      return;
+    }
+
+    setData(this.orderTable);
+    //TODO empName.setText(ApplicationVariable.getUser().getFullName());
   }
 }
