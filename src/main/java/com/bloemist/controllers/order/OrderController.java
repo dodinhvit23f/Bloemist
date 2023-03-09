@@ -9,6 +9,7 @@ import com.bloemist.services.IOrderService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
 import com.utils.Utils;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
@@ -85,7 +87,7 @@ public abstract class OrderController extends BaseController {
         || ObjectUtils.isEmpty(orderInfor.getSalePrice())
         || ObjectUtils.isEmpty(orderInfor.getTotalAmount())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
-      return true;
+      return Boolean.FALSE;
     }
 
     if (!Utils.isNumber(orderInfor.getTruePrice())
@@ -93,28 +95,34 @@ public abstract class OrderController extends BaseController {
         || !Utils.isNumber(orderInfor.getVatFee())
         || !Utils.isNumber(orderInfor.getDepositAmount())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return true;
+      return Boolean.FALSE;
     }
 
     if (orderInfor.getDeliveryTime().length() != 5) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_006));
-      return true;
+      return Boolean.FALSE;
     }
-    return false;
+
+    if(!validateTime(orderInfor.getDeliveryTime().split(":"))){
+      publisher.publishEvent(new MessageWarning(Constants. ERR_ORDER_INFO_005));
+      return Boolean.FALSE;
+    }
+
+    return Boolean.TRUE;
   }
 
   protected boolean validateTime(String[] deliveryTimeAr) {
     if (deliveryTimeAr.length != BigInteger.TWO.intValue()) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
-      return true;
+      return Boolean.FALSE;
     }
 
     if (!Utils.isNumber(deliveryTimeAr[BigInteger.ZERO.intValue()]) ||
         !Utils.isNumber(deliveryTimeAr[BigInteger.ONE.intValue()])) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return true;
+      return Boolean.FALSE;
     }
-    return false;
+    return Boolean.TRUE;
   }
 
   protected Date getDeliveryDate(DatePicker datePicker) {
@@ -238,6 +246,9 @@ public abstract class OrderController extends BaseController {
   protected void setData(TableView<Order> orderTable) {
     orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()));
   }
+
+  @FXML
+  public abstract void extractData() throws IOException;
 
   public abstract void initEvent();
 }

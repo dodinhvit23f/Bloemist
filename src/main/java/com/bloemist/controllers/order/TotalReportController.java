@@ -3,11 +3,17 @@ package com.bloemist.controllers.order;
 import com.bloemist.dto.Order;
 import com.constant.ApplicationVariable;
 import com.constant.OrderState;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -17,6 +23,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -99,6 +108,86 @@ public class TotalReportController extends OrderController {
     setAfterEditEvent();
   }
 
+  @Override
+  public void extractData() throws IOException {
+    Alert alert = confirmDialog();
+    if (alert.getResult() == ButtonType.YES) {
+      File csvFile = new File(String.join(".",
+          String.valueOf(System.currentTimeMillis()),
+          "xls"));
+
+      HSSFWorkbook workbook = new HSSFWorkbook();
+      HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
+
+      HSSFRow rowhead = sheet.createRow(BigInteger.ZERO.shortValue());
+      rowhead.createCell(0).setCellValue("Tình Trạng");
+      rowhead.createCell(1).setCellValue("Mã Đơn");
+      rowhead.createCell(2).setCellValue("Mô tả đơn");
+      rowhead.createCell(3).setCellValue("Nội dung banner");
+      rowhead.createCell(4).setCellValue("Người nhận");
+      rowhead.createCell(5).setCellValue("SĐT người nhận");
+      rowhead.createCell(6).setCellValue("Địa chỉ giao");
+      rowhead.createCell(7).setCellValue("Ngày nhận");
+      rowhead.createCell(8).setCellValue("Ghi chú");
+      rowhead.createCell(9).setCellValue("Tên Người đặt");
+      rowhead.createCell(10).setCellValue("SĐT người đặt");
+      rowhead.createCell(11).setCellValue("Link mạng xã hội");
+      rowhead.createCell(12).setCellValue("Nguồn khách");
+      rowhead.createCell(13).setCellValue("Ngày Đặt");
+      rowhead.createCell(14).setCellValue("Giá niêm yết");
+      rowhead.createCell(15).setCellValue("Chiết khấu");
+      rowhead.createCell(16).setCellValue("Giá bán");
+      rowhead.createCell(17).setCellValue("Phí giao khách trả");
+      rowhead.createCell(18).setCellValue("Phí viết VAT khách trả");
+      rowhead.createCell(19).setCellValue("Đặt cọc");
+      rowhead.createCell(20).setCellValue("Còn phải trả");
+      rowhead.createCell(21).setCellValue("Chi phí nguyên liệu");
+      rowhead.createCell(22).setCellValue("Phí giao hoa thực tế");
+      rowhead.createCell(23).setCellValue("Phí viết VAT thực tế");
+
+      ApplicationVariable.getOrders()
+          .forEach(order -> {
+            HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
+            row.createCell(0).setCellValue(order.getStatus());
+            row.createCell(1).setCellValue(order.getCode());
+            row.createCell(2).setCellValue(order.getOrderDescription());
+            row.createCell(3).setCellValue(order.getBanner());
+            row.createCell(4).setCellValue(order.getReceiverName());
+            row.createCell(5).setCellValue(order.getReceiverPhone());
+            row.createCell(6).setCellValue(order.getDeliveryAddress());
+            row.createCell(7).setCellValue(order.getDeliveryDate());
+            row.createCell(8).setCellValue(order.getCustomerNote());
+            row.createCell(9).setCellValue(order.getCustomerName());
+            row.createCell(10).setCellValue(order.getCustomerPhone());
+            row.createCell(11).setCellValue(order.getCustomerSocialLink());
+            row.createCell(12).setCellValue(order.getCustomerSource());
+            row.createCell(13).setCellValue(order.getOrderDate());
+            row.createCell(14).setCellValue(order.getActualPrice());
+            row.createCell(15).setCellValue(order.getDiscount());
+            row.createCell(16).setCellValue(order.getSalePrice());
+            row.createCell(17).setCellValue(order.getDeliveryFee());
+            row.createCell(18).setCellValue(order.getVatFee());
+            row.createCell(19).setCellValue(order.getVatFee());
+            row.createCell(20).setCellValue(order.getDeposit());
+            row.createCell(21).setCellValue("0");
+            row.createCell(22).setCellValue(order.getActualDeliveryFee());
+            row.createCell(23).setCellValue(order.getActualVatFee());
+
+          });
+
+      workbook.write(csvFile);
+      workbook.close();
+
+      Alert confirm = new Alert(AlertType.CONFIRMATION,
+          String.join(" ",
+              "File",
+              csvFile.getName(),
+              "đã lưu lại"),
+          ButtonType.YES);
+      confirm.show();
+    }
+  }
+
   private void setColumnsValues() {
     statusCol.setCellValueFactory(new PropertyValueFactory<>(Order.STATUS));
     customerName.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NAME));
@@ -159,15 +248,15 @@ public class TotalReportController extends OrderController {
     statusCol.setCellFactory(tc -> {
           ComboBox<String> combo = new ComboBox<>();
           combo.getItems().addAll(FXCollections.observableArrayList(
-              OrderState.DONE.getState(),
-              OrderState.DONE_DELIVERY.getState(),
-              OrderState.DONE_PROCESS.getState(),
-              OrderState.CANCEL.getState(),
-              OrderState.IN_DELIVERY.getState(),
-              OrderState.IN_DEBIT.getState(),
-              OrderState.IN_PROCESS.getState()));
+              OrderState.DONE.getStateText(),
+              OrderState.DONE_DELIVERY.getStateText(),
+              OrderState.DONE_PROCESS.getStateText(),
+              OrderState.CANCEL.getStateText(),
+              OrderState.IN_DELIVERY.getStateText(),
+              OrderState.IN_DEBIT.getStateText(),
+              OrderState.IN_PROCESS.getStateText()));
 
-          TableCell<Order, String> cell = new TableCell<>() {
+          return new TableCell<>() {
             @Override
             protected void updateItem(String reason, boolean empty) {
               super.updateItem(reason, empty);
@@ -179,8 +268,6 @@ public class TotalReportController extends OrderController {
               }
             }
           };
-
-          return cell;
         }
     );
   }
@@ -209,20 +296,20 @@ public class TotalReportController extends OrderController {
     setEditEventTableCell(customerName);
   }
 
-  private void setEditEventTableCell(TableColumn tableColumn) {
+  private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
     tableColumn.setOnEditStart(event -> {
-      var cellEditEvent = ((CellEditEvent<Order, String>) event);
-      textArea.setText(cellEditEvent.getOldValue());
-      orderRow = cellEditEvent.getTablePosition().getRow();
-      currentOrder = cellEditEvent.getTableView().getItems().get(orderRow);
+      var cellEditStartEvent = ((CellEditEvent<Order, String>) event);
+      textArea.setText(cellEditStartEvent.getOldValue());
+      orderRow = cellEditStartEvent.getTablePosition().getRow();
+      currentOrder = cellEditStartEvent.getTableView().getItems().get(orderRow);
       editableColumn = tableColumn;
     });
 
     tableColumn.setOnEditCommit(event -> {
-      var cellEditEvent = ((CellEditEvent<Order, String>) event);
-      if(Objects.nonNull(cellEditEvent.getNewValue())) {
-        textArea.setText(cellEditEvent.getNewValue());
-        setValueToColumn(editableColumn, currentOrder, cellEditEvent.getNewValue());
+      var cellEditCommitEvent = ((CellEditEvent<Order, String>) event);
+      if (Objects.nonNull(cellEditCommitEvent.getNewValue())) {
+        textArea.setText(cellEditCommitEvent.getNewValue());
+        setValueToColumn(editableColumn, currentOrder, cellEditCommitEvent.getNewValue());
       }
     });
 
@@ -231,7 +318,7 @@ public class TotalReportController extends OrderController {
 
   private void setAfterEditEvent() {
     textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-      if(Boolean.FALSE.equals(newValue)){
+      if (Boolean.FALSE.equals(newValue)) {
         setValueToColumn(editableColumn, currentOrder, textArea.getText());
         orderTable.refresh();
       }

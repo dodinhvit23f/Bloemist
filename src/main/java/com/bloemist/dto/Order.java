@@ -68,8 +68,10 @@ public class Order {
   String vatFee;
   String deliveryFee;
   String actualDeliveryFee;
+  String actualVatFee;
   String deposit;
   String remain;
   String total;
   Boolean isSelected;
+  Integer priority;
 }

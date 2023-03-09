@@ -1,24 +1,26 @@
 package com.bloemist.controllers.order;
 
+import com.bloemist.dto.Order;
 import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
+import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
+import com.constant.Constants;
+import com.utils.Utils;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -26,18 +28,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.ObjectUtils;
-import com.bloemist.dto.CustomerOrder;
-import com.constant.Constants;
-import com.utils.Utils;
-import javafx.collections.FXCollections;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+import org.springframework.util.NumberUtils;
+import org.springframework.util.ObjectUtils;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -159,7 +157,7 @@ public class CreateOrderController extends OrderController {
       return;
     }
 
-    if (validateOrderInfo(
+    if (!validateOrderInfo(
          OrderInfo.builder()
              .customerName(customerName)
              .customerPhone(customerPhone)
@@ -191,8 +189,8 @@ public class CreateOrderController extends OrderController {
 
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
-      orderService.createNewOrder(
-          CustomerOrder.builder()
+      var order = orderService.createNewOrder(
+          Order.builder()
               .customerName(customerName)
               .customerPhone(customerPhone)
               .customerSocialLink(customerSocialLink)
@@ -200,23 +198,25 @@ public class CreateOrderController extends OrderController {
               .deliveryAddress(deliveryAddress)
               .receiverPhone(receiverPhone)
               .receiverName(receiverName)
-              .orderDate(Date.from(Instant.now()))
-              .receiveTime(deliveryTime)
-              .receiveDate(deliveryDate)
+              .orderDate(Utils.formatDate(Date.from(Instant.now())))
+              .deliveryHour(deliveryTime)
+              .deliveryDate(Utils.formatDate(deliveryDate))
               .imagePath(imageFile.getAbsolutePath())
               .orderDescription(orderDescription)
-              .orderNote(orderNote)
+              .customerNote(orderNote)
               .banner(banner)
-              .discount(discount)
-              .orderDate(new Date())
-              .truePrice(NumberUtils.parseNumber(truePrice, BigDecimal.class))
-              .deliveryFee(NumberUtils.parseNumber(deliveryFee, BigDecimal.class))
-              .vatFee(NumberUtils.parseNumber(vatFee, BigDecimal.class))
-              .salePrice(NumberUtils.parseNumber(salePrice, BigDecimal.class))
-              .depositAmount(NumberUtils.parseNumber(depositAmount, BigDecimal.class))
-              .remainAmount(NumberUtils.parseNumber(remainAmount, BigDecimal.class))
-              .totalBill(NumberUtils.parseNumber(totalAmount, BigDecimal.class))
+              .discount(String.valueOf(discount))
+              .actualPrice(truePrice)
+              .deliveryFee(deliveryFee)
+              .vatFee(vatFee)
+              .salePrice(salePrice)
+              .deposit(depositAmount)
+              .remain(remainAmount)
+              .total(totalAmount)
               .build());
+
+      ApplicationVariable.add(order);
+      CompletableFuture.runAsync(ApplicationVariable::sortOrders);
     }
   }
 
@@ -300,5 +300,7 @@ public class CreateOrderController extends OrderController {
     switchScene(ApplicationView.INQUIRY_ORDER);
   }
 
-
+  @Override
+  public void extractData() {
+  }
 }

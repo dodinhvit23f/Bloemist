@@ -91,14 +91,14 @@ public class OrderStatusController extends BaseController {
 
     changeStatus.setItems(
         FXCollections.observableList(
-            List.of(OrderState.CANCEL.getState(),
-                OrderState.DONE.getState(),
-                OrderState.IN_PROCESS.getState(),
-                OrderState.PENDING.getState(),
-                OrderState.DONE_DELIVERY.getState(),
-                OrderState.DONE_PROCESS.getState(),
-                OrderState.IN_DEBIT.getState(),
-                OrderState.IN_DELIVERY.getState())));
+            List.of(OrderState.CANCEL.getStateText(),
+                OrderState.DONE.getStateText(),
+                OrderState.IN_PROCESS.getStateText(),
+                OrderState.PENDING.getStateText(),
+                OrderState.DONE_DELIVERY.getStateText(),
+                OrderState.DONE_PROCESS.getStateText(),
+                OrderState.IN_DEBIT.getStateText(),
+                OrderState.IN_DELIVERY.getStateText())));
   }
 
 }

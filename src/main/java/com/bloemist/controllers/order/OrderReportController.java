@@ -1,6 +1,5 @@
 package com.bloemist.controllers.order;
 
-import com.bloemist.dto.CustomerOrder;
 import com.bloemist.dto.Order;
 import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
@@ -10,14 +9,9 @@ import com.constant.Constants;
 import com.utils.Utils;
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -39,8 +33,6 @@ import lombok.experimental.FieldDefaults;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -133,13 +125,13 @@ public class OrderReportController extends OrderController {
     var banner = this.bannerContent.getText().strip(); //NOSONAR
     var discount = this.discountRate.getText(); //NOSONAR
     var deliveryFee = Utils.currencyToNumber(this.deliveryFee.getText().strip()); //NOSONAR
-    var vatFee = Utils.currencyToNumber(this.vatFee.getText().strip());//NOSONAR
+    var vatFee = this.vatFee.getText().strip();//NOSONAR
     var depositAmount = Utils.currencyToNumber(this.depositAmount.getText().strip());//NOSONAR
     var truePrice = Utils.currencyToNumber(this.actualPrice.getText().strip());//NOSONAR
     var remainAmount = Utils.currencyToNumber(this.outstandingBalance.getText());//NOSONAR
-    var totalAmount = Utils.currencyToNumber(this.outstandingBalance.getText());//NOSONAR
+    var totalAmount = Utils.currencyToNumber(this.totalAmount.getText());//NOSONAR
 
-    if (validateOrderInfo(
+    if (!validateOrderInfo(
         new OrderInfo(customerName, customerPhone, currentOrder.getCustomerSocialLink(),
             deliveryAddress,
             deliveryTime, truePrice, deliveryFee, vatFee,
@@ -172,24 +164,28 @@ public class OrderReportController extends OrderController {
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
       orderService.updateOrder(
-          CustomerOrder.builder()
+          Order.builder()
               .customerName(customerName)
               .customerPhone(customerPhone)
               .deliveryAddress(deliveryAddress)
               .receiverPhone(receiverPhone)
               .receiverName(receiverName)
-              .orderDate(Date.from(Instant.now()))
-              .receiveDate(deliveryDateTime)
+              .orderDate(currentOrder.getOrderDate())
+              .deliveryDate(Utils.formatDate(deliveryDateTime))
               .orderDescription(orderDescription)
+              .deliveryHour(deliveryTime)
+              .customerNote(currentOrder.getCustomerNote())
               .banner(banner)
-              .discount(NumberUtils.parseNumber(discount, Integer.class))
-              .truePrice(NumberUtils.parseNumber(truePrice, BigDecimal.class))
-              .deliveryFee(NumberUtils.parseNumber(deliveryFee, BigDecimal.class))
-              .vatFee(NumberUtils.parseNumber(vatFee, BigDecimal.class))
-              .salePrice(BigDecimal.valueOf(salePrice))
-              .depositAmount(NumberUtils.parseNumber(depositAmount, BigDecimal.class))
-              .remainAmount(NumberUtils.parseNumber(remainAmount, BigDecimal.class))
-              .totalBill(NumberUtils.parseNumber(totalAmount, BigDecimal.class))
+              .customerSource(currentOrder.getCustomerSource())
+              .customerSocialLink(currentOrder.getCustomerSocialLink())
+              .discount(discount)
+              .actualPrice(truePrice)
+              .deliveryFee(deliveryFee)
+              .vatFee(vatFee)
+              .salePrice(salePrice.toString())
+              .deposit(depositAmount)
+              .remain(remainAmount)
+              .total(totalAmount)
               .code(currentOrder.getCode())
               .build());
 
@@ -216,7 +212,7 @@ public class OrderReportController extends OrderController {
 
   }
 
-  @FXML
+  @Override
   public void extractData() throws IOException {
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
@@ -224,20 +220,32 @@ public class OrderReportController extends OrderController {
           String.valueOf(System.currentTimeMillis()),
           "xls"));
 
+      final int statusCell = 0;
+      final int orderCodeCell = 1;
+      final int deliveryTimeCell = 2;
+      final int deliveryDateCell = 3;
+      final int customerNameCell = 4;
+      final int socialLinkCell = 5;
+      final int orderDesCell = 6;
+      final int orderNoteCell = 7;
+      final int remainCell = 8;
+      final int totalCell = 9;
+
       HSSFWorkbook workbook = new HSSFWorkbook();
       HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
 
       HSSFRow rowhead = sheet.createRow(BigInteger.ZERO.shortValue());
-      rowhead.createCell(0).setCellValue("Tình Trạng");
-      rowhead.createCell(1).setCellValue("Mã Đơn");
-      rowhead.createCell(2).setCellValue("Giờ Giao");
-      rowhead.createCell(3).setCellValue("Ngày Giao");
-      rowhead.createCell(4).setCellValue("Tên Khách Hàng");
-      rowhead.createCell(5).setCellValue("Link FB");
-      rowhead.createCell(6).setCellValue("Mô Tả Đơn");
-      rowhead.createCell(7).setCellValue("Ghi Chú");
-      rowhead.createCell(8).setCellValue("Số nợ");
-      rowhead.createCell(9).setCellValue("Tổng Tiền");
+
+      rowhead.createCell(statusCell).setCellValue("Tình Trạng");
+      rowhead.createCell(orderCodeCell).setCellValue("Mã Đơn");
+      rowhead.createCell(deliveryTimeCell).setCellValue("Giờ Giao");
+      rowhead.createCell(deliveryDateCell).setCellValue("Ngày Giao");
+      rowhead.createCell(customerNameCell).setCellValue("Tên Khách Hàng");
+      rowhead.createCell(socialLinkCell).setCellValue("Link FB");
+      rowhead.createCell(orderDesCell).setCellValue("Mô Tả Đơn");
+      rowhead.createCell(orderNoteCell).setCellValue("Ghi Chú");
+      rowhead.createCell(remainCell).setCellValue("Số nợ");
+      rowhead.createCell(totalCell).setCellValue("Tổng Tiền");
 
       ApplicationVariable.getOrders().stream()
           .filter(order -> Utils.toDate(order.getOrderDate())
@@ -249,16 +257,16 @@ public class OrderReportController extends OrderController {
               >= BigInteger.ONE.intValue())
           .forEach(order -> {
             HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
-            row.createCell(0).setCellValue(order.getStatus());
-            row.createCell(1).setCellValue(order.getCode());
-            row.createCell(2).setCellValue(order.getDeliveryHour());
-            row.createCell(3).setCellValue(order.getDeliveryDate());
-            row.createCell(4).setCellValue(order.getCustomerName());
-            row.createCell(5).setCellValue(order.getCustomerSocialLink());
-            row.createCell(6).setCellValue(order.getOrderDescription());
-            row.createCell(7).setCellValue(order.getCustomerNote());
-            row.createCell(8).setCellValue(order.getRemain());
-            row.createCell(9).setCellValue(order.getTotal());
+            row.createCell(statusCell).setCellValue(order.getStatus());
+            row.createCell(orderCodeCell).setCellValue(order.getCode());
+            row.createCell(deliveryTimeCell).setCellValue(order.getDeliveryHour());
+            row.createCell(deliveryDateCell).setCellValue(order.getDeliveryDate());
+            row.createCell(customerNameCell).setCellValue(order.getCustomerName());
+            row.createCell(socialLinkCell).setCellValue(order.getCustomerSocialLink());
+            row.createCell(orderDesCell).setCellValue(order.getOrderDescription());
+            row.createCell(orderNoteCell).setCellValue(order.getCustomerNote());
+            row.createCell(remainCell).setCellValue(order.getRemain());
+            row.createCell(totalCell).setCellValue(order.getTotal());
           });
 
       workbook.write(csvFile);
@@ -331,11 +339,14 @@ public class OrderReportController extends OrderController {
     }
   }
 
-
   @Override
   public void initEvent() {
     setCellValueFactory();
     addTableViewListener();
+    addEventLostFocus(this.actualPrice, this::calculateTotalPrice);
+    addEventLostFocus(this.deliveryFee, this::calculateTotalPrice);
+    addEventLostFocus(this.vatFee, this::calculateTotalPrice);
+    addEventLostFocus(this.depositAmount, this::calculateTotalPrice);
   }
 
   @Override
@@ -355,5 +366,36 @@ public class OrderReportController extends OrderController {
 
     setData(this.orderTable);
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
+  }
+
+  @FXML
+  public void calculateTotalPrice() {
+    if (validOrderPrice()) {
+      return;
+    }
+
+    var discount = NumberUtils.parseNumber(Utils.currencyToNumber(this.discountRate.getText()), Double.class);
+    var truePrice = NumberUtils.parseNumber(Utils.currencyToNumber(this.actualPrice.getText()), Double.class);
+    var deliveryFeeAmount = NumberUtils.parseNumber(Utils.currencyToNumber(this.deliveryFee.getText()), Double.class);
+    var vatFeeAmount = NumberUtils.parseNumber(Utils.currencyToNumber(this.vatFee.getText()), Double.class);
+    var deposit = NumberUtils.parseNumber(Utils.currencyToNumber(this.depositAmount.getText()), Double.class);
+
+
+    var salePrice = getSalePrice(truePrice, discount);
+    var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);
+
+    this.totalAmount.setText(Utils.currencyFormat(totalSaleAmount));
+    this.outstandingBalance.setText(Utils.currencyFormat(totalSaleAmount - deposit));
+  }
+
+  private boolean validOrderPrice() {
+    if (!Utils.isNumber(Utils.currencyToNumber(this.actualPrice.getText()).strip())
+        || !Utils.isNumber(Utils.currencyToNumber(this.deliveryFee.getText().strip()))
+        || !Utils.isNumber(Utils.currencyToNumber(this.vatFee.getText().strip()))
+        || !Utils.isNumber(Utils.currencyToNumber(this.depositAmount.getText().strip()))) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
+      return true;
+    }
+    return false;
   }
 }

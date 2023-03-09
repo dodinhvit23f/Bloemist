@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
+import org.hibernate.Interceptor;
 import org.hibernate.annotations.DynamicUpdate;
 
 
@@ -93,7 +94,7 @@ public class OrderReport extends BaseEntity {
   private String orderDescription;
 
   @Column(name = "order_status", length = 30)
-  private String orderStatus;
+  private Integer orderStatus;
 
   @Column(name = "receiver", length = 60)
   private String receiver;

@@ -1,63 +1,51 @@
 package com.bloemist.converters;
 
 import com.bloemist.dto.Order;
+import com.constant.OrderState;
 import com.utils.Utils;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Date;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import com.bloemist.dto.CustomerOrder;
 import com.bloemist.entity.OrderReport;
 import org.mapstruct.factory.Mappers;
+import org.springframework.util.NumberUtils;
 
 
 @Mapper
 public interface OrderMapper {
   OrderMapper MAPPER = Mappers.getMapper(OrderMapper.class);
-  @Mapping(target = "clientName", source = "order.customerName")
-  @Mapping(target = "clientPhone", source = "order.customerPhone")
-  @Mapping(target = "clientSocialLink", source = "order.customerSocialLink")
-  @Mapping(target = "clientSource", source = "order.customerSource")
-  @Mapping(target = "deliveryAddress", source = "order.deliveryAddress")
-  @Mapping(target = "receiver", source = "order.receiverName")
-  @Mapping(target = "receiverPhone", source = "order.receiverPhone")
-  @Mapping(target = "orderDate", source = "order.orderDate")
-  @Mapping(target = "deliveryDate", source = "order.receiveDate")
-  @Mapping(target = "deliveryTime", source = "order.receiveTime")
-  @Mapping(target = "samplePictureLink", source = "order.imagePath")
-  @Mapping(target = "orderDescription", source = "order.orderDescription")
-  @Mapping(target = "remark", source = "order.orderNote")
-  @Mapping(target = "bannerContent", source = "order.banner")
-  @Mapping(target = "discount", source = "order.discount")
-  @Mapping(target = "vatFee", source = "order.vatFee")
-  @Mapping(target = "deliveryFee", source = "order.deliveryFee")
-  @Mapping(target = "actualPrice", source = "order.truePrice")
-  @Mapping(target = "salePrice", source = "order.salePrice")
-  @Mapping(target = "depositAmount", source = "order.depositAmount")
-  @Mapping(target = "remainingAmount", source = "order.remainAmount")
-  @Mapping(target = "totalAmount", source = "order.totalBill")
-  OrderReport customerOrderToOrder(CustomerOrder order);
 
-  @Mapping(source = "orderReport.clientName", target = "customerName")
-  @Mapping(source = "orderReport.clientPhone", target = "customerPhone")
-  @Mapping(source = "orderReport.clientSocialLink", target = "customerSocialLink")
-  @Mapping(source = "orderReport.clientSource", target = "customerSource")
-  @Mapping(source = "orderReport.deliveryAddress", target = "deliveryAddress")
-  @Mapping(source = "orderReport.receiver", target = "receiverName")
-  @Mapping(source = "orderReport.receiverPhone", target = "receiverPhone")
-  @Mapping(source = "orderReport.orderDate", target = "orderDate")
-  @Mapping(source = "orderReport.deliveryTime", target = "receiveDate")
-  @Mapping(source = "orderReport.samplePictureLink", target = "imagePath")
-  @Mapping(source = "orderReport.orderDescription", target = "orderDescription")
-  @Mapping(source = "orderReport.remark", target = "orderNote")
-  @Mapping(source = "orderReport.bannerContent", target = "banner")
-  @Mapping(source = "orderReport.discount", target = "discount")
-  @Mapping(source = "orderReport.vatFee", target = "vatFee")
-  @Mapping(source = "orderReport.deliveryFee", target = "deliveryFee")
-  @Mapping(source = "orderReport.actualPrice", target = "truePrice")
-  @Mapping(source = "orderReport.salePrice", target = "salePrice")
-  @Mapping(source = "orderReport.depositAmount", target = "depositAmount")
-  @Mapping(source = "orderReport.remainingAmount", target = "remainAmount")
-  @Mapping(source = "orderReport.totalAmount", target = "totalBill")
-  CustomerOrder orderToCustomerOrder(OrderReport orderReport);
+  default OrderReport orderToOrderReport(Order order){
+
+    return OrderReport.builder()
+        .clientName(order.getCustomerName())
+        .clientPhone(order.getCustomerPhone())
+        .clientSocialLink(order.getCustomerSocialLink())
+        .clientSource(order.getCustomerSocialLink())
+        .receiver(order.getReceiverName())
+        .receiverPhone(order.getCustomerPhone())
+        .orderDescription(order.getOrderDescription())
+        .remark(order.getCustomerNote())
+        .bannerContent(order.getBanner())
+        .deliveryAddress(order.getDeliveryAddress())
+        .orderDate(Utils.toDate(order.getOrderDate()))
+        .deliveryDate(Utils.toDate(order.getDeliveryDate()))
+        .deliveryTime(order.getDeliveryHour())
+        .samplePictureLink(order.getImagePath())
+        .discount(Integer.parseInt(order.getDiscount()))
+        .actualPrice(new BigDecimal(order.getActualPrice()))
+        .deliveryFee(new BigDecimal(order.getDeliveryFee()))
+        .vatFee(new BigDecimal(order.getVatFee()))
+        .salePrice(new BigDecimal(order.getSalePrice()))
+        .depositAmount(new BigDecimal(order.getDeposit()))
+        .remainingAmount(new BigDecimal(order.getRemain()))
+        .totalAmount(new BigDecimal(order.getTotal()))
+        .build();
+  };
+
 
 
   default Order orderReportToOrder(OrderReport orderReport){
@@ -83,10 +71,14 @@ public interface OrderMapper {
         .remain(Utils.currencyFormat(orderReport.getRemainingAmount().doubleValue()))
         .deposit(Utils.currencyFormat(orderReport.getDepositAmount().doubleValue()))
         .total(Utils.currencyFormat(orderReport.getTotalAmount().doubleValue()))
-        .status(orderReport.getOrderStatus())
+        .status(Arrays.stream(OrderState.values())
+            .filter(orderState -> orderReport.getOrderStatus() == orderState.getState())
+            .findFirst().orElseThrow().getStateText())
         .code(orderReport.getOrderCode())
         .customerSource(orderReport.getClientSource())
         .actualDeliveryFee(Utils.currencyFormat(orderReport.getActualDeliveryFee().doubleValue()))
+        .actualVatFee(Utils.currencyFormat(orderReport.getActualVatFee().doubleValue()))
+        .priority(orderReport.getOrderStatus())
         .build();
   }
 }

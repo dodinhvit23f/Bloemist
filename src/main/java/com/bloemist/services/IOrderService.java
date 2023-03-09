@@ -1,8 +1,6 @@
 package com.bloemist.services;
 
-import com.bloemist.dto.CustomerOrder;
 import com.bloemist.dto.Order;
-import com.constant.OrderState;
 import java.util.Date;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 public interface IOrderService {
 
   @Transactional
-  void createNewOrder(CustomerOrder order);
+  Order createNewOrder(Order order);
 
   @Transactional
-  void updateOrder(CustomerOrder order);
+  void updateOrder(Order order);
 
   @Transactional
   void deleteOrder(String orderCode);
