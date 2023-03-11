@@ -45,15 +45,14 @@ public class StageListener implements ApplicationListener<StageEvent> {
       fxmlLoader.setControllerFactory(context::getBean);
 
       var panel = (Pane) fxmlLoader.load();
-
+      final double padding = 20;
       Scene scene = new Scene(panel);
       stage.setScene(scene);
       stage.setTitle(manager.getStageTitle());
       stage.getIcons().add(new Image(new FileInputStream(iconResoure.getFile())));
-      stage.setMinHeight(panel.getPrefHeight());
-      stage.setMinWidth(panel.getPrefWidth());
-      stage.setMaxHeight(panel.getMaxHeight());
-      stage.setMaxWidth(panel.getMaxWidth());
+      stage.setMinWidth(panel.getPrefWidth() + padding);
+      stage.setMinHeight(panel.getHeight() + padding);
+      stage.setResizable(false);
       stage.show();
 
     } catch (IOException e) {

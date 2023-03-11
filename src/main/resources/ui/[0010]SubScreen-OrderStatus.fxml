@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:controller="com.bloemist.controllers.order.OrderStatusController" maxHeight="500.0" maxWidth="Infinity" prefHeight="400.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="420.0" maxWidth="310.0" prefHeight="420.0" prefWidth="310.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.OrderStatusController">
    <children>
       <ImageView fx:id="logoImg" fitHeight="99.0" fitWidth="200.0" layoutX="53.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>

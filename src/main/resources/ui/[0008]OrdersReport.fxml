@@ -7,12 +7,12 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="anchorPane" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="776.0" prefWidth="1187.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.OrderReportController">
-  <SplitPane dividerPositions="0.6043" focusTraversable="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="anchorPane" maxHeight="770.0" maxWidth="1263.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1263.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.OrderReportController">
+  <SplitPane fx:id="splitPane" dividerPositions="0.6043" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <items>
-      <Pane prefHeight="621.0" prefWidth="672.0">
+      <Pane prefHeight="621.0" prefWidth="672.0" SplitPane.resizableWithParent="false">
 
-        <TableView id="orderTable" fx:id="orderTable" editable="false" layoutX="25.0" layoutY="108.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="617.0" prefWidth="731.0" tableMenuButtonVisible="true">
+        <TableView id="orderTable" fx:id="orderTable" layoutX="25.0" layoutY="108.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="617.0" prefWidth="731.0" tableMenuButtonVisible="true">
           <columns>
             <TableColumn fx:id="statusCol" editable="false" prefWidth="75.0" text="Tình trạng" />
             <TableColumn fx:id="orderCodeCol" editable="false" prefWidth="75.0" text="Mã đơn" />
@@ -27,7 +27,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
           </columnResizePolicy>
         </TableView>
-        <TextArea layoutX="296.0" layoutY="22.0" prefHeight="67.0" prefWidth="361.0" promptText="On click hiển thị text ở đây" />
+        <TextArea fx:id="orderNote" layoutX="296.0" layoutY="22.0" prefHeight="67.0" prefWidth="361.0" promptText="On click hiển thị text ở đây" />
         <Button layoutX="26.0" layoutY="21.0" mnemonicParsing="false" onMouseClicked="#createOrder" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: LEMONCHIFFON;" text="Tạo đơn">
           <font>
             <Font name="System Bold" size="12.0" />
@@ -63,16 +63,17 @@
             <Font name="System Bold" size="12.0" />
           </font>
         </Button>
-        <Button layoutX="537.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTSEAGREEN;" text="Thống kê chi tiết">
+        <Button layoutX="518.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTSEAGREEN;" text="Thống kê chi tiết">
           <font>
             <Font name="System Bold" size="12.0" />
           </font>
         </Button>
         <DatePicker fx:id="fromDate" editable="false" layoutX="25.0" layoutY="730.0" promptText="Từ ngày" />
         <DatePicker fx:id="toDate" editable="false" layoutX="209.0" layoutY="730.0" promptText="Đến ngày" />
+            <Button layoutX="678.0" layoutY="730.0" mnemonicParsing="false" onAction="#cancel" text="Home" />
 
       </Pane>
-      <Pane maxHeight="1.7976931348623157E308" maxWidth="583.0" minHeight="769.0" minWidth="496.0" prefHeight="769.0" prefWidth="583.0">
+      <Pane maxHeight="769.0" maxWidth="583.0" minHeight="769.0" minWidth="496.0" prefHeight="769.0" prefWidth="583.0" AnchorPane.rightAnchor="0" SplitPane.resizableWithParent="false">
 
         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="24.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
           <image>

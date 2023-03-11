@@ -23,6 +23,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -92,6 +93,8 @@ public class OrderReportController extends OrderController {
   @FXML
   private TextArea bannerContent;
   @FXML
+  private TextArea orderNote;
+  @FXML
   private TextArea deliveryAddress;
   @FXML
   private DatePicker deliveryDate;
@@ -99,7 +102,8 @@ public class OrderReportController extends OrderController {
   private DatePicker toDate;
   @FXML
   private DatePicker fromDate;
-
+  @FXML
+  private SplitPane splitPane;
 
   private Order currentOrder;
 
@@ -130,6 +134,7 @@ public class OrderReportController extends OrderController {
     var truePrice = Utils.currencyToNumber(this.actualPrice.getText().strip());//NOSONAR
     var remainAmount = Utils.currencyToNumber(this.outstandingBalance.getText());//NOSONAR
     var totalAmount = Utils.currencyToNumber(this.totalAmount.getText());//NOSONAR
+    var orderNote = this.orderNote.getText().strip();
 
     if (!validateOrderInfo(
         new OrderInfo(customerName, customerPhone, currentOrder.getCustomerSocialLink(),
@@ -174,7 +179,7 @@ public class OrderReportController extends OrderController {
               .deliveryDate(Utils.formatDate(deliveryDateTime))
               .orderDescription(orderDescription)
               .deliveryHour(deliveryTime)
-              .customerNote(currentOrder.getCustomerNote())
+              .customerNote(orderNote)
               .banner(banner)
               .customerSource(currentOrder.getCustomerSource())
               .customerSocialLink(currentOrder.getCustomerSocialLink())
@@ -326,6 +331,7 @@ public class OrderReportController extends OrderController {
     this.orderDescription.setText(currentOrder.getOrderDescription());
     this.bannerContent.setText(currentOrder.getBanner());
     this.deliveryAddress.setText(currentOrder.getDeliveryAddress());
+    this.orderNote.setText(currentOrder.getCustomerNote());
     this.deliveryDate.setValue(
         LocalDate.ofInstant(Utils.toDate(currentOrder.getDeliveryDate()).toInstant(),
             ZoneId.systemDefault()));
