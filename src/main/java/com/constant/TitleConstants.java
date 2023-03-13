@@ -9,7 +9,7 @@ public final class TitleConstants {
   public static final String LOGIN_TITLE = "LOGIN_TITLE";
   public static final String NEW_ORDER_TITLE = "NEW_ORDER_TITLE";
   public static final String MASTER_ORDER_TITLE = "MASTER_ORDER_TITLE";
-  public static final String ORDER_REPORT = "MASTER_ORDER_TITLE";
+  public static final String PRINT_ORDER = "PRINT_ORDER";
   public static final String SUB_ORDER_SCREEN = "SUB_ORDER_SCREEN";
   public static final String ID_REGISTRATION_TITLE = "ID_REGISTRATION_TITLE";
   public static final String CHANGE_PASSWORD_TITLE = "CHANGE_PASSWORD_TITLE";

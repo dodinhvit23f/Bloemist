@@ -5,6 +5,22 @@ import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public enum ApplicationView {
+  PRINT_ORDER {
+    @Override
+    public String getUrl() {
+      return "ui/[0014]SubScreen-PrintVoucher.fxml";
+    }
+
+    @Override
+    public String getTitle() {
+      return TitleConstants.PRINT_ORDER;
+    }
+
+    @Override
+    public String getCode() {
+      return "0014";
+    }
+  },
   SUB_ORDER_SCREEN {
     @Override
     public String getUrl() {

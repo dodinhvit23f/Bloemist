@@ -214,7 +214,7 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private void printOrder() {
-
+    switchScene(ApplicationView.PRINT_ORDER);
   }
 
   @Override
@@ -403,5 +403,10 @@ public class OrderReportController extends OrderController {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public void cancel() {
+    switchScene(ApplicationView.HOME);
   }
 }

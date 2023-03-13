@@ -43,7 +43,7 @@
             <Font name="System Bold" size="12.0" />
           </font>
         </Button>
-        <Button layoutX="202.0" layoutY="62.0" mnemonicParsing="false" onMouseClicked="#printOrder" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: LAVENDER;" text="In phiếu">
+        <Button layoutX="202.0" layoutY="62.0" mnemonicParsing="false" onAction="#printOrder" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: LAVENDER;" text="In phiếu">
           <font>
             <Font name="System Bold" size="12.0" />
           </font>

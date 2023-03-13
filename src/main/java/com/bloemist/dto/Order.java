@@ -43,6 +43,9 @@ public class Order {
   public static final String CUSTOMER_SOURCE = "customerSource";
   public static final String IS_SELECTED = "isSelected";
   public static final String ORDER_DATE = "orderDate";
+  public static final String ACTUAL_DELIVERY_FEE = "actualDeliveryFee";
+  public static final String ACTUAL_VAT_FEE = "actualVatFee";
+  public static final String MATERIALS_FEE = "materialsFee";
 
 
   String stt;
@@ -62,16 +65,17 @@ public class Order {
   String deliveryDate;
   String deliveryHour;
   String deliveryAddress;
-  String actualPrice;
   String salePrice;
   String discount;
   String vatFee;
   String deliveryFee;
+  String actualPrice;
   String actualDeliveryFee;
   String actualVatFee;
   String deposit;
   String remain;
   String total;
+  String materialsFee;
   Boolean isSelected;
   Integer priority;
 }

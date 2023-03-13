@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane prefHeight="616.0" prefWidth="1070.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane maxHeight="616.0" maxWidth="1070.0" prefHeight="616.0" prefWidth="1070.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
    <children>
       <TableView layoutX="17.0" layoutY="111.0" prefHeight="475.0" prefWidth="1033.0">
         <columns>

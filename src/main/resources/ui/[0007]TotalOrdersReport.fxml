@@ -4,12 +4,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="2019.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.TotalReportController">
+<AnchorPane maxHeight="899.0" maxWidth="2019.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="2019.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.TotalReportController">
 
   <TableView fx:id="orderTable" editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1969.0" tableMenuButtonVisible="true">
     <columns>
-      <TableColumn fx:id="statusCol" prefWidth="75.0" text="Trạng thái" />
-      <TableColumn fx:id="orderStt" prefWidth="75.0" text="STT" />
+      <TableColumn fx:id="statusCol" prefWidth="110.0" text="Trạng thái" />
+      <TableColumn fx:id="orderStt" prefWidth="40.0" text="STT" />
       <TableColumn prefWidth="75.0" text="Thông tin đơn hoa">
         <columns>
           <TableColumn fx:id="orderDescriptionCol" prefWidth="75.0" text="Mô tả đơn hoa" />
@@ -48,16 +48,16 @@
       </TableColumn>
       <TableColumn prefWidth="75.0" text="Thông tin chi phí">
         <columns>
-          <TableColumn prefWidth="75.0" text="Chi phí nguyên liệu" />
-          <TableColumn prefWidth="75.0" text="Phí giao hoa thực tế" />
-          <TableColumn prefWidth="75.0" text="Phí viết VAT thực tế" />
+          <TableColumn fx:id="categoryFee" prefWidth="75.0" text="Chi phí nguyên liệu" />
+          <TableColumn fx:id="actualDeliveryFee" prefWidth="75.0" text="Phí giao hoa thực tế" />
+          <TableColumn fx:id="actualVatFee" prefWidth="75.0" text="Phí viết VAT thực tế" />
         </columns>
       </TableColumn>
-      <TableColumn fx:id="orderCodeCol" prefWidth="75.0" text="Code" />
-      <TableColumn fx:id="checkAll" prefWidth="32.0" text="Chọn" />
+      <TableColumn fx:id="orderCodeCol" prefWidth="68.0" text="Code" />
+      <TableColumn fx:id="checkAll" prefWidth="39.0" text="Chọn" />
     </columns>
   </TableView>
-  <TextArea fx:id="textArea" layoutX="484.0" layoutY="14.0" prefHeight="69.0" prefWidth="1510.0" promptText="On click hiển thị text ở đây" />
+  <TextArea fx:id="textArea" layoutX="481.0" layoutY="14.0" prefHeight="69.0" prefWidth="1513.0" promptText="On click hiển thị text ở đây" />
   <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#extractData" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất dữ liệu" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
@@ -68,7 +68,7 @@
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="277.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="Nhập dữ liệu" textAlignment="CENTER" wrapText="true">
+  <Button fx:id="createNewOrder" layoutX="277.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="Nhập dữ liệu" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
@@ -78,12 +78,12 @@
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="25.0" layoutY="861.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTCYAN;" text="Màn hình báo đơn">
+  <Button layoutX="25.0" layoutY="861.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LIGHTCYAN;" text="Màn hình chính">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <DatePicker layoutX="25.0" layoutY="14.0" promptText="Từ ngày" />
+  <DatePicker layoutX="25.0" layoutY="14.0" onAction="#cancel" promptText="Từ ngày" />
   <DatePicker layoutX="25.0" layoutY="58.0" promptText="Đến ngày" />
 
 </AnchorPane>

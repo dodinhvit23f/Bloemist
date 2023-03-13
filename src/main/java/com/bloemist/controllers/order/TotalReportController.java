@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,12 +18,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javax.security.auth.callback.Callback;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -94,6 +97,12 @@ public class TotalReportController extends OrderController {
   private TableColumn<Order, String> customerSource;
   @FXML
   private TableColumn<Order, String> orderDate;
+  @FXML
+  private TableColumn<Order, String> categoryFee;
+  @FXML
+  private TableColumn<Order, String> actualDeliveryFee;
+  @FXML
+  private TableColumn<Order, String> actualVatFee;
   @FXML
   private TableColumn<Order, Boolean> checkAll;
 
@@ -238,6 +247,35 @@ public class TotalReportController extends OrderController {
     deposit.setCellValueFactory(new PropertyValueFactory<>(Order.DEPOSIT));
     customerSource.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_SOURCE));
     orderDate.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DATE));
+    categoryFee.setCellValueFactory(new PropertyValueFactory<>(Order.MATERIALS_FEE));
+    actualDeliveryFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_VAT_FEE));
+    actualVatFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_DELIVERY_FEE));
+
+    checkAll.setCellValueFactory(new Callback<CellDataFeatures<Order, Boolean>, ObservableValue<Boolean>>() {
+
+      @Override
+      public ObservableValue<Boolean> call(CellDataFeatures<Person, Boolean> param) {
+        Person person = param.getValue();
+
+        SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(person.isSingle());
+
+        // Note: singleCol.setOnEditCommit(): Not work for
+        // CheckBoxTableCell.
+
+        // When "Single?" column change.
+        booleanProp.addListener(new ChangeListener<Boolean>() {
+
+          @Override
+          public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+              Boolean newValue) {
+            person.setSingle(newValue);
+          }
+        });
+        return booleanProp;
+      }
+    });
+
+
   }
 
   private void setColumnsFactory() {
@@ -266,6 +304,9 @@ public class TotalReportController extends OrderController {
     orderDate.setCellFactory(TextFieldTableCell.forTableColumn());
     bannerContent.setCellFactory(TextFieldTableCell.forTableColumn());
     orderCodeCol.setCellFactory(TextFieldTableCell.forTableColumn());
+    categoryFee.setCellFactory(TextFieldTableCell.forTableColumn());
+    actualDeliveryFee.setCellFactory(TextFieldTableCell.forTableColumn());
+    actualVatFee.setCellFactory(TextFieldTableCell.forTableColumn());
     checkAll.setCellFactory(CheckBoxTableCell.forTableColumn(checkAll));
   }
 
@@ -319,6 +360,7 @@ public class TotalReportController extends OrderController {
     setEditEventTableCell(customerSource);
     setEditEventTableCell(orderDate);
     setEditEventTableCell(customerName);
+
   }
 
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {

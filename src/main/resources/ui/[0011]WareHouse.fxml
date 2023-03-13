@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="1338.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="899.0" maxWidth="1338.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="899.0" prefWidth="1338.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TableView editable="true" layoutX="25.0" layoutY="100.0" prefHeight="752.0" prefWidth="1283.0">
          <columns>

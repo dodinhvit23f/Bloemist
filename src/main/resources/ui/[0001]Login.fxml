@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="305.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.LoginController">
+<AnchorPane maxHeight="400.0" maxWidth="305.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="305.0" style="-fx-min-width: 300px; -fx-max-width: 400px; -fx-min-height: 400px; -fx-max-height: 500px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.LoginController">
    <children>
       <Button fx:id="loginButton" graphicTextGap="3.0" layoutX="79.0" layoutY="266.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="30.0" prefWidth="149.0" style="-fx-border-radius: 0; -fx-background-radius: 0;" text="Đăng nhập" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS">
          <font>
