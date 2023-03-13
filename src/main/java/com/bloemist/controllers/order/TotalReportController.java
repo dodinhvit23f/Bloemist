@@ -9,6 +9,8 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -25,7 +27,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javax.security.auth.callback.Callback;
+
+import javafx.util.Callback;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -251,28 +254,11 @@ public class TotalReportController extends OrderController {
     actualDeliveryFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_VAT_FEE));
     actualVatFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_DELIVERY_FEE));
 
-    checkAll.setCellValueFactory(new Callback<CellDataFeatures<Order, Boolean>, ObservableValue<Boolean>>() {
-
-      @Override
-      public ObservableValue<Boolean> call(CellDataFeatures<Person, Boolean> param) {
-        Person person = param.getValue();
-
-        SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(person.isSingle());
-
-        // Note: singleCol.setOnEditCommit(): Not work for
-        // CheckBoxTableCell.
-
-        // When "Single?" column change.
-        booleanProp.addListener(new ChangeListener<Boolean>() {
-
-          @Override
-          public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-              Boolean newValue) {
-            person.setSingle(newValue);
-          }
-        });
-        return booleanProp;
-      }
+    checkAll.setCellValueFactory(param -> {
+      Order order = param.getValue();
+      final SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(order.getIsSelected());
+      booleanProp.addListener((observable, oldValue, newValue) -> order.setIsSelected(newValue));
+      return booleanProp;
     });
 
 
