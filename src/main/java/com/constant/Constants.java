@@ -62,6 +62,9 @@ public final class Constants {
   // ORDER STATUS
   public static final String SUS_ORDER_STATUS = "SUS_ORDER_STATUS";
   public static final String ERR_ORDER_STATUS = "ERR_ORDER_STATUS";
+  // MASTER ORDER
+  public static final String ERR_MESSAGE_BATCH_INSERT = "ERR_MESSAGE_BATCH_INSERT";
+
 
   public static final String CONNECTION_FAIL = "CONNECTION_FAIL";
 
@@ -83,4 +86,5 @@ public final class Constants {
   public static final Double MAX_VAT = 10D;
   public static final String ORDER_CODER_PRE_FIX = "BL";
   public static final int MAX_RECORD = 30;
+  public static final String COMMA = ",";
 }

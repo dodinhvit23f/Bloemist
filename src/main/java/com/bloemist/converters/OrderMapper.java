@@ -79,6 +79,7 @@ public interface OrderMapper {
         .actualDeliveryFee(Utils.currencyFormat(orderReport.getActualDeliveryFee().doubleValue()))
         .actualVatFee(Utils.currencyFormat(orderReport.getActualVatFee().doubleValue()))
         .priority(orderReport.getOrderStatus())
+        .isSelected(Boolean.FALSE)
         .build();
   }
 }

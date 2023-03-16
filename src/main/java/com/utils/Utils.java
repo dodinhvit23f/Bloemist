@@ -41,7 +41,7 @@ public final class Utils {
   }
   
   public static String currencyToNumber(String currency) {
-    return currency.replace(",", "")
+    return currency.replace(Constants.COMMA, "")
         .replace(".", "").strip();
   }
 

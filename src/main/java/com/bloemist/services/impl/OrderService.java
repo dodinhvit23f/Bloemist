@@ -11,6 +11,7 @@ import com.constant.Constants;
 import com.constant.OrderState;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,13 +43,23 @@ public class OrderService implements IOrderService {
     orderReport.setMaterialsFee(BigDecimal.ZERO);
 
     try {
-      var order =  OrderMapper.MAPPER.orderReportToOrder(orderReportRepository.save(orderReport));
+      var order = OrderMapper.MAPPER.orderReportToOrder(orderReportRepository.save(orderReport));
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
       return order;
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
       return new Order();
     }
+  }
+
+  @Override
+  public List<OrderReport> createNewOrders(Collection<Order> orders) {
+
+    Collection<OrderReport> orderReports = orders.stream()
+        .map(OrderMapper.MAPPER::orderToOrderReport)
+        .collect(Collectors.toList());
+
+    return orderReportRepository.saveAll(orderReports);
   }
 
   @Override
@@ -88,7 +99,6 @@ public class OrderService implements IOrderService {
       orderReport.setOrderDescription(order.getOrderDescription());
       orderReport.setBannerContent(order.getBanner());
       orderReport.setRemark(order.getCustomerNote());
-
 
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
     }, () -> publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004)));

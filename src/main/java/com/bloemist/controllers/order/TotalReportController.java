@@ -1,17 +1,23 @@
 package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
+import com.bloemist.dto.OrderInfo;
+import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
+import com.constant.Constants;
 import com.constant.OrderState;
+import com.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -20,7 +26,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -28,16 +33,18 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
-import javafx.util.Callback;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 @Component
 public class TotalReportController extends OrderController {
+
+  public static final String ZERO = "0";
 
   TotalReportController(ApplicationEventPublisher publisher) {
     super(publisher);
@@ -120,6 +127,76 @@ public class TotalReportController extends OrderController {
     setAfterEditEvent();
   }
 
+  @FXML
+  public void updateInfo() {
+
+  }
+
+  @FXML
+  public void saveSelectedOrders() {
+    List<Order> selectedOrder = orderTable.getItems()
+        .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE));
+
+    List<Order> failOrders = new ArrayList<>();
+
+    selectedOrder.forEach(order -> {
+      if (!validateOrderInfo(OrderInfo.builder()
+          .customerName(order.getCustomerName())
+          .customerPhone(order.getCustomerPhone())
+          .customerSocialLink(order.getCustomerSocialLink())
+          .deliveryAddress(order.getDeliveryAddress())
+          .deliveryTime(order.getDeliveryHour())
+          .deliveryFee(order.getDeliveryFee())
+          .vatFee(order.getVatFee())
+          .truePrice(order.getActualPrice())
+          .salePrice(order.getSalePrice())
+          .depositAmount(order.getDeposit())
+          .remainAmount(order.getRemain())
+          .totalAmount(order.getTotal())
+          .imagePath(order.getImagePath())
+          .build())) {
+        failOrders.add(order);
+        return;
+      }
+
+      if (ObjectUtils.isEmpty(order.getCustomerSource()) ||
+          ObjectUtils.isEmpty(order.getDeliveryDate()) ||
+          ObjectUtils.isEmpty(order.getDiscount()) ||
+          ObjectUtils.isEmpty(order.getMaterialsFee()) ||
+          Utils.isNumber(order.getMaterialsFee()) ||
+          ObjectUtils.isEmpty(order.getActualDeliveryFee()) ||
+          Utils.isNumber(order.getActualDeliveryFee()) ||
+          ObjectUtils.isEmpty(order.getActualVatFee()) ||
+          Utils.isNumber(order.getActualVatFee())) {
+        failOrders.add(order);
+      }
+
+      if(ObjectUtils.isEmpty(order.getReceiverName())){
+        order.setReceiverName(order.getCustomerName());
+      }
+      if(ObjectUtils.isEmpty(order.getReceiverPhone())){
+        order.setReceiverPhone(order.getCustomerPhone());
+      }
+    });
+
+    if (!ObjectUtils.isEmpty(failOrders)) {
+      publisher.publishEvent(
+          new MessageWarning(Constants.ERR_MESSAGE_BATCH_INSERT,
+              failOrders.stream()
+                  .map(Order::getStt)
+                  .collect(Collectors.joining(Constants.COMMA))));
+      return;
+    }
+
+    orderService.createNewOrders(selectedOrder);
+  }
+
+  @FXML
+  public void printSelectedOrders() {
+
+  }
+
+  @FXML
   @Override
   public void extractData() throws IOException {
     Alert alert = confirmDialog();
@@ -206,7 +283,7 @@ public class TotalReportController extends OrderController {
             row.createCell(vatFeeCell).setCellValue(order.getVatFee());
             row.createCell(depositCell).setCellValue(order.getVatFee());
             row.createCell(remainCell).setCellValue(order.getDeposit());
-            row.createCell(categoryFeeCell).setCellValue("0");
+            row.createCell(categoryFeeCell).setCellValue(ZERO);
             row.createCell(actualFeeCell).setCellValue(order.getActualDeliveryFee());
             row.createCell(actualVatCell).setCellValue(order.getActualVatFee());
 
@@ -223,6 +300,22 @@ public class TotalReportController extends OrderController {
           ButtonType.YES);
       confirm.show();
     }
+  }
+
+  @FXML
+  public void addOrder() {
+    ApplicationVariable.addFirst(Order.builder()
+        .orderDate(Utils.formatDate(new Date()))
+        .status(OrderState.PENDING_TEXT)
+        .isSelected(Boolean.TRUE)
+        .actualVatFee(ZERO)
+        .actualPrice(ZERO)
+        .actualDeliveryFee(ZERO)
+        .materialsFee(ZERO)
+        .build());
+
+    setData(orderTable);
+    ApplicationVariable.setTableSequence();
   }
 
   private void setColumnsValues() {
@@ -260,8 +353,6 @@ public class TotalReportController extends OrderController {
       booleanProp.addListener((observable, oldValue, newValue) -> order.setIsSelected(newValue));
       return booleanProp;
     });
-
-
   }
 
   private void setColumnsFactory() {
@@ -346,7 +437,9 @@ public class TotalReportController extends OrderController {
     setEditEventTableCell(customerSource);
     setEditEventTableCell(orderDate);
     setEditEventTableCell(customerName);
-
+    setEditEventTableCell(actualDeliveryFee);
+    setEditEventTableCell(actualVatFee);
+    setEditEventTableCell(categoryFee);
   }
 
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
@@ -467,6 +560,7 @@ public class TotalReportController extends OrderController {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initEvent();
+    addTableViewListener();
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable));
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
@@ -474,6 +568,17 @@ public class TotalReportController extends OrderController {
       return;
     }
     setData(this.orderTable);
+
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
+  }
+
+  private void addTableViewListener() {
+    orderTable.getSelectionModel().selectedItemProperty()
+        .addListener((obs, oldSelection, newSelection) -> {
+          if (Objects.nonNull(newSelection)) {
+            currentOrder = newSelection;
+            ApplicationVariable.currentOrder = currentOrder;
+          }
+        });
   }
 }

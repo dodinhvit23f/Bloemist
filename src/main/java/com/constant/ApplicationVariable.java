@@ -2,10 +2,12 @@ package com.constant;
 
 import com.bloemist.dto.AccountDetail;
 import com.bloemist.dto.Order;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ApplicationVariable {
 
@@ -41,6 +43,10 @@ public final class ApplicationVariable {
     ORDERS.add(order);
   }
 
+  public static  void addFirst(Order order){
+    ORDERS.add(BigInteger.ZERO.intValue(), order);
+  }
+
   public static void sortOrders() {
     ORDERS.sort((previous, next) -> {
 
@@ -53,7 +59,12 @@ public final class ApplicationVariable {
       }
 
       return previous.getDeliveryHour().compareTo(next.getDeliveryHour());
-
     });
+    setTableSequence();
+  }
+
+  public static void setTableSequence(){
+    AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
+    ORDERS.forEach(order -> order.setStt(String.valueOf(stt.getAndIncrement())));
   }
 }

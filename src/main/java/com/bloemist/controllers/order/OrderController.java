@@ -78,7 +78,6 @@ public abstract class OrderController extends BaseController {
         || ObjectUtils.isEmpty(orderInfor.getCustomerPhone())
         || ObjectUtils.isEmpty(orderInfor.getDeliveryAddress())
         || ObjectUtils.isEmpty(orderInfor.getDeliveryTime())
-        || Objects.isNull(orderInfor.getImagePath())
         || ObjectUtils.isEmpty(orderInfor.getImagePath())
         || ObjectUtils.isEmpty(orderInfor.getTruePrice())
         || ObjectUtils.isEmpty(orderInfor.getDeliveryFee())

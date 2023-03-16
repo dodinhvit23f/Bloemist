@@ -68,7 +68,7 @@ public class UserService implements IUserService {
           AccountDetail.builder().role(EMPTY).username(username).build();
     }
     return AccountDetail.builder()
-        .role(user.getRoles().stream().map(JobGrade::getName).collect(Collectors.joining(",")))
+        .role(user.getRoles().stream().map(JobGrade::getName).collect(Collectors.joining(Constants.COMMA)))
         .username(username).fullName(user.getFullName()).address(user.getAddress())
         .dob(user.getDob()).phoneNumber(user.getPhoneNumber()).gender(user.getGender())
         .password(user.getPassword()).build();
