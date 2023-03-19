@@ -73,7 +73,7 @@
             <Button layoutX="678.0" layoutY="730.0" mnemonicParsing="false" onAction="#cancel" text="Home" />
 
       </Pane>
-      <Pane maxHeight="769.0" maxWidth="583.0" minHeight="769.0" minWidth="496.0" prefHeight="769.0" prefWidth="583.0" AnchorPane.rightAnchor="0" SplitPane.resizableWithParent="false">
+      <Pane fx:id="printPane" maxHeight="769.0" maxWidth="583.0" minHeight="769.0" minWidth="496.0" prefHeight="769.0" prefWidth="583.0" AnchorPane.rightAnchor="0" SplitPane.resizableWithParent="false">
 
         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="24.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
           <image>

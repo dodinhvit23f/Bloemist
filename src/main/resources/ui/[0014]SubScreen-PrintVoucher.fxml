@@ -12,7 +12,7 @@
          </image>
       </ImageView>
       <Button fx:id="cancelPrint" layoutX="37.0" layoutY="246.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="98.0" text="Hủy" />
-      <Button fx:id="applyPrint" layoutX="173.0" layoutY="246.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="98.0" text="In hóa đơn" />
+      <Button layoutX="173.0" layoutY="246.0" mnemonicParsing="false" onAction="#applyPrint" prefHeight="25.0" prefWidth="98.0" text="In hóa đơn" />
       <ChoiceBox fx:id="choicePrinter" layoutX="36.0" layoutY="124.0" prefHeight="25.0" prefWidth="235.0" />
       <RadioButton fx:id="heatBill" layoutX="38.0" layoutY="172.0" mnemonicParsing="false" text="In bill nhiệt">
          <toggleGroup>

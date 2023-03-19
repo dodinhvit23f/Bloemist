@@ -3,6 +3,7 @@ package com.bloemist.controllers.order;
 import com.bloemist.dto.Order;
 import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
+import com.bloemist.events.StageEvent;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
@@ -12,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -29,6 +29,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -104,6 +105,8 @@ public class OrderReportController extends OrderController {
   private DatePicker fromDate;
   @FXML
   private SplitPane splitPane;
+  @FXML
+  private Pane printPane;
 
   private Order currentOrder;
 
@@ -215,6 +218,12 @@ public class OrderReportController extends OrderController {
   @FXML
   private void printOrder() {
     switchScene(ApplicationView.PRINT_ORDER);
+  }
+
+  @Override
+  protected void switchScene(ApplicationView view) {
+    stageManager.setView(view);
+    publisher.publishEvent(new StageEvent(stageManager, printPane));
   }
 
   @Override

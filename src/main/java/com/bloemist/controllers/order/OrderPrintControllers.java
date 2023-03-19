@@ -8,6 +8,12 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.print.JobSettings;
+import javafx.print.PageLayout;
+import javafx.print.PageOrientation;
+import javafx.print.Paper;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javax.print.PrintService;
@@ -37,6 +43,15 @@ public class OrderPrintControllers extends BaseController {
   public void applyPrint(){
     if(imageBill.isSelected()){
       
+    }
+
+    if(a5Bill.isSelected()){
+      var printerServices = PrintServiceLookup.lookupPrintServices(null, null);
+
+      PrinterJob job = PrinterJob.createPrinterJob();
+      Printer printer = Printer.getDefaultPrinter();
+      PageLayout pageLayout = printer.createPageLayout(Paper.A5, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
+      JobSettings jobSettings = job.getJobSettings();
     }
   }
 
