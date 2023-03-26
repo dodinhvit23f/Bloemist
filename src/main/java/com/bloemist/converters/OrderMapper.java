@@ -7,18 +7,25 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import com.bloemist.entity.OrderReport;
 import org.mapstruct.factory.Mappers;
 import org.springframework.util.NumberUtils;
+import org.springframework.util.ObjectUtils;
 
 
 @Mapper
 public interface OrderMapper {
+
   OrderMapper MAPPER = Mappers.getMapper(OrderMapper.class);
 
-  default OrderReport orderToOrderReport(Order order){
+  default OrderReport orderToOrderReport(Order order) {
+    var status = OrderState.PENDING.getState();
+    if (!ObjectUtils.isEmpty(order.getStatus())) {
+      status = OrderState.getState(order.getStatus());
+    }
 
     return OrderReport.builder()
         .clientName(order.getCustomerName())
@@ -43,13 +50,15 @@ public interface OrderMapper {
         .depositAmount(new BigDecimal(order.getDeposit()))
         .remainingAmount(new BigDecimal(order.getRemain()))
         .totalAmount(new BigDecimal(order.getTotal()))
+        .actualDeliveryFee(new BigDecimal(order.getActualDeliveryFee()))
+        .actualVatFee(new BigDecimal(order.getActualVatFee()))
+        .materialsFee(new BigDecimal(order.getMaterialsFee()))
+        .orderStatus(status)
         .build();
-  };
+  }
 
-
-
-  default Order orderReportToOrder(OrderReport orderReport){
-    return  Order.builder()
+  default Order orderReportToOrder(OrderReport orderReport) {
+    return Order.builder()
         .customerName(orderReport.getClientName())
         .customerPhone(orderReport.getClientPhone())
         .customerNote(orderReport.getRemark())

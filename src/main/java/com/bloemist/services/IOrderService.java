@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 public interface IOrderService {
 
   @Transactional
-  Order createNewOrder(Order order);
+  void createNewOrder(Order order);
 
   @Transactional
-  List<OrderReport> createNewOrders(Collection<Order> order);
+  void createNewOrders(Collection<Order> order);
 
   @Transactional
   void updateOrder(Order order);

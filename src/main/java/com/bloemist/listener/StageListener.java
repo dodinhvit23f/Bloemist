@@ -43,6 +43,7 @@ public class StageListener implements ApplicationListener<StageEvent> {
 
       FXMLLoader fxmlLoader = new FXMLLoader(manager.getUrlFxmlFile());
       fxmlLoader.setControllerFactory(context::getBean);
+      manager.setPane(event.getPrintPane());
 
       var panel = (Pane) fxmlLoader.load();
       final double padding = 20;
@@ -51,8 +52,10 @@ public class StageListener implements ApplicationListener<StageEvent> {
       stage.setTitle(manager.getStageTitle());
       stage.getIcons().add(new Image(new FileInputStream(iconResoure.getFile())));
       stage.setMinWidth(panel.getPrefWidth() + padding);
-      stage.setMinHeight(panel.getHeight() + padding);
-      stage.setResizable(false);
+      stage.setMinHeight(panel.getPrefHeight() + padding);
+      stage.setMaxWidth(panel.getPrefWidth() + padding * 2);
+      stage.setMaxHeight(panel.getPrefHeight() + padding * 2);
+      //stage.setResizable(false);
       stage.show();
 
     } catch (IOException e) {
