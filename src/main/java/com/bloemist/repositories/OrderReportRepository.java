@@ -17,9 +17,9 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
   @Query("SELECT order "
       + "FROM OrderReport order "
       + "WHERE order.orderDate BETWEEN :startTime AND :endTime "
-      + "ORDER BY order.orderStatus ASC, "
-      + "order.deliveryDate ASC,"
-      + "order.deliveryTime ASC")
+      + "ORDER BY order.deliveryDate ASC,"
+      + "order.deliveryTime ASC, "
+      + "order.orderStatus ASC")
   List<OrderReport> getOrders(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
 

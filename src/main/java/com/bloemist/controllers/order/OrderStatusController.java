@@ -8,17 +8,21 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.constant.OrderState;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -45,9 +49,9 @@ public class OrderStatusController extends BaseController {
 
   }
 
-  public void changeOrderStatus(){
+  public void changeOrderStatus() {
 
-    if(Objects.isNull(this.order)){
+    if (Objects.isNull(this.order)) {
       publisher.publishEvent(new MessageSuccess(Constants.ERR_ORDER_STATUS));
       switchScene(ApplicationView.INQUIRY_ORDER);
       return;
@@ -56,24 +60,24 @@ public class OrderStatusController extends BaseController {
     var note = customerRemark.getText();
     var deliveryFee = actualDeliveryfee.getText();
 
-    if(!order.getCustomerNote().equals(note)){
+    if (!order.getCustomerNote().equals(note)) {
       order.setCustomerNote(note);
     }
 
-    if(!order.getActualDeliveryFee().equals(deliveryFee)){
+    if (!order.getActualDeliveryFee().equals(deliveryFee)) {
       order.setActualDeliveryFee(deliveryFee);
     }
 
-    if(!order.getStatus().equals(changeStatus.getValue())){
-      order.setActualDeliveryFee(changeStatus.getValue());
+    if (!order.getStatus().equals(changeStatus.getValue())) {
+      order.setStatus(changeStatus.getValue());
     }
 
     orderService.changeOrderStateInfo(order);
-
+    ApplicationVariable.sortOrders();
   }
 
   @Override
-  public void cancel(){
+  public void cancel() {
     switchScene(ApplicationView.INQUIRY_ORDER);
   }
 
@@ -81,7 +85,7 @@ public class OrderStatusController extends BaseController {
   public void initialize(URL location, ResourceBundle resources) { //NOSONAR
 
     order = ApplicationVariable.currentOrder;
-    if(Objects.isNull(this.order)){
+    if (Objects.isNull(this.order)) {
       return;
     }
 

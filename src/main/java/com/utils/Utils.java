@@ -1,11 +1,16 @@
 package com.utils;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Random;
+
+import org.springframework.util.ObjectUtils;
+
 import com.constant.Constants;
 import com.google.common.hash.Hashing;
 
@@ -41,6 +46,9 @@ public final class Utils {
   }
   
   public static String currencyToNumber(String currency) {
+    if(ObjectUtils.isEmpty(currency)){
+      return BigInteger.ZERO.toString();
+    }
     return currency.replace(Constants.COMMA, "").strip();
   }
 

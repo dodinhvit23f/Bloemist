@@ -4,15 +4,14 @@ import com.bloemist.dto.Order;
 import com.constant.OrderState;
 import com.utils.Utils;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
+
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import com.bloemist.entity.OrderReport;
 import org.mapstruct.factory.Mappers;
-import org.springframework.util.NumberUtils;
+
 import org.springframework.util.ObjectUtils;
 
 
@@ -31,7 +30,7 @@ public interface OrderMapper {
         .clientName(order.getCustomerName())
         .clientPhone(order.getCustomerPhone())
         .clientSocialLink(order.getCustomerSocialLink())
-        .clientSource(order.getCustomerSocialLink())
+        .clientSource(order.getCustomerSource())
         .receiver(order.getReceiverName())
         .receiverPhone(order.getCustomerPhone())
         .orderDescription(order.getOrderDescription())
@@ -43,18 +42,22 @@ public interface OrderMapper {
         .deliveryTime(order.getDeliveryHour())
         .samplePictureLink(order.getImagePath())
         .discount(Integer.parseInt(order.getDiscount()))
-        .actualPrice(new BigDecimal(order.getActualPrice()))
-        .deliveryFee(new BigDecimal(order.getDeliveryFee()))
-        .vatFee(new BigDecimal(order.getVatFee()))
-        .salePrice(new BigDecimal(order.getSalePrice()))
-        .depositAmount(new BigDecimal(order.getDeposit()))
-        .remainingAmount(new BigDecimal(order.getRemain()))
-        .totalAmount(new BigDecimal(order.getTotal()))
-        .actualDeliveryFee(new BigDecimal(order.getActualDeliveryFee()))
-        .actualVatFee(new BigDecimal(order.getActualVatFee()))
-        .materialsFee(new BigDecimal(order.getMaterialsFee()))
+        .actualPrice(convertBigDecimal(order.getActualPrice()))
+        .deliveryFee(convertBigDecimal(order.getDeliveryFee()))
+        .vatFee(convertBigDecimal(order.getVatFee()))
+        .salePrice(convertBigDecimal(order.getSalePrice()))
+        .depositAmount(convertBigDecimal(order.getDeposit()))
+        .remainingAmount(convertBigDecimal(order.getRemain()))
+        .totalAmount(convertBigDecimal(order.getTotal()))
+        .actualDeliveryFee(convertBigDecimal(order.getActualDeliveryFee()))
+        .actualVatFee(convertBigDecimal(order.getActualVatFee()))
+        .materialsFee(convertBigDecimal(order.getMaterialsFee()))
         .orderStatus(status)
         .build();
+  }
+
+  private static BigDecimal convertBigDecimal(String s) {
+    return Objects.isNull(s) ? BigDecimal.ZERO : new BigDecimal(s);
   }
 
   default Order orderReportToOrder(OrderReport orderReport) {

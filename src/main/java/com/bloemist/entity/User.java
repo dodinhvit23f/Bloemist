@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -81,7 +83,8 @@ public class User extends BaseEntity {
 
   @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
   @JoinTable(name = "staff_description", joinColumns = @JoinColumn(name = "user_id", table = "users"),
-      inverseJoinColumns = @JoinColumn(name = "job_grade_id", table = "staff_description"))
+      inverseJoinColumns = @JoinColumn(name = "job_grade_id", table = "staff_description"),
+      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT, name = "none"))
   private Set<JobGrade> roles;
 
 }

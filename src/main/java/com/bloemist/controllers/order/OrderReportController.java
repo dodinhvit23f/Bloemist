@@ -8,6 +8,7 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.utils.Utils;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -30,11 +32,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -362,6 +367,7 @@ public class OrderReportController extends OrderController {
     addEventLostFocus(this.deliveryFee, this::calculateTotalPrice);
     addEventLostFocus(this.vatFee, this::calculateTotalPrice);
     addEventLostFocus(this.depositAmount, this::calculateTotalPrice);
+    addEventLostFocus(this.discountRate, this::calculateTotalPrice);
   }
 
   @Override
@@ -379,8 +385,9 @@ public class OrderReportController extends OrderController {
       return;
     }
 
-    setData(this.orderTable);
-    //TODO empName.setText(ApplicationVariable.getUser().getFullName());
+    setDataOrderTable(this.orderTable);
+    empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
+                    "" : ApplicationVariable.getUser().getFullName());
   }
 
   @FXML
@@ -389,12 +396,16 @@ public class OrderReportController extends OrderController {
       return;
     }
 
-    var discount = NumberUtils.parseNumber(Utils.currencyToNumber(this.discountRate.getText()), Double.class);
-    var truePrice = NumberUtils.parseNumber(Utils.currencyToNumber(this.actualPrice.getText()), Double.class);
-    var deliveryFeeAmount = NumberUtils.parseNumber(Utils.currencyToNumber(this.deliveryFee.getText()), Double.class);
-    var vatFeeAmount = NumberUtils.parseNumber(Utils.currencyToNumber(this.vatFee.getText()), Double.class);
-    var deposit = NumberUtils.parseNumber(Utils.currencyToNumber(this.depositAmount.getText()), Double.class);
-
+    var discount = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.discountRate.getText()), Double.class);
+    var truePrice = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.actualPrice.getText()), Double.class);
+    var deliveryFeeAmount = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.deliveryFee.getText()), Double.class);
+    var vatFeeAmount = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.vatFee.getText()), Double.class);
+    var deposit = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.depositAmount.getText()), Double.class);
 
     var salePrice = getSalePrice(truePrice, discount);
     var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);

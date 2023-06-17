@@ -149,6 +149,7 @@ public class TotalReportController extends OrderController {
           order.setDiscount(Utils.currencyToNumber(order.getDiscount()));
           order.setVatFee(Utils.currencyToNumber(order.getVatFee()));
           order.setMaterialsFee(Utils.currencyToNumber(order.getMaterialsFee()));
+          //order.setCustomerSource(y);
 
           return order;
         }).collect(Collectors.toList());
@@ -202,7 +203,7 @@ public class TotalReportController extends OrderController {
 
     orderService.createNewOrders(selectedOrder);
     ApplicationVariable.sortOrders();
-    setData(orderTable);
+    setDataOrderTable(orderTable);
     orderTable.refresh();
   }
 
@@ -329,7 +330,7 @@ public class TotalReportController extends OrderController {
         .materialsFee(ZERO)
         .build());
 
-    setData(orderTable);
+    setDataOrderTable(orderTable);
     ApplicationVariable.setTableSequence();
   }
 
@@ -582,7 +583,7 @@ public class TotalReportController extends OrderController {
       loadPageAsync(null, this.orderTable);
       return;
     }
-    setData(this.orderTable);
+    setDataOrderTable(this.orderTable);
 
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
   }

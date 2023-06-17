@@ -41,9 +41,9 @@ public class OrderService implements IOrderService {
     orderReport.setOrderCode(getOrderCode());
 
     try {
-      var order = OrderMapper.MAPPER.orderReportToOrder(orderReportRepository.save(orderReport));
-      order.setCode(orderReport.getOrderCode());
-      order.setPriority(orderReport.getOrderStatus());
+      orderReportRepository.save(orderReport);
+      customerOrder.setCode(orderReport.getOrderCode());
+      customerOrder.setPriority(orderReport.getOrderStatus());
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));

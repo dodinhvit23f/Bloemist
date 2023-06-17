@@ -169,7 +169,7 @@ public abstract class OrderController extends BaseController {
     orderLoading.thenAccept(orders -> {
       if (Objects.isNull(isNew)) {
         ApplicationVariable.setOrders(orders);
-        setData(orderTable);
+        setDataOrderTable(orderTable);
         return;
       }
 
@@ -207,7 +207,7 @@ public abstract class OrderController extends BaseController {
     }).collect(Collectors.toList());
 
     ApplicationVariable.setOrders(orders);
-    setData(orderTable);
+    setDataOrderTable(orderTable);
   }
 
   private void handleOldData(TableView<Order> orderTable, List<Order> orders) {
@@ -223,7 +223,7 @@ public abstract class OrderController extends BaseController {
     }).collect(Collectors.toList());
 
     ApplicationVariable.add(oldOrders);
-    setData(orderTable);
+    setDataOrderTable(orderTable);
   }
 
   public void onScrollFinished(TableView<Order> orderTable) {
@@ -242,8 +242,13 @@ public abstract class OrderController extends BaseController {
     });
   }
 
-  protected void setData(TableView<Order> orderTable) {
-    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()));
+  protected void setDataOrderTable(TableView<Order> orderTable) {
+    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()
+        .stream()
+        .sorted(Comparator.comparing(Order::getDeliveryDate)
+            .thenComparing(Order::getDeliveryHour)
+            .thenComparing(Order::getPriority))
+        .collect(Collectors.toList())));
   }
 
   @FXML
