@@ -3,12 +3,10 @@ package com.bloemist.controllers.order;
 import com.bloemist.dto.Order;
 import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
-import com.bloemist.events.StageEvent;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.utils.Utils;
-
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -19,27 +17,21 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Pane;
-
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -108,10 +100,6 @@ public class OrderReportController extends OrderController {
   private DatePicker toDate;
   @FXML
   private DatePicker fromDate;
-  @FXML
-  private SplitPane splitPane;
-  @FXML
-  private Pane printPane;
 
   private Order currentOrder;
 
@@ -222,13 +210,133 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private void printOrder() {
+    if(isCurrentOrderEmpty()){
+      return;
+    }
     switchScene(ApplicationView.PRINT_ORDER);
   }
 
+  @FXML
+  public void seeImage() throws IOException {
+    if(isCurrentOrderEmpty()){
+      return;
+    }
+    var imagePath = currentOrder.getImagePath();
+    if (Objects.nonNull(imagePath) && new File(imagePath).exists()) {
+      Desktop.getDesktop().open(new File(imagePath));
+    }
+  }
+
+  @FXML
+  public void calculateTotalPrice() {
+    if (validOrderPrice()) {
+      return;
+    }
+
+    var discount = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.discountRate.getText()), Double.class);
+    var truePrice = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.actualPrice.getText()), Double.class);
+    var deliveryFeeAmount = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.deliveryFee.getText()), Double.class);
+    var vatFeeAmount = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.vatFee.getText()), Double.class);
+    var deposit = NumberUtils
+        .parseNumber(Utils.currencyToNumber(this.depositAmount.getText()), Double.class);
+
+    var salePrice = getSalePrice(truePrice, discount);
+    var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);
+
+    this.totalAmount.setText(Utils.currencyFormat(totalSaleAmount));
+    this.outstandingBalance.setText(Utils.currencyFormat(totalSaleAmount - deposit));
+  }
+
+  @FXML
+  private void changeStatus() {
+    this.switchScene(ApplicationView.SUB_ORDER_SCREEN);
+  }
+
+  private void addTableViewListener() {
+    orderTable.getSelectionModel().selectedItemProperty()
+        .addListener((obs, oldSelection, newSelection) -> {
+          if (Objects.nonNull(newSelection)) {
+            currentOrder = newSelection;
+            setOrderData();
+            ApplicationVariable.currentOrder = currentOrder;
+          }
+        });
+  }
+
+  private void setCellValueFactory() {
+    statusCol.setCellValueFactory(new PropertyValueFactory<>(Order.STATUS));
+    deliveryDateCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_DATE));
+    customerNameCol.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NAME));
+    customerSocialLink.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_SOCIAL_LINK));
+    orderDescriptionCol.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DESCRIPTION));
+    orderRemarkCol.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NOTE));
+    orderCodeCol.setCellValueFactory(new PropertyValueFactory<>(Order.CODE));
+    deliveryHourCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_HOUR));
+  }
+
+  private void setOrderData() {
+    this.customerName.setText(currentOrder.getCustomerName());
+    this.customerPhone.setText(currentOrder.getCustomerPhone());
+    this.receiverPhone.setText(currentOrder.getReceiverPhone());
+    this.receiverName.setText(currentOrder.getReceiverName());
+    this.deliveryHour.setText(currentOrder.getDeliveryHour());
+    this.actualPrice.setText(currentOrder.getActualPrice());
+    this.discountRate.setText(currentOrder.getDiscount());
+    this.totalAmount.setText(currentOrder.getTotal());
+    this.outstandingBalance.setText(currentOrder.getRemain());
+    this.deliveryFee.setText(currentOrder.getDeliveryFee());
+    this.vatFee.setText(currentOrder.getVatFee());
+    this.depositAmount.setText(currentOrder.getDeposit());
+    this.orderDescription.setText(currentOrder.getOrderDescription());
+    this.bannerContent.setText(currentOrder.getBanner());
+    this.deliveryAddress.setText(currentOrder.getDeliveryAddress());
+    this.orderNote.setText(currentOrder.getCustomerNote());
+    this.deliveryDate.setValue(
+        LocalDate.ofInstant(Utils.toDate(currentOrder.getDeliveryDate()).toInstant(),
+            ZoneId.systemDefault()));
+  }
+
+  private boolean isCurrentOrderEmpty() {
+    if(ObjectUtils.isEmpty(currentOrder.getCode())){
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_STATUS));
+      return Boolean.TRUE;
+    }
+    return Boolean.FALSE;
+  }
+
   @Override
-  protected void switchScene(ApplicationView view) {
-    stageManager.setView(view);
-    publisher.publishEvent(new StageEvent(stageManager, printPane));
+  public void initEvent() {
+    setCellValueFactory();
+    addTableViewListener();
+    addEventLostFocus(this.actualPrice, this::calculateTotalPrice);
+    addEventLostFocus(this.deliveryFee, this::calculateTotalPrice);
+    addEventLostFocus(this.vatFee, this::calculateTotalPrice);
+    addEventLostFocus(this.depositAmount, this::calculateTotalPrice);
+    addEventLostFocus(this.discountRate, this::calculateTotalPrice);
+  }
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initEvent();
+    this.stageManager.getStage().setOnShown(event ->
+        onScrollFinished(this.orderTable));
+
+    var localDate = LocalDate.now();
+    fromDate.setValue(localDate);
+    toDate.setValue(localDate.minusDays(SEVEN_DAYS));
+
+    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
+      loadPageAsync(null, this.orderTable);
+      return;
+    }
+
+    setDataOrderTable(this.orderTable);
+    empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
+                    "" : ApplicationVariable.getUser().getFullName());
   }
 
   @Override
@@ -301,117 +409,9 @@ public class OrderReportController extends OrderController {
     }
   }
 
-  @FXML
-  private void changeStatus() {
-    this.switchScene(ApplicationView.SUB_ORDER_SCREEN);
-  }
-
-
-  private void addTableViewListener() {
-    orderTable.getSelectionModel().selectedItemProperty()
-        .addListener((obs, oldSelection, newSelection) -> {
-          if (Objects.nonNull(newSelection)) {
-            currentOrder = newSelection;
-            setOrderData();
-            ApplicationVariable.currentOrder = currentOrder;
-          }
-        });
-  }
-
-  private void setCellValueFactory() {
-    statusCol.setCellValueFactory(new PropertyValueFactory<>(Order.STATUS));
-    deliveryDateCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_DATE));
-    customerNameCol.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NAME));
-    customerSocialLink.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_SOCIAL_LINK));
-    orderDescriptionCol.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DESCRIPTION));
-    orderRemarkCol.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NOTE));
-    orderCodeCol.setCellValueFactory(new PropertyValueFactory<>(Order.CODE));
-    deliveryHourCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_HOUR));
-  }
-
-  private void setOrderData() {
-    this.customerName.setText(currentOrder.getCustomerName());
-    this.customerPhone.setText(currentOrder.getCustomerPhone());
-    this.receiverPhone.setText(currentOrder.getReceiverPhone());
-    this.receiverName.setText(currentOrder.getReceiverName());
-    this.deliveryHour.setText(currentOrder.getDeliveryHour());
-    this.actualPrice.setText(currentOrder.getActualPrice());
-    this.discountRate.setText(currentOrder.getDiscount());
-    this.totalAmount.setText(currentOrder.getTotal());
-    this.outstandingBalance.setText(currentOrder.getRemain());
-    this.deliveryFee.setText(currentOrder.getDeliveryFee());
-    this.vatFee.setText(currentOrder.getVatFee());
-    this.depositAmount.setText(currentOrder.getDeposit());
-    this.orderDescription.setText(currentOrder.getOrderDescription());
-    this.bannerContent.setText(currentOrder.getBanner());
-    this.deliveryAddress.setText(currentOrder.getDeliveryAddress());
-    this.orderNote.setText(currentOrder.getCustomerNote());
-    this.deliveryDate.setValue(
-        LocalDate.ofInstant(Utils.toDate(currentOrder.getDeliveryDate()).toInstant(),
-            ZoneId.systemDefault()));
-  }
-
-  @FXML
-  private void seeImage() throws IOException {
-    var imagePath = currentOrder.getImagePath();
-    if (Objects.nonNull(imagePath) && new File(imagePath).exists()) {
-      Desktop.getDesktop().open(new File(imagePath));
-    }
-  }
-
   @Override
-  public void initEvent() {
-    setCellValueFactory();
-    addTableViewListener();
-    addEventLostFocus(this.actualPrice, this::calculateTotalPrice);
-    addEventLostFocus(this.deliveryFee, this::calculateTotalPrice);
-    addEventLostFocus(this.vatFee, this::calculateTotalPrice);
-    addEventLostFocus(this.depositAmount, this::calculateTotalPrice);
-    addEventLostFocus(this.discountRate, this::calculateTotalPrice);
-  }
-
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    initEvent();
-    this.stageManager.getStage().setOnShown(event ->
-        onScrollFinished(this.orderTable));
-
-    var localDate = LocalDate.now();
-    fromDate.setValue(localDate);
-    toDate.setValue(localDate.minusDays(SEVEN_DAYS));
-
-    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable);
-      return;
-    }
-
-    setDataOrderTable(this.orderTable);
-    empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
-                    "" : ApplicationVariable.getUser().getFullName());
-  }
-
-  @FXML
-  public void calculateTotalPrice() {
-    if (validOrderPrice()) {
-      return;
-    }
-
-    var discount = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.discountRate.getText()), Double.class);
-    var truePrice = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.actualPrice.getText()), Double.class);
-    var deliveryFeeAmount = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.deliveryFee.getText()), Double.class);
-    var vatFeeAmount = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.vatFee.getText()), Double.class);
-    var deposit = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.depositAmount.getText()), Double.class);
-
-    var salePrice = getSalePrice(truePrice, discount);
-    var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);
-
-    this.totalAmount.setText(Utils.currencyFormat(totalSaleAmount));
-    this.outstandingBalance.setText(Utils.currencyFormat(totalSaleAmount - deposit));
+  public void cancel() {
+    switchScene(ApplicationView.HOME);
   }
 
   private boolean validOrderPrice() {
@@ -420,13 +420,9 @@ public class OrderReportController extends OrderController {
         || !Utils.isNumber(Utils.currencyToNumber(this.vatFee.getText().strip()))
         || !Utils.isNumber(Utils.currencyToNumber(this.depositAmount.getText().strip()))) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return true;
+      return Boolean.TRUE;
     }
-    return false;
+    return Boolean.FALSE;
   }
 
-  @Override
-  public void cancel() {
-    switchScene(ApplicationView.HOME);
-  }
 }

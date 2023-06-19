@@ -1,22 +1,24 @@
 package com.utils;
 
+import com.constant.Constants;
+import com.google.common.hash.Hashing;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Random;
-
 import org.springframework.util.ObjectUtils;
-
-import com.constant.Constants;
-import com.google.common.hash.Hashing;
+import org.springframework.util.ResourceUtils;
 
 public final class Utils {
 
-  private Utils() {}
+  private Utils() {
+  }
 
   private static final Random RANDOM = new Random();
 
@@ -24,35 +26,35 @@ public final class Utils {
     int leftLimit = 48; // numeral '0'
     int rightLimit = 122; // letter 'z'
 
-
     return RANDOM.ints(leftLimit, rightLimit + 1)
         .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(length)
         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
         .toString();
   }
-  
+
   public static String hashPassword(String password) {
-    return Hashing.sha256().hashString(String.join("", password, Constants.SALT), StandardCharsets.UTF_8)
+    return Hashing.sha256()
+        .hashString(String.join("", password, Constants.SALT), StandardCharsets.UTF_8)
         .toString();
   }
-  
+
   public static String currencyFormat(Double doubleValue) {
     DecimalFormat formatter = new DecimalFormat("#,###");
     return formatter.format(doubleValue);
   }
 
-  public static boolean isNumber(String number){
-    return  number.chars().filter(character -> character != '.').allMatch(Character::isDigit);
+  public static boolean isNumber(String number) {
+    return number.chars().filter(character -> character != '.').allMatch(Character::isDigit);
   }
-  
+
   public static String currencyToNumber(String currency) {
-    if(ObjectUtils.isEmpty(currency)){
+    if (ObjectUtils.isEmpty(currency)) {
       return BigInteger.ZERO.toString();
     }
     return currency.replace(Constants.COMMA, "").strip();
   }
 
-  public static String formatDate(Date date){
+  public static String formatDate(Date date) {
     SimpleDateFormat dt = new SimpleDateFormat("dd-MM-yyyy");
     return dt.format(date);
   }
@@ -66,8 +68,19 @@ public final class Utils {
     }
   }
 
-  public static String formatTime(Date date){
+  public static String formatTime(Date date) {
     SimpleDateFormat dt = new SimpleDateFormat("hh:mm");
     return dt.format(date);
+  }
+
+  public static String fileFormat(String path)
+      throws FileNotFoundException, UnsupportedEncodingException {
+    if (ObjectUtils.isEmpty(path)) {
+      return "";
+    }
+
+    return URLDecoder.decode(ResourceUtils.getFile(path).getAbsolutePath(),
+            StandardCharsets.UTF_8.name())
+        .replace("\\", "/").replace(" ", "%20");
   }
 }
