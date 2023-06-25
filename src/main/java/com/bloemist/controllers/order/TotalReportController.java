@@ -2,16 +2,13 @@ package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
 import com.bloemist.dto.OrderInfo;
-import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
-import com.constant.Constants;
 import com.constant.OrderState;
 import com.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +29,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -135,60 +131,80 @@ public class TotalReportController extends OrderController {
   @FXML
   public void saveSelectedOrders() {
     List<Order> selectedOrder = orderTable.getItems()
-        .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE));
+        .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
+        .stream()
+        .map(order -> {
+          order.setTotal(getTotalPrice(Double.valueOf(Utils.currencyToNumber(order.getSalePrice())),
+              Double.valueOf(Utils.currencyToNumber(order.getDeliveryFee())),
+              Double.valueOf(Utils.currencyToNumber(order.getVatFee()))).toString());
+          order.setRemain(String.valueOf(Double.parseDouble(order.getTotal()) - Double.parseDouble(
+              Utils.currencyToNumber(order.getDeposit()))));
 
-    List<Order> failOrders = new ArrayList<>();
+          order.setActualPrice(Utils.currencyToNumber(order.getActualPrice()));
+          order.setActualVatFee(Utils.currencyToNumber(order.getActualVatFee()));
+          order.setActualDeliveryFee(Utils.currencyToNumber(order.getActualDeliveryFee()));
+          order.setSalePrice(Utils.currencyToNumber(order.getSalePrice()));
+          order.setDeliveryFee(Utils.currencyToNumber(order.getDeliveryFee()));
+          order.setDeposit(Utils.currencyToNumber(order.getDeposit()));
+          order.setDiscount(Utils.currencyToNumber(order.getDiscount()));
+          order.setVatFee(Utils.currencyToNumber(order.getVatFee()));
+          order.setMaterialsFee(Utils.currencyToNumber(order.getMaterialsFee()));
+          //order.setCustomerSource(y);
 
-    selectedOrder.forEach(order -> {
-      if (!validateOrderInfo(OrderInfo.builder()
-          .customerName(order.getCustomerName())
-          .customerPhone(order.getCustomerPhone())
-          .customerSocialLink(order.getCustomerSocialLink())
-          .deliveryAddress(order.getDeliveryAddress())
-          .deliveryTime(order.getDeliveryHour())
-          .deliveryFee(order.getDeliveryFee())
-          .vatFee(order.getVatFee())
-          .truePrice(order.getActualPrice())
-          .salePrice(order.getSalePrice())
-          .depositAmount(order.getDeposit())
-          .remainAmount(order.getRemain())
-          .totalAmount(order.getTotal())
-          .imagePath(order.getImagePath())
-          .build())) {
-        failOrders.add(order);
-        return;
-      }
+          return order;
+        }).collect(Collectors.toList());
 
-      if (ObjectUtils.isEmpty(order.getCustomerSource()) ||
-          ObjectUtils.isEmpty(order.getDeliveryDate()) ||
-          ObjectUtils.isEmpty(order.getDiscount()) ||
-          ObjectUtils.isEmpty(order.getMaterialsFee()) ||
-          Utils.isNumber(order.getMaterialsFee()) ||
-          ObjectUtils.isEmpty(order.getActualDeliveryFee()) ||
-          Utils.isNumber(order.getActualDeliveryFee()) ||
-          ObjectUtils.isEmpty(order.getActualVatFee()) ||
-          Utils.isNumber(order.getActualVatFee())) {
-        failOrders.add(order);
-      }
+    var failOrder = selectedOrder.stream()
+        .filter(order -> {
+          if (validateOrderInfo(OrderInfo.builder()
+              .customerName(order.getCustomerName())
+              .customerPhone(order.getCustomerPhone())
+              .customerSocialLink(order.getCustomerSocialLink())
+              .deliveryAddress(order.getDeliveryAddress())
+              .deliveryTime(order.getDeliveryHour())
+              .deliveryFee(Utils.currencyToNumber(order.getDeliveryFee()))
+              .vatFee(order.getVatFee())
+              .truePrice(order.getActualPrice())
+              .salePrice(order.getSalePrice())
+              .depositAmount(order.getDeposit())
+              .remainAmount(order.getRemain())
+              .totalAmount(order.getTotal())
+              // .imagePath(order.getImagePath())
+              .imagePath("12313")
+              .build())) {
 
-      if(ObjectUtils.isEmpty(order.getReceiverName())){
-        order.setReceiverName(order.getCustomerName());
-      }
-      if(ObjectUtils.isEmpty(order.getReceiverPhone())){
-        order.setReceiverPhone(order.getCustomerPhone());
-      }
-    });
+            if (ObjectUtils.isEmpty(order.getCustomerSource()) ||
+                ObjectUtils.isEmpty(order.getDeliveryDate()) ||
+                ObjectUtils.isEmpty(order.getDiscount()) ||
+                ObjectUtils.isEmpty(order.getMaterialsFee()) ||
+                !Utils.isNumber(order.getMaterialsFee()) ||
+                ObjectUtils.isEmpty(order.getActualDeliveryFee()) ||
+                !Utils.isNumber(order.getActualDeliveryFee()) ||
+                ObjectUtils.isEmpty(order.getActualVatFee()) ||
+                !Utils.isNumber(order.getActualVatFee())) {
+              return Boolean.TRUE;
+            }
 
-    if (!ObjectUtils.isEmpty(failOrders)) {
-      publisher.publishEvent(
-          new MessageWarning(Constants.ERR_MESSAGE_BATCH_INSERT,
-              failOrders.stream()
-                  .map(Order::getStt)
-                  .collect(Collectors.joining(Constants.COMMA))));
+            if (ObjectUtils.isEmpty(order.getReceiverName())) {
+              order.setReceiverName(order.getCustomerName());
+            }
+
+            if (ObjectUtils.isEmpty(order.getReceiverPhone())) {
+              order.setReceiverPhone(order.getCustomerPhone());
+            }
+            return Boolean.FALSE;
+          }
+          return Boolean.TRUE;
+        }).findFirst();
+
+    if (failOrder.isPresent()) {
       return;
     }
 
     orderService.createNewOrders(selectedOrder);
+    ApplicationVariable.sortOrders();
+    setDataOrderTable(orderTable);
+    orderTable.refresh();
   }
 
   @FXML
@@ -314,7 +330,7 @@ public class TotalReportController extends OrderController {
         .materialsFee(ZERO)
         .build());
 
-    setData(orderTable);
+    setDataOrderTable(orderTable);
     ApplicationVariable.setTableSequence();
   }
 
@@ -567,7 +583,7 @@ public class TotalReportController extends OrderController {
       loadPageAsync(null, this.orderTable);
       return;
     }
-    setData(this.orderTable);
+    setDataOrderTable(this.orderTable);
 
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
   }

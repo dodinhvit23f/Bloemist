@@ -72,8 +72,9 @@ public class AppConfiguration {
     String classpath = System.getProperty("java.class.path");
     String[] classpathEntries = classpath.split(File.pathSeparator);
 
-    return StageManager.builder().stage(stage).view(ApplicationView.INQUIRY_ORDER)
+    return StageManager.builder().stage(stage).view(ApplicationView.MASTER_ORDER)
         .message(getMessage())
-        .path(classpathEntries[0]).build();
+        .path(classpathEntries[0])
+        .pane(null).build();
   }
 }

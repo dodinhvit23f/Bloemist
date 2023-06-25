@@ -23,19 +23,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseEntity  implements Serializable{
-  
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  private static final String SEQ_SUBFIX = "_id_seq";
+
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @GenericGenerator( name = "seq_generator", strategy = "sequence",
-      parameters = {
-          @Parameter(name = SequenceStyleGenerator.CONFIG_SEQUENCE_PER_ENTITY_SUFFIX, value = SEQ_SUBFIX),
-          @Parameter(name = SequenceStyleGenerator.CONFIG_SEQUENCE_PER_ENTITY_SUFFIX, value = SEQ_SUBFIX)
-      })
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", updatable = false)
   private Long id;
 }

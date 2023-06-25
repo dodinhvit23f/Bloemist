@@ -11,7 +11,9 @@ import com.constant.Constants;
 import com.constant.OrderState;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
@@ -32,34 +35,53 @@ public class OrderService implements IOrderService {
   ApplicationEventPublisher publisher;
 
   @Override
-  public Order createNewOrder(Order customerOrder) {
+  public void createNewOrder(Order customerOrder) {
     OrderReport orderReport = OrderMapper.MAPPER.orderToOrderReport(customerOrder);
 
-    orderReport
-        .setOrderCode(String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime()));
-    orderReport.setOrderStatus(OrderState.PENDING.getState());
-    orderReport.setActualDeliveryFee(BigDecimal.ZERO);
-    orderReport.setActualVatFee(BigDecimal.ZERO);
-    orderReport.setMaterialsFee(BigDecimal.ZERO);
+    orderReport.setOrderCode(getOrderCode());
 
     try {
-      var order = OrderMapper.MAPPER.orderReportToOrder(orderReportRepository.save(orderReport));
+      orderReportRepository.save(orderReport);
+      customerOrder.setCode(orderReport.getOrderCode());
+      customerOrder.setPriority(orderReport.getOrderStatus());
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
-      return order;
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
-      return new Order();
     }
   }
 
-  @Override
-  public List<OrderReport> createNewOrders(Collection<Order> orders) {
+  private static String getOrderCode() {
+    return String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime());
+  }
 
-    Collection<OrderReport> orderReports = orders.stream()
+  @Override
+  public void createNewOrders(Collection<Order> orders) {
+
+    List<OrderReport> orderReports = orders.stream()
         .map(OrderMapper.MAPPER::orderToOrderReport)
+        .map(orderReport -> {
+          orderReport.setOrderCode(getOrderCode());
+          return orderReport;
+        })
         .collect(Collectors.toList());
 
-    return orderReportRepository.saveAll(orderReports);
+    try {
+      orderReportRepository.saveAll(orderReports);
+      publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
+      orders.forEach(order -> {
+        var orderReport = orderReports.stream()
+            .filter(or -> or.getClientName().equals(order.getCustomerName()) &&
+                or.getClientPhone().equals(order.getCustomerPhone()) &&
+                or.getClientSource().equals(order.getCustomerSource()) &&
+                or.getTotalAmount().toString().equals(order.getTotal()) &&
+                or.getActualPrice().toString().equals(order.getActualPrice())
+            ).findFirst().orElseThrow();
+        order.setCode(orderReport.getOrderCode());
+        order.setPriority(orderReport.getOrderStatus());
+      });
+    } catch (Exception ex) {
+      publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
+    }
   }
 
   @Override

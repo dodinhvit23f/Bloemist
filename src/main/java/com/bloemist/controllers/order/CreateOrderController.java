@@ -6,6 +6,7 @@ import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
+import com.constant.OrderState;
 import com.utils.Utils;
 import java.awt.Desktop;
 import java.io.File;
@@ -135,7 +136,8 @@ public class CreateOrderController extends OrderController {
     var customerName = this.customerName.getText().strip(); //NOSONAR
     var customerPhone = this.customerPhone.getText().strip(); //NOSONAR
     var customerSocialLink = this.socialLink.getText().strip(); //NOSONAR
-    var customerSource = this.customerSource.getSelectionModel().getSelectedItem().strip(); //NOSONAR
+    var customerSource = this.customerSource.getSelectionModel().getSelectedItem()
+        .strip(); //NOSONAR
     var deliveryAddress = this.deliveryAddress.getText().strip(); //NOSONAR
     var receiverName = this.receiverName.getText().strip(); //NOSONAR
     var receiverPhone = this.receiverPhone.getText().strip(); //NOSONAR
@@ -152,32 +154,31 @@ public class CreateOrderController extends OrderController {
     var remainAmount = Utils.currencyToNumber(this.outstandingBalanceValue.getText()); //NOSONAR
     var totalAmount = Utils.currencyToNumber(this.totalAmountValue.getText());//NOSONAR
 
-    if(Objects.isNull(imageFile)){
+    if (Objects.isNull(imageFile)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
       return;
     }
 
     if (!validateOrderInfo(
-         OrderInfo.builder()
-             .customerName(customerName)
-             .customerPhone(customerPhone)
-             .customerSocialLink(customerSocialLink)
-             .deliveryAddress(deliveryAddress)
-             .deliveryTime(deliveryTime)
-             .truePrice(truePrice)
-             .deliveryFee(deliveryFee)
-             .vatFee(vatFee)
-             .salePrice(salePrice)
-             .depositAmount(depositAmount)
-             .remainAmount(remainAmount)
-             .totalAmount(totalAmount)
-             .imagePath( imageFile.getPath())
-             .build())) {
+        OrderInfo.builder()
+            .customerName(customerName)
+            .customerPhone(customerPhone)
+            .customerSocialLink(customerSocialLink)
+            .deliveryAddress(deliveryAddress)
+            .deliveryTime(deliveryTime)
+            .truePrice(truePrice)
+            .deliveryFee(deliveryFee)
+            .vatFee(vatFee)
+            .salePrice(salePrice)
+            .depositAmount(depositAmount)
+            .remainAmount(remainAmount)
+            .totalAmount(totalAmount)
+            .imagePath(imageFile.getPath())
+            .build())) {
       return;
     }
 
-    Date  deliveryDate = getDeliveryDate(this.deliveryDate);
-
+    Date deliveryDate = getDeliveryDate(this.deliveryDate);
 
     if (ObjectUtils.isEmpty(receiverName)) {
       receiverName = customerName;
@@ -189,31 +190,34 @@ public class CreateOrderController extends OrderController {
 
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
-      var order = orderService.createNewOrder(
-          Order.builder()
-              .customerName(customerName)
-              .customerPhone(customerPhone)
-              .customerSocialLink(customerSocialLink)
-              .customerSource(customerSource)
-              .deliveryAddress(deliveryAddress)
-              .receiverPhone(receiverPhone)
-              .receiverName(receiverName)
-              .orderDate(Utils.formatDate(Date.from(Instant.now())))
-              .deliveryHour(deliveryTime)
-              .deliveryDate(Utils.formatDate(deliveryDate))
-              .imagePath(imageFile.getAbsolutePath())
-              .orderDescription(orderDescription)
-              .customerNote(orderNote)
-              .banner(banner)
-              .discount(String.valueOf(discount))
-              .actualPrice(truePrice)
-              .deliveryFee(deliveryFee)
-              .vatFee(vatFee)
-              .salePrice(salePrice)
-              .deposit(depositAmount)
-              .remain(remainAmount)
-              .total(totalAmount)
-              .build());
+      var order =  Order.builder()
+          .customerName(customerName)
+          .customerPhone(customerPhone)
+          .customerSocialLink(customerSocialLink)
+          .customerSource(customerSource)
+          .deliveryAddress(deliveryAddress)
+          .receiverPhone(receiverPhone)
+          .receiverName(receiverName)
+          .orderDate(Utils.formatDate(Date.from(Instant.now())))
+          .deliveryHour(deliveryTime)
+          .deliveryDate(Utils.formatDate(deliveryDate))
+          .imagePath(imageFile.getAbsolutePath())
+          .orderDescription(orderDescription)
+          .customerNote(orderNote)
+          .banner(banner)
+          .discount(String.valueOf(discount))
+          .actualPrice(truePrice)
+          .deliveryFee(deliveryFee)
+          .vatFee(vatFee)
+          .salePrice(salePrice)
+          .deposit(depositAmount)
+          .remain(remainAmount)
+          .total(totalAmount)
+          .status(OrderState.PENDING.getStateText())
+          .actualVatFee("0")
+          .actualDeliveryFee("0")
+          .build();
+       orderService.createNewOrder(order);
 
       ApplicationVariable.add(order);
       CompletableFuture.runAsync(ApplicationVariable::sortOrders);

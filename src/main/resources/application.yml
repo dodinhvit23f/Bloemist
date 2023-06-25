@@ -2,17 +2,15 @@ spring:
   main:
     web-application-type: none
   datasource:
-    username: ${USER_NAME :postgres}
-    password: ${PASSWORD :123}
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    username: ${USER_NAME :database}
+    password: ${PASSWORD :secret@passs}
+    url: jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=name
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        dialect: org.hibernate.dialect.SQLServerDialect
         show_sql: true
-    hibernate:
-      ddl-auto: update
+
   mail:
     host: smtp.gmail.com
     port: 587

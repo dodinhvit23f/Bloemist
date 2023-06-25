@@ -31,6 +31,7 @@ public class MessageListener {
     if (ObjectUtils.isEmpty(event.getAdditional())) {
       new Alert(AlertType.WARNING,
           messageSource.getMessage(event.getMessage())).show();
+      return;
     }
     new Alert(AlertType.WARNING,
         String.format(messageSource.getMessage(event.getMessage()),

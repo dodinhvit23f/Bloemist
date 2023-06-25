@@ -64,6 +64,8 @@ public final class Constants {
   public static final String ERR_ORDER_STATUS = "ERR_ORDER_STATUS";
   // MASTER ORDER
   public static final String ERR_MESSAGE_BATCH_INSERT = "ERR_MESSAGE_BATCH_INSERT";
+  // PRINT ORDER
+  public static final String ERR_MESSAGE_ORDER="ERR_MESSAGE_ORDER";
 
 
   public static final String CONNECTION_FAIL = "CONNECTION_FAIL";

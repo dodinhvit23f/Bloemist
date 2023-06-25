@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ public class StageListener implements ApplicationListener<StageEvent> {
   final ApplicationContext context;
   
   @Value("${application.image-url}")
-  Resource iconResoure;
+  Resource iconResource;
   
   public StageListener( ApplicationContext context) {
     this.context = context;
@@ -49,10 +48,12 @@ public class StageListener implements ApplicationListener<StageEvent> {
       Scene scene = new Scene(panel);
       stage.setScene(scene);
       stage.setTitle(manager.getStageTitle());
-      stage.getIcons().add(new Image(new FileInputStream(iconResoure.getFile())));
+      stage.getIcons().add(new Image(new FileInputStream(iconResource.getFile())));
       stage.setMinWidth(panel.getPrefWidth() + padding);
-      stage.setMinHeight(panel.getHeight() + padding);
-      stage.setResizable(false);
+      stage.setMinHeight(panel.getPrefHeight() + padding);
+      stage.setMaxWidth(panel.getPrefWidth() + padding * 2);
+      stage.setMaxHeight(panel.getPrefHeight() + padding * 2);
+      //stage.setResizable(false);
       stage.show();
 
     } catch (IOException e) {

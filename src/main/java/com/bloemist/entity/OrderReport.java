@@ -24,7 +24,7 @@ import org.hibernate.annotations.DynamicUpdate;
  */
 @Entity
 @SuperBuilder
-@Table(name = "Order_Report",
+@Table(name = "order_report",
     indexes = {
         @Index(columnList = "order_status, delivery_date, delivery_time, order_date", name = "idx_delivery_time__status"),
         @Index(columnList = "order_code", name = "udx_order_code")
@@ -62,7 +62,7 @@ public class OrderReport extends BaseEntity {
   @Column(name = "client_source", length = 60)
   private String clientSource;
 
-  @Column(name = "delivery_address", length = 500)
+  @Column(name = "delivery_address", length = 1000)
   private String deliveryAddress;
 
   @Column(name = "delivery_fee")
@@ -90,7 +90,7 @@ public class OrderReport extends BaseEntity {
   @Column(name = "order_date")
   private Date orderDate;
 
-  @Column(name = "order_description", length = 36535)
+  @Column(name = "order_description", length = 8000)
   private String orderDescription;
 
   @Column(name = "order_status", length = 30)
