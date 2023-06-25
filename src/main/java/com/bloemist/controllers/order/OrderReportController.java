@@ -1,7 +1,6 @@
 package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
-import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
@@ -130,16 +129,7 @@ public class OrderReportController extends OrderController {
     var truePrice = Utils.currencyToNumber(this.actualPrice.getText().strip());//NOSONAR
     var remainAmount = Utils.currencyToNumber(this.outstandingBalance.getText());//NOSONAR
     var totalAmount = Utils.currencyToNumber(this.totalAmount.getText());//NOSONAR
-    var orderNote = this.orderNote.getText().strip();
-
-    if (!validateOrderInfo(
-        new OrderInfo(customerName, customerPhone, currentOrder.getCustomerSocialLink(),
-            deliveryAddress,
-            deliveryTime, truePrice, deliveryFee, vatFee,
-            Utils.currencyToNumber(currentOrder.getSalePrice()), depositAmount, remainAmount,
-            totalAmount, currentOrder.getImagePath()))) {
-      return;
-    }
+    var customerNote = this.orderNote.getText().strip();
 
     if (!Utils.isNumber(discount)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_008));
@@ -175,7 +165,7 @@ public class OrderReportController extends OrderController {
               .deliveryDate(Utils.formatDate(deliveryDateTime))
               .orderDescription(orderDescription)
               .deliveryHour(deliveryTime)
-              .customerNote(orderNote)
+              .customerNote(customerNote)
               .banner(banner)
               .customerSource(currentOrder.getCustomerSource())
               .customerSocialLink(currentOrder.getCustomerSocialLink())
@@ -188,6 +178,7 @@ public class OrderReportController extends OrderController {
               .remain(remainAmount)
               .total(totalAmount)
               .code(currentOrder.getCode())
+              .imagePath(currentOrder.getImagePath())
               .build());
 
       currentOrder.setCustomerName(customerName);
@@ -210,7 +201,7 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private void printOrder() {
-    if(isCurrentOrderEmpty()){
+    if (isCurrentOrderEmpty()) {
       return;
     }
     switchScene(ApplicationView.PRINT_ORDER);
@@ -218,7 +209,7 @@ public class OrderReportController extends OrderController {
 
   @FXML
   public void seeImage() throws IOException {
-    if(isCurrentOrderEmpty()){
+    if (isCurrentOrderEmpty()) {
       return;
     }
     var imagePath = currentOrder.getImagePath();
@@ -262,7 +253,7 @@ public class OrderReportController extends OrderController {
           if (Objects.nonNull(newSelection)) {
             currentOrder = newSelection;
             setOrderData();
-            ApplicationVariable.currentOrder = currentOrder;
+            ApplicationVariable.setCurrentOrder(currentOrder);
           }
         });
   }
@@ -301,7 +292,7 @@ public class OrderReportController extends OrderController {
   }
 
   private boolean isCurrentOrderEmpty() {
-    if(ObjectUtils.isEmpty(currentOrder.getCode())){
+    if (ObjectUtils.isEmpty(currentOrder.getCode())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_STATUS));
       return Boolean.TRUE;
     }
@@ -336,7 +327,7 @@ public class OrderReportController extends OrderController {
 
     setDataOrderTable(this.orderTable);
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
-                    "" : ApplicationVariable.getUser().getFullName());
+        "" : ApplicationVariable.getUser().getFullName());
   }
 
   @Override
@@ -358,54 +349,56 @@ public class OrderReportController extends OrderController {
       final int remainCell = 8;
       final int totalCell = 9;
 
-      HSSFWorkbook workbook = new HSSFWorkbook();
-      HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
+      try (final HSSFWorkbook workbook = new HSSFWorkbook()) {
+        HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
 
-      HSSFRow rowhead = sheet.createRow(BigInteger.ZERO.shortValue());
+        HSSFRow rowhead = sheet.createRow(BigInteger.ZERO.shortValue());
 
-      rowhead.createCell(statusCell).setCellValue("Tình Trạng");
-      rowhead.createCell(orderCodeCell).setCellValue("Mã Đơn");
-      rowhead.createCell(deliveryTimeCell).setCellValue("Giờ Giao");
-      rowhead.createCell(deliveryDateCell).setCellValue("Ngày Giao");
-      rowhead.createCell(customerNameCell).setCellValue("Tên Khách Hàng");
-      rowhead.createCell(socialLinkCell).setCellValue("Link FB");
-      rowhead.createCell(orderDesCell).setCellValue("Mô Tả Đơn");
-      rowhead.createCell(orderNoteCell).setCellValue("Ghi Chú");
-      rowhead.createCell(remainCell).setCellValue("Số nợ");
-      rowhead.createCell(totalCell).setCellValue("Tổng Tiền");
+        rowhead.createCell(statusCell).setCellValue("Tình Trạng");
+        rowhead.createCell(orderCodeCell).setCellValue("Mã Đơn");
+        rowhead.createCell(deliveryTimeCell).setCellValue("Giờ Giao");
+        rowhead.createCell(deliveryDateCell).setCellValue("Ngày Giao");
+        rowhead.createCell(customerNameCell).setCellValue("Tên Khách Hàng");
+        rowhead.createCell(socialLinkCell).setCellValue("Link FB");
+        rowhead.createCell(orderDesCell).setCellValue("Mô Tả Đơn");
+        rowhead.createCell(orderNoteCell).setCellValue("Ghi Chú");
+        rowhead.createCell(remainCell).setCellValue("Số nợ");
+        rowhead.createCell(totalCell).setCellValue("Tổng Tiền");
 
-      ApplicationVariable.getOrders().stream()
-          .filter(order -> Utils.toDate(order.getOrderDate())
-              .compareTo(
-                  Date.from(
-                      toDate.getValue()
-                          .atStartOfDay()
-                          .atZone(ZoneId.systemDefault()).toInstant()))
-              >= BigInteger.ONE.intValue())
-          .forEach(order -> {
-            HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
-            row.createCell(statusCell).setCellValue(order.getStatus());
-            row.createCell(orderCodeCell).setCellValue(order.getCode());
-            row.createCell(deliveryTimeCell).setCellValue(order.getDeliveryHour());
-            row.createCell(deliveryDateCell).setCellValue(order.getDeliveryDate());
-            row.createCell(customerNameCell).setCellValue(order.getCustomerName());
-            row.createCell(socialLinkCell).setCellValue(order.getCustomerSocialLink());
-            row.createCell(orderDesCell).setCellValue(order.getOrderDescription());
-            row.createCell(orderNoteCell).setCellValue(order.getCustomerNote());
-            row.createCell(remainCell).setCellValue(order.getRemain());
-            row.createCell(totalCell).setCellValue(order.getTotal());
-          });
+        ApplicationVariable.getOrders().stream()
+            .filter(order -> Utils.toDate(order.getOrderDate())
+                .compareTo(
+                    Date.from(
+                        toDate.getValue()
+                            .atStartOfDay()
+                            .atZone(ZoneId.systemDefault()).toInstant()))
+                >= BigInteger.ONE.intValue())
+            .forEach(order -> {
+              HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
+              row.createCell(statusCell).setCellValue(order.getStatus());
+              row.createCell(orderCodeCell).setCellValue(order.getCode());
+              row.createCell(deliveryTimeCell).setCellValue(order.getDeliveryHour());
+              row.createCell(deliveryDateCell).setCellValue(order.getDeliveryDate());
+              row.createCell(customerNameCell).setCellValue(order.getCustomerName());
+              row.createCell(socialLinkCell).setCellValue(order.getCustomerSocialLink());
+              row.createCell(orderDesCell).setCellValue(order.getOrderDescription());
+              row.createCell(orderNoteCell).setCellValue(order.getCustomerNote());
+              row.createCell(remainCell).setCellValue(order.getRemain());
+              row.createCell(totalCell).setCellValue(order.getTotal());
+            });
+        workbook.write(csvFile);
 
-      workbook.write(csvFile);
-      workbook.close();
-
-      Alert confirm = new Alert(AlertType.CONFIRMATION,
-          String.join(" ",
-              "File",
-              csvFile.getName(),
-              "đã lưu lại"),
-          ButtonType.YES);
-      confirm.show();
+        Alert confirm = new Alert(AlertType.CONFIRMATION,
+            String.join(" ",
+                "File",
+                csvFile.getName(),
+                "đã lưu lại"),
+            ButtonType.YES);
+        confirm.show();
+      } catch (Exception e) {
+        Alert confirm = new Alert(AlertType.ERROR, "Xuất file xảy ra lỗi", ButtonType.OK);
+        confirm.show();
+      }
     }
   }
 

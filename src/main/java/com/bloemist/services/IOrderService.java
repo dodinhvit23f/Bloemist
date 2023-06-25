@@ -1,7 +1,6 @@
 package com.bloemist.services;
 
 import com.bloemist.dto.Order;
-import com.bloemist.entity.OrderReport;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -27,5 +26,5 @@ public interface IOrderService {
   @Transactional(readOnly = true)
   List<Order> getPage(Date startTime, Date endTime);
 
-
+  boolean validOrder(Order orderInfo);
 }

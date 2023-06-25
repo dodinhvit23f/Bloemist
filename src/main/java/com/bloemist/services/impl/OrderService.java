@@ -7,24 +7,23 @@ import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.OrderReportRepository;
 import com.bloemist.services.IOrderService;
+import com.bloemist.services.ITimeService;
 import com.constant.Constants;
 import com.constant.OrderState;
+import com.utils.Utils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
+import org.springframework.util.ObjectUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -32,10 +31,15 @@ import org.springframework.util.NumberUtils;
 public class OrderService implements IOrderService {
 
   OrderReportRepository orderReportRepository;
+  ITimeService timeService;
   ApplicationEventPublisher publisher;
 
   @Override
   public void createNewOrder(Order customerOrder) {
+    if (Boolean.FALSE.equals(validOrder(customerOrder))) {
+      return;
+    }
+
     OrderReport orderReport = OrderMapper.MAPPER.orderToOrderReport(customerOrder);
 
     orderReport.setOrderCode(getOrderCode());
@@ -50,10 +54,6 @@ public class OrderService implements IOrderService {
     }
   }
 
-  private static String getOrderCode() {
-    return String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime());
-  }
-
   @Override
   public void createNewOrders(Collection<Order> orders) {
 
@@ -63,7 +63,7 @@ public class OrderService implements IOrderService {
           orderReport.setOrderCode(getOrderCode());
           return orderReport;
         })
-        .collect(Collectors.toList());
+        .toList();
 
     try {
       orderReportRepository.saveAll(orderReports);
@@ -86,6 +86,10 @@ public class OrderService implements IOrderService {
 
   @Override
   public void updateOrder(Order order) {
+    if (Boolean.FALSE.equals(validOrder(order))) {
+      return;
+    }
+
     var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
     optionalOrderReport.ifPresentOrElse(orderReport -> {
       // change money
@@ -162,8 +166,49 @@ public class OrderService implements IOrderService {
           var order = OrderMapper.MAPPER.orderReportToOrder(orderReport);
           order.setStt(String.valueOf(stt.getAndIncrement()));
           return order;
-        }).collect(Collectors.toList());
+        }).toList();
+  }
+
+  @Override
+  public boolean validOrder(Order orderInfo) {
+    if (ObjectUtils.isEmpty(orderInfo.getCustomerName())
+        || ObjectUtils.isEmpty(orderInfo.getCustomerPhone())
+        || ObjectUtils.isEmpty(orderInfo.getDeliveryAddress())
+        || ObjectUtils.isEmpty(orderInfo.getDeliveryHour())
+        || ObjectUtils.isEmpty(orderInfo.getImagePath())
+        || ObjectUtils.isEmpty(orderInfo.getActualPrice())
+        || ObjectUtils.isEmpty(orderInfo.getDeliveryFee())
+        || ObjectUtils.isEmpty(orderInfo.getDeposit())
+        || ObjectUtils.isEmpty(orderInfo.getRemain())
+        || ObjectUtils.isEmpty(orderInfo.getSalePrice())
+        || ObjectUtils.isEmpty(orderInfo.getTotal())) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
+      return Boolean.FALSE;
+    }
+
+    if (!Utils.isNumber(orderInfo.getSalePrice())
+        || !Utils.isNumber(orderInfo.getDeliveryFee())
+        || !Utils.isNumber(orderInfo.getVatFee())
+        || !Utils.isNumber(orderInfo.getDeposit())) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
+      return Boolean.FALSE;
+    }
+
+    if (orderInfo.getDeliveryHour().length() != 5) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_006));
+      return Boolean.FALSE;
+    }
+
+    if (!timeService.validateTime(orderInfo.getDeliveryHour().split(":"))) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_005));
+      return Boolean.FALSE;
+    }
+
+    return Boolean.TRUE;
   }
 
 
+  private static String getOrderCode() {
+    return String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime());
+  }
 }

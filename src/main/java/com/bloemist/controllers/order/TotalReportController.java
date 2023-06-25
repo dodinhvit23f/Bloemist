@@ -1,7 +1,6 @@
 package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
-import com.bloemist.dto.OrderInfo;
 import com.constant.ApplicationVariable;
 import com.constant.OrderState;
 import com.utils.Utils;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -23,7 +21,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -152,23 +149,23 @@ public class TotalReportController extends OrderController {
           //order.setCustomerSource(y);
 
           return order;
-        }).collect(Collectors.toList());
+        }).toList();
 
     var failOrder = selectedOrder.stream()
         .filter(order -> {
-          if (validateOrderInfo(OrderInfo.builder()
+          if (validateOrderInfo(Order.builder()
               .customerName(order.getCustomerName())
               .customerPhone(order.getCustomerPhone())
               .customerSocialLink(order.getCustomerSocialLink())
               .deliveryAddress(order.getDeliveryAddress())
-              .deliveryTime(order.getDeliveryHour())
+              .deliveryHour(order.getDeliveryHour())
               .deliveryFee(Utils.currencyToNumber(order.getDeliveryFee()))
               .vatFee(order.getVatFee())
-              .truePrice(order.getActualPrice())
+              .actualPrice(order.getActualPrice())
               .salePrice(order.getSalePrice())
-              .depositAmount(order.getDeposit())
-              .remainAmount(order.getRemain())
-              .totalAmount(order.getTotal())
+              .deposit(order.getDeposit())
+              .remain(order.getRemain())
+              .total(order.getTotal())
               // .imagePath(order.getImagePath())
               .imagePath("12313")
               .build())) {
@@ -221,100 +218,102 @@ public class TotalReportController extends OrderController {
           String.valueOf(System.currentTimeMillis()),
           "xls"));
 
-      HSSFWorkbook workbook = new HSSFWorkbook();
-      HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
+      try (HSSFWorkbook workbook = new HSSFWorkbook();) {
+        HSSFSheet sheet = workbook.createSheet("Hoá Đơn");
+        HSSFRow rowHead = sheet.createRow(BigInteger.ZERO.shortValue());
 
-      HSSFRow rowHead = sheet.createRow(BigInteger.ZERO.shortValue());
+        int statusCodeCell = 0;
+        int orderCodeCell = 1;
+        int orderDesCell = 2;
+        int bannerContentCell = 3;
+        int receiverNameCell = 4;
+        int receiverPhoneCell = 5;
+        int deliveryAddressCell = 6;
+        int receiveDateCell = 7;
+        int orderNoteCell = 8;
+        int customerNameCell = 9;
+        int customerPhoneCell = 10;
+        int socialLinkCell = 11;
+        int sourceCell = 12;
+        int orderDateCell = 13;
+        int truePriceCell = 14;
+        int discountCell = 15;
+        int salePriceCell = 16;
+        int deliveryFeeCell = 17;
+        int vatFeeCell = 18;
+        int depositCell = 19;
+        int remainCell = 20;
+        int categoryFeeCell = 21;
+        int actualFeeCell = 22;
+        int actualVatCell = 23;
+        rowHead.createCell(statusCodeCell).setCellValue("Tình Trạng");
+        rowHead.createCell(orderCodeCell).setCellValue("Mã Đơn");
+        rowHead.createCell(orderDesCell).setCellValue("Mô tả đơn");
+        rowHead.createCell(bannerContentCell).setCellValue("Nội dung banner");
+        rowHead.createCell(receiverNameCell).setCellValue("Người nhận");
+        rowHead.createCell(receiverPhoneCell).setCellValue("SĐT người nhận");
+        rowHead.createCell(deliveryAddressCell).setCellValue("Địa chỉ giao");
+        rowHead.createCell(receiveDateCell).setCellValue("Ngày nhận");
+        rowHead.createCell(orderNoteCell).setCellValue("Ghi chú");
+        rowHead.createCell(customerNameCell).setCellValue("Tên Người đặt");
+        rowHead.createCell(customerPhoneCell).setCellValue("SĐT người đặt");
+        rowHead.createCell(socialLinkCell).setCellValue("Link mạng xã hội");
+        rowHead.createCell(sourceCell).setCellValue("Nguồn khách");
+        rowHead.createCell(orderDateCell).setCellValue("Ngày Đặt");
+        rowHead.createCell(truePriceCell).setCellValue("Giá niêm yết");
+        rowHead.createCell(discountCell).setCellValue("Chiết khấu");
+        rowHead.createCell(salePriceCell).setCellValue("Giá bán");
+        rowHead.createCell(deliveryFeeCell).setCellValue("Phí giao khách trả");
+        rowHead.createCell(vatFeeCell).setCellValue("Phí viết VAT khách trả");
+        rowHead.createCell(depositCell).setCellValue("Đặt cọc");
+        rowHead.createCell(remainCell).setCellValue("Còn phải trả");
+        rowHead.createCell(categoryFeeCell).setCellValue("Chi phí nguyên liệu");
+        rowHead.createCell(actualFeeCell).setCellValue("Phí giao hoa thực tế");
+        rowHead.createCell(actualVatCell).setCellValue("Phí viết VAT thực tế");
 
-      int statusCodeCell = 0;
-      int orderCodeCell = 1;
-      int orderDesCell = 2;
-      int bannerContentCell = 3;
-      int receiverNameCell = 4;
-      int receiverPhoneCell = 5;
-      int deliveryAddressCell = 6;
-      int receiveDateCell = 7;
-      int orderNoteCell = 8;
-      int customerNameCell = 9;
-      int customerPhoneCell = 10;
-      int socialLinkCell = 11;
-      int sourceCell = 12;
-      int orderDateCell = 13;
-      int truePriceCell = 14;
-      int discountCell = 15;
-      int salePriceCell = 16;
-      int deliveryFeeCell = 17;
-      int vatFeeCell = 18;
-      int depositCell = 19;
-      int remainCell = 20;
-      int categoryFeeCell = 21;
-      int actualFeeCell = 22;
-      int actualVatCell = 23;
-      rowHead.createCell(statusCodeCell).setCellValue("Tình Trạng");
-      rowHead.createCell(orderCodeCell).setCellValue("Mã Đơn");
-      rowHead.createCell(orderDesCell).setCellValue("Mô tả đơn");
-      rowHead.createCell(bannerContentCell).setCellValue("Nội dung banner");
-      rowHead.createCell(receiverNameCell).setCellValue("Người nhận");
-      rowHead.createCell(receiverPhoneCell).setCellValue("SĐT người nhận");
-      rowHead.createCell(deliveryAddressCell).setCellValue("Địa chỉ giao");
-      rowHead.createCell(receiveDateCell).setCellValue("Ngày nhận");
-      rowHead.createCell(orderNoteCell).setCellValue("Ghi chú");
-      rowHead.createCell(customerNameCell).setCellValue("Tên Người đặt");
-      rowHead.createCell(customerPhoneCell).setCellValue("SĐT người đặt");
-      rowHead.createCell(socialLinkCell).setCellValue("Link mạng xã hội");
-      rowHead.createCell(sourceCell).setCellValue("Nguồn khách");
-      rowHead.createCell(orderDateCell).setCellValue("Ngày Đặt");
-      rowHead.createCell(truePriceCell).setCellValue("Giá niêm yết");
-      rowHead.createCell(discountCell).setCellValue("Chiết khấu");
-      rowHead.createCell(salePriceCell).setCellValue("Giá bán");
-      rowHead.createCell(deliveryFeeCell).setCellValue("Phí giao khách trả");
-      rowHead.createCell(vatFeeCell).setCellValue("Phí viết VAT khách trả");
-      rowHead.createCell(depositCell).setCellValue("Đặt cọc");
-      rowHead.createCell(remainCell).setCellValue("Còn phải trả");
-      rowHead.createCell(categoryFeeCell).setCellValue("Chi phí nguyên liệu");
-      rowHead.createCell(actualFeeCell).setCellValue("Phí giao hoa thực tế");
-      rowHead.createCell(actualVatCell).setCellValue("Phí viết VAT thực tế");
+        ApplicationVariable.getOrders()
+            .forEach(order -> {
+              HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
+              row.createCell(statusCodeCell).setCellValue(order.getStatus());
+              row.createCell(orderCodeCell).setCellValue(order.getCode());
+              row.createCell(orderDesCell).setCellValue(order.getOrderDescription());
+              row.createCell(bannerContentCell).setCellValue(order.getBanner());
+              row.createCell(receiverNameCell).setCellValue(order.getReceiverName());
+              row.createCell(receiverPhoneCell).setCellValue(order.getReceiverPhone());
+              row.createCell(deliveryAddressCell).setCellValue(order.getDeliveryAddress());
+              row.createCell(orderDateCell).setCellValue(order.getDeliveryDate());
+              row.createCell(orderNoteCell).setCellValue(order.getCustomerNote());
+              row.createCell(customerNameCell).setCellValue(order.getCustomerName());
+              row.createCell(customerPhoneCell).setCellValue(order.getCustomerPhone());
+              row.createCell(socialLinkCell).setCellValue(order.getCustomerSocialLink());
+              row.createCell(sourceCell).setCellValue(order.getCustomerSource());
+              row.createCell(orderDateCell).setCellValue(order.getOrderDate());
+              row.createCell(truePriceCell).setCellValue(order.getActualPrice());
+              row.createCell(discountCell).setCellValue(order.getDiscount());
+              row.createCell(salePriceCell).setCellValue(order.getSalePrice());
+              row.createCell(deliveryFeeCell).setCellValue(order.getDeliveryFee());
+              row.createCell(vatFeeCell).setCellValue(order.getVatFee());
+              row.createCell(depositCell).setCellValue(order.getVatFee());
+              row.createCell(remainCell).setCellValue(order.getDeposit());
+              row.createCell(categoryFeeCell).setCellValue(ZERO);
+              row.createCell(actualFeeCell).setCellValue(order.getActualDeliveryFee());
+              row.createCell(actualVatCell).setCellValue(order.getActualVatFee());
 
-      ApplicationVariable.getOrders()
-          .forEach(order -> {
-            HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
-            row.createCell(statusCodeCell).setCellValue(order.getStatus());
-            row.createCell(orderCodeCell).setCellValue(order.getCode());
-            row.createCell(orderDesCell).setCellValue(order.getOrderDescription());
-            row.createCell(bannerContentCell).setCellValue(order.getBanner());
-            row.createCell(receiverNameCell).setCellValue(order.getReceiverName());
-            row.createCell(receiverPhoneCell).setCellValue(order.getReceiverPhone());
-            row.createCell(deliveryAddressCell).setCellValue(order.getDeliveryAddress());
-            row.createCell(orderDateCell).setCellValue(order.getDeliveryDate());
-            row.createCell(orderNoteCell).setCellValue(order.getCustomerNote());
-            row.createCell(customerNameCell).setCellValue(order.getCustomerName());
-            row.createCell(customerPhoneCell).setCellValue(order.getCustomerPhone());
-            row.createCell(socialLinkCell).setCellValue(order.getCustomerSocialLink());
-            row.createCell(sourceCell).setCellValue(order.getCustomerSource());
-            row.createCell(orderDateCell).setCellValue(order.getOrderDate());
-            row.createCell(truePriceCell).setCellValue(order.getActualPrice());
-            row.createCell(discountCell).setCellValue(order.getDiscount());
-            row.createCell(salePriceCell).setCellValue(order.getSalePrice());
-            row.createCell(deliveryFeeCell).setCellValue(order.getDeliveryFee());
-            row.createCell(vatFeeCell).setCellValue(order.getVatFee());
-            row.createCell(depositCell).setCellValue(order.getVatFee());
-            row.createCell(remainCell).setCellValue(order.getDeposit());
-            row.createCell(categoryFeeCell).setCellValue(ZERO);
-            row.createCell(actualFeeCell).setCellValue(order.getActualDeliveryFee());
-            row.createCell(actualVatCell).setCellValue(order.getActualVatFee());
+            });
 
-          });
+        workbook.write(csvFile);
 
-      workbook.write(csvFile);
-      workbook.close();
-
-      Alert confirm = new Alert(AlertType.CONFIRMATION,
-          String.join(" ",
-              "File",
-              csvFile.getName(),
-              "đã lưu lại"),
-          ButtonType.YES);
-      confirm.show();
+        Alert confirm = new Alert(AlertType.CONFIRMATION,
+            String.join(" ",
+                "File",
+                csvFile.getName(),
+                "đã lưu lại"),
+            ButtonType.YES);
+        confirm.show();
+      } catch (Exception e) {
+        new Alert(AlertType.CONFIRMATION, "Xảy ra lỗi khi xuất file",
+            ButtonType.OK).show();
+      }
     }
   }
 
@@ -460,7 +459,7 @@ public class TotalReportController extends OrderController {
 
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
     tableColumn.setOnEditStart(event -> {
-      var cellEditStartEvent = ((CellEditEvent<Order, String>) event);
+      var cellEditStartEvent = event;
       textArea.setText(cellEditStartEvent.getOldValue());
       orderRow = cellEditStartEvent.getTablePosition().getRow();
       currentOrder = cellEditStartEvent.getTableView().getItems().get(orderRow);
@@ -468,7 +467,7 @@ public class TotalReportController extends OrderController {
     });
 
     tableColumn.setOnEditCommit(event -> {
-      var cellEditCommitEvent = ((CellEditEvent<Order, String>) event);
+      var cellEditCommitEvent = event;
       if (Objects.nonNull(cellEditCommitEvent.getNewValue())) {
         textArea.setText(cellEditCommitEvent.getNewValue());
         setValueToColumn(editableColumn, currentOrder, cellEditCommitEvent.getNewValue());

@@ -2,13 +2,10 @@ package com.bloemist.controllers.order;
 
 import com.bloemist.controllers.BaseController;
 import com.bloemist.dto.Order;
-import com.bloemist.dto.OrderInfo;
-import com.bloemist.events.MessageWarning;
 import com.bloemist.funcation.MethodParameter;
 import com.bloemist.services.IOrderService;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
-import com.constant.Constants;
 import com.utils.Utils;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -26,7 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -40,7 +36,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class OrderController extends BaseController {
@@ -53,11 +48,9 @@ public abstract class OrderController extends BaseController {
   @Autowired
   IPrinterService printerService;
 
-
   protected OrderController(ApplicationEventPublisher publisher) {
     super(publisher);
   }
-
 
   public Double getSalePrice(Double truePrice, Double discount) {
     return truePrice - (truePrice * discount / INT_100);
@@ -75,55 +68,8 @@ public abstract class OrderController extends BaseController {
     });
   }
 
-  protected boolean validateOrderInfo(OrderInfo orderInfor) {
-    if (ObjectUtils.isEmpty(orderInfor.getCustomerName())
-        || ObjectUtils.isEmpty(orderInfor.getCustomerPhone())
-        || ObjectUtils.isEmpty(orderInfor.getDeliveryAddress())
-        || ObjectUtils.isEmpty(orderInfor.getDeliveryTime())
-        || ObjectUtils.isEmpty(orderInfor.getImagePath())
-        || ObjectUtils.isEmpty(orderInfor.getTruePrice())
-        || ObjectUtils.isEmpty(orderInfor.getDeliveryFee())
-        || ObjectUtils.isEmpty(orderInfor.getDepositAmount())
-        || ObjectUtils.isEmpty(orderInfor.getRemainAmount())
-        || ObjectUtils.isEmpty(orderInfor.getSalePrice())
-        || ObjectUtils.isEmpty(orderInfor.getTotalAmount())) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
-      return Boolean.FALSE;
-    }
-
-    if (!Utils.isNumber(orderInfor.getTruePrice())
-        || !Utils.isNumber(orderInfor.getDeliveryFee())
-        || !Utils.isNumber(orderInfor.getVatFee())
-        || !Utils.isNumber(orderInfor.getDepositAmount())) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return Boolean.FALSE;
-    }
-
-    if (orderInfor.getDeliveryTime().length() != 5) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_006));
-      return Boolean.FALSE;
-    }
-
-    if (!validateTime(orderInfor.getDeliveryTime().split(":"))) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_005));
-      return Boolean.FALSE;
-    }
-
-    return Boolean.TRUE;
-  }
-
-  protected boolean validateTime(String[] deliveryTimeAr) {
-    if (deliveryTimeAr.length != BigInteger.TWO.intValue()) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
-      return Boolean.FALSE;
-    }
-
-    if (!Utils.isNumber(deliveryTimeAr[BigInteger.ZERO.intValue()]) ||
-        !Utils.isNumber(deliveryTimeAr[BigInteger.ONE.intValue()])) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return Boolean.FALSE;
-    }
-    return Boolean.TRUE;
+  protected boolean validateOrderInfo(Order orderInfo) {
+    return orderService.validOrder(orderInfo);
   }
 
   protected Date getDeliveryDate(DatePicker datePicker) {
@@ -206,7 +152,7 @@ public abstract class OrderController extends BaseController {
     orders = orders.stream().map(order -> {
       order.setStt(String.valueOf(integer.getAndIncrement()));
       return order;
-    }).collect(Collectors.toList());
+    }).toList();
 
     ApplicationVariable.setOrders(orders);
     setDataOrderTable(orderTable);
@@ -222,7 +168,7 @@ public abstract class OrderController extends BaseController {
     var oldOrders = orders.stream().map(order -> {
       order.setStt(order.getStt() + raise);
       return order;
-    }).collect(Collectors.toList());
+    }).toList();
 
     ApplicationVariable.add(oldOrders);
     setDataOrderTable(orderTable);
@@ -250,7 +196,7 @@ public abstract class OrderController extends BaseController {
         .sorted(Comparator.comparing(Order::getDeliveryDate)
             .thenComparing(Order::getDeliveryHour)
             .thenComparing(Order::getPriority))
-        .collect(Collectors.toList())));
+        .toList()));
   }
 
   protected void printA5(String printerName, Order order) throws IOException {

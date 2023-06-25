@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import lombok.Setter;
 
 public final class ApplicationVariable {
 
@@ -15,8 +16,9 @@ public final class ApplicationVariable {
   }
 
   private static AccountDetail user;
-  private static List<Order> ORDERS = new ArrayList<>();
+  private static List<Order> order = new ArrayList<>();
 
+  @Setter
   public static Order currentOrder;
 
   public static AccountDetail getUser() {
@@ -28,27 +30,27 @@ public final class ApplicationVariable {
   }
 
   public static List<Order> getOrders() {
-    return ORDERS;
+    return order;
   }
 
   public static void setOrders(List<Order> orders) {
-    ORDERS = orders;
+    order = orders;
   }
 
   public static void add(Collection<Order> orders) {
-    ORDERS.addAll(orders);
+    order.addAll(orders);
   }
 
   public static void add(Order order) {
-    ORDERS.add(order);
+    ApplicationVariable.order.add(order);
   }
 
-  public static  void addFirst(Order order){
-    ORDERS.add(BigInteger.ZERO.intValue(), order);
+  public static void addFirst(Order order) {
+    ApplicationVariable.order.add(BigInteger.ZERO.intValue(), order);
   }
 
   public static void sortOrders() {
-    ORDERS.sort((previous, next) -> {
+    order.sort((previous, next) -> {
 
       if (!Objects.equals(previous.getPriority(), next.getPriority())) {
         return previous.getPriority().compareTo(next.getPriority());
@@ -63,8 +65,8 @@ public final class ApplicationVariable {
     setTableSequence();
   }
 
-  public static void setTableSequence(){
+  public static void setTableSequence() {
     AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
-    ORDERS.forEach(order -> order.setStt(String.valueOf(stt.getAndIncrement())));
+    order.forEach(order -> order.setStt(String.valueOf(stt.getAndIncrement())));
   }
 }

@@ -1,7 +1,6 @@
 package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
-import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
@@ -19,7 +18,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -90,12 +88,10 @@ public class CreateOrderController extends OrderController {
   File imageFile;
 
   public void openImage() throws IOException {
-
     if (Objects.nonNull(imageFile)) {
       Desktop.getDesktop().open(new File(imageFile.getAbsolutePath()));
     }
   }
-
 
   public void chooseImage() {
     Stage stage = (Stage) stageManager.getStage().getScene().getWindow();
@@ -159,26 +155,7 @@ public class CreateOrderController extends OrderController {
       return;
     }
 
-    if (!validateOrderInfo(
-        OrderInfo.builder()
-            .customerName(customerName)
-            .customerPhone(customerPhone)
-            .customerSocialLink(customerSocialLink)
-            .deliveryAddress(deliveryAddress)
-            .deliveryTime(deliveryTime)
-            .truePrice(truePrice)
-            .deliveryFee(deliveryFee)
-            .vatFee(vatFee)
-            .salePrice(salePrice)
-            .depositAmount(depositAmount)
-            .remainAmount(remainAmount)
-            .totalAmount(totalAmount)
-            .imagePath(imageFile.getPath())
-            .build())) {
-      return;
-    }
-
-    Date deliveryDate = getDeliveryDate(this.deliveryDate);
+    Date deliveryDateTime = getDeliveryDate(this.deliveryDate);
 
     if (ObjectUtils.isEmpty(receiverName)) {
       receiverName = customerName;
@@ -190,7 +167,7 @@ public class CreateOrderController extends OrderController {
 
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
-      var order =  Order.builder()
+      var order = Order.builder()
           .customerName(customerName)
           .customerPhone(customerPhone)
           .customerSocialLink(customerSocialLink)
@@ -200,7 +177,7 @@ public class CreateOrderController extends OrderController {
           .receiverName(receiverName)
           .orderDate(Utils.formatDate(Date.from(Instant.now())))
           .deliveryHour(deliveryTime)
-          .deliveryDate(Utils.formatDate(deliveryDate))
+          .deliveryDate(Utils.formatDate(deliveryDateTime))
           .imagePath(imageFile.getAbsolutePath())
           .orderDescription(orderDescription)
           .customerNote(orderNote)
@@ -217,7 +194,7 @@ public class CreateOrderController extends OrderController {
           .actualVatFee("0")
           .actualDeliveryFee("0")
           .build();
-       orderService.createNewOrder(order);
+      orderService.createNewOrder(order);
 
       ApplicationVariable.add(order);
       CompletableFuture.runAsync(ApplicationVariable::sortOrders);
@@ -229,7 +206,7 @@ public class CreateOrderController extends OrderController {
     // set discount rate from 0 to max
     this.discountRate.setItems(FXCollections
         .observableArrayList(IntStream.range(BigInteger.ZERO.intValue(), Constants.MAX_DISCOUNT)
-            .boxed().collect(Collectors.toList())));
+            .boxed().toList()));
 
     this.customerSource.setItems(FXCollections.observableArrayList(Constants.ON_SHOP,
         Constants.FACEBOOK, Constants.INSTAGRAM, Constants.ZALO));
@@ -306,5 +283,6 @@ public class CreateOrderController extends OrderController {
 
   @Override
   public void extractData() {
+    throw new UnsupportedOperationException();
   }
 }
