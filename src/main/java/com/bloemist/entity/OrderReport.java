@@ -78,7 +78,7 @@ public class OrderReport extends BaseEntity {
   @Column(name = "deposit_amount")
   private BigDecimal depositAmount;
 
-  private Integer discount;
+  private BigDecimal discount;
 
   @Column(name = "materials_fee")
   private BigDecimal materialsFee;

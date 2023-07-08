@@ -84,9 +84,6 @@ public final class Constants {
   public static final String SUPERVISOR = "supervisor";
   public static final String MANAGER = "manager";
 
-  public static final Integer MAX_DISCOUNT = 20;
-  public static final Double MAX_VAT = 10D;
   public static final String ORDER_CODER_PRE_FIX = "BL";
-  public static final int MAX_RECORD = 30;
   public static final String COMMA = ",";
 }

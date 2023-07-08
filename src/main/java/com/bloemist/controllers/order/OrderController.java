@@ -45,7 +45,6 @@ import org.springframework.util.ObjectUtils;
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class OrderController extends BaseController {
 
-  public static final int INT_100 = 100;
   public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.TRUE);
   public static final int SEVEN_DAYS = 7;
   @Autowired
@@ -60,11 +59,11 @@ public abstract class OrderController extends BaseController {
 
 
   public Double getSalePrice(Double truePrice, Double discount) {
-    return truePrice - (truePrice * discount / INT_100);
+    return truePrice - discount;
   }
 
   public Double getTotalPrice(Double salePriceValue, Double deliveryFee, Double vatFee) {
-    return salePriceValue + deliveryFee + (salePriceValue * vatFee / INT_100);
+    return salePriceValue + deliveryFee + vatFee;
   }
 
   protected void addEventLostFocus(TextField textField, MethodParameter consumer) {
@@ -99,30 +98,6 @@ public abstract class OrderController extends BaseController {
       return Boolean.FALSE;
     }
 
-    if (orderInfor.getDeliveryTime().length() != 5) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_006));
-      return Boolean.FALSE;
-    }
-
-    if (!validateTime(orderInfor.getDeliveryTime().split(":"))) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_005));
-      return Boolean.FALSE;
-    }
-
-    return Boolean.TRUE;
-  }
-
-  protected boolean validateTime(String[] deliveryTimeAr) {
-    if (deliveryTimeAr.length != BigInteger.TWO.intValue()) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
-      return Boolean.FALSE;
-    }
-
-    if (!Utils.isNumber(deliveryTimeAr[BigInteger.ZERO.intValue()]) ||
-        !Utils.isNumber(deliveryTimeAr[BigInteger.ONE.intValue()])) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return Boolean.FALSE;
-    }
     return Boolean.TRUE;
   }
 

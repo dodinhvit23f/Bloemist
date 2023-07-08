@@ -21,6 +21,13 @@
         <Tooltip text="Nhập địa chỉ nhận hoa" />
       </tooltip>
     </TextField>
+    <TextField id="orderTime" fx:id="deliveryHour" layoutX="272.0" layoutY="85.0" prefHeight="25.0" prefWidth="222.0" promptText="00:00 - 00:00 - Khoảng nhận hoa">
+      <tooltip>
+        <Tooltip text="Nhập vào khoảng giờ nhận hoa" />
+      </tooltip>
+    </TextField>
+    <DatePicker id="OrderDate" fx:id="deliveryDate" layoutX="272.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Ngày nhận hoa" />
+    <TextField fx:id="socialLink" layoutX="26.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Link FB/Insta (nếu có)" />
     <TextField fx:id="receiverName" layoutX="272.0" layoutY="162.0" prefHeight="25.0" prefWidth="222.0" promptText="Người nhận hoa">
       <tooltip>
         <Tooltip text="Nhập vào tên người nhận" />
@@ -31,33 +38,33 @@
         <Tooltip text="Nhập vào số điện thoại người nhận" />
       </tooltip>
     </TextField>
-    <TextField id="orderTime" fx:id="deliveryHour" layoutX="272.0" layoutY="85.0" prefHeight="25.0" prefWidth="222.0" promptText="Giờ nhận hoa">
-      <tooltip>
-        <Tooltip text="Nhập vào giờ nhận hh:mm" />
-      </tooltip>
-    </TextField>
     <ComboBox fx:id="customerSource" layoutX="26.0" layoutY="162.0" prefHeight="25.0" prefWidth="222.0" promptText="Nguồn khách" />
+    <Button layoutX="25.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#chooseImage" prefHeight="25.0" prefWidth="92.0" text="Chọn ảnh" />
+    <Label layoutX="25.0" layoutY="18.0" text="Thông tin đặt hàng" />
+    <Label layoutX="25.0" layoutY="400.0" text="Thông tin thanh toán" />
+    <TextArea id="orderDescription" fx:id="orderDescription" layoutX="25.0" layoutY="276.0" prefHeight="50.0" prefWidth="279.0" promptText="Mô tả đơn hàng" />
+    <TextArea id="orderNote" fx:id="customerRemark" layoutX="325.0" layoutY="276.0" prefHeight="50.0" prefWidth="169.0" promptText="Ghi chú (xuất VAT, khi giao hoa ...)" />
+    <TextArea fx:id="bannerContent" layoutX="25.0" layoutY="339.0" prefHeight="50.0" prefWidth="469.0" promptText="Nội dung Banner (nếu có)" />
     <TextField id="actualPrice" fx:id="actualPrice" layoutX="69.0" layoutY="428.0" prefHeight="25.0" prefWidth="179.0" promptText="Giá niêm yết">
       <tooltip>
         <Tooltip text="Nhập vào giá niêm yết" />
       </tooltip>
     </TextField>
-    <Label layoutX="25.0" layoutY="18.0" text="Thông tin đặt hàng" />
-    <Label layoutX="25.0" layoutY="400.0" text="Thông tin thanh toán" />
-    <ComboBox fx:id="discountRate" layoutX="26.0" layoutY="466.0" prefHeight="25.0" prefWidth="222.0" promptText="Chiết khấu" />
-    <TextArea id="orderDescription" fx:id="orderDescription" layoutX="25.0" layoutY="276.0" prefHeight="50.0" prefWidth="279.0" promptText="Mô tả đơn hàng" />
-    <TextArea fx:id="bannerContent" layoutX="25.0" layoutY="339.0" prefHeight="50.0" prefWidth="469.0" promptText="Nội dung Banner (nếu có)" />
-    <TextArea id="orderNote" fx:id="customerRemark" layoutX="325.0" layoutY="276.0" prefHeight="50.0" prefWidth="169.0" promptText="Ghi chú (xuất VAT, khi giao hoa ...)" />
     <TextField fx:id="deliveryFee" layoutX="325.0" layoutY="428.0" prefHeight="25.0" prefWidth="169.0" promptText="Phí giao hoa thu của khách">
       <tooltip>
         <Tooltip text="Nhập vào phí vận chuyển" />
       </tooltip>
     </TextField>
-    <DatePicker id="OrderDate" fx:id="deliveryDate" layoutX="272.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Ngày nhận hoa" />
-    <Button fx:id="nextInput" layoutX="403.0" layoutY="587.0" mnemonicParsing="false" onMouseClicked="#nextOrder" prefHeight="25.0" prefWidth="92.0" text="Đơn tiếp" textAlignment="CENTER" />
-    <Button fx:id="finishInput" layoutX="296.0" layoutY="587.0" mnemonicParsing="false" onMouseClicked="#createNew" prefHeight="25.0" prefWidth="92.0" text="Hoàn thành" textAlignment="CENTER" />
-    <Button fx:id="cancelInput" layoutX="190.0" layoutY="587.0" mnemonicParsing="false" onMouseClicked="#cancel" prefHeight="25.0" prefWidth="92.0" text="Hủy" textAlignment="CENTER" />
-    <Hyperlink fx:id="imgLink" layoutX="170.0" layoutY="198.0" onMouseClicked="#openImage" prefHeight="23.0" prefWidth="78.0" text="Xem ảnh" textAlignment="JUSTIFY" underline="true" />
+      <TextField id="actualPrice" fx:id="discountAmount" layoutX="69.0" layoutY="465.0" prefHeight="25.0" prefWidth="179.0" promptText="Giá chiết khấu">
+         <tooltip>
+            <Tooltip text="Nhập vào giá niêm yết" />
+         </tooltip>
+      </TextField>
+    <TextField id="vatFee" fx:id="vatFee" layoutX="325.0" layoutY="466.0" prefHeight="25.0" prefWidth="169.0" promptText="Phí viết VAT">
+      <tooltip>
+        <Tooltip text="Nhập vào phí VAT" />
+      </tooltip>
+    </TextField>
     <TextField id="depositAmount" fx:id="depositAmount" layoutX="69.0" layoutY="498.0" prefHeight="30.0" prefWidth="179.0" promptText="Số tiền khách đặt cọc">
       <tooltip>
         <Tooltip text="Nhập vào số tiền đặt cọc" />
@@ -66,28 +73,25 @@
             <Font size="14.0" />
          </font>
     </TextField>
-    <TextField fx:id="socialLink" layoutX="26.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Link FB/Insta (nếu có)" />
-    <TextField id="vatFee" fx:id="vatFee" layoutX="325.0" layoutY="466.0" prefHeight="25.0" prefWidth="169.0" promptText="Phí viết VAT">
-      <tooltip>
-        <Tooltip text="Nhập vào phí VAT" />
-      </tooltip>
-    </TextField>
-    <TextField id="salePriceValue" fx:id="salePriceValue" editable="false" layoutX="70.0" layoutY="533.0" prefHeight="30.0" prefWidth="179.0" promptText="Giá bán:">
-      <font>
-        <Font size="14.0" />
-      </font>
-    </TextField>
-    <TextField fx:id="totalAmountValue" editable="false" layoutX="272.0" layoutY="534.0" prefHeight="25.0" prefWidth="222.0" promptText="Tổng giá trị đơn hàng: ">
-      <font>
-        <Font size="14.0" />
-      </font>
-    </TextField>
+    <Button fx:id="finishInput" layoutX="296.0" layoutY="587.0" mnemonicParsing="false" onMouseClicked="#finishInput" prefHeight="25.0" prefWidth="92.0" text="Hoàn thành" textAlignment="CENTER" />
+    <Button fx:id="nextInput" layoutX="403.0" layoutY="587.0" mnemonicParsing="false" onMouseClicked="#nextInput" prefHeight="25.0" prefWidth="92.0" text="Đơn tiếp" textAlignment="CENTER" />
+    <Button fx:id="cancelInput" layoutX="190.0" layoutY="587.0" mnemonicParsing="false" onMouseClicked="#cancel" prefHeight="25.0" prefWidth="92.0" text="Hủy" textAlignment="CENTER" />
+    <Hyperlink fx:id="imgLink" layoutX="170.0" layoutY="198.0" onMouseClicked="#openImage" prefHeight="23.0" prefWidth="78.0" text="Xem ảnh" textAlignment="JUSTIFY" underline="true" />
     <TextField fx:id="outstandingBalanceValue" editable="false" layoutX="324.0" layoutY="499.0" prefHeight="30.0" prefWidth="169.0" promptText="Số tiền còn lại:">
       <font>
         <Font size="14.0" />
       </font>
     </TextField>
-    <Button layoutX="25.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#chooseImage" prefHeight="25.0" prefWidth="92.0" text="Chọn ảnh" />
+    <TextField id="salePriceValue" fx:id="salePriceValue" editable="false" layoutX="70.0" layoutY="533.0" prefHeight="30.0" prefWidth="179.0" promptText="Giá bán ra">
+      <font>
+        <Font size="14.0" />
+      </font>
+    </TextField>
+    <TextField fx:id="totalAmountValue" editable="false" layoutX="266.0" layoutY="534.0" prefHeight="30.0" prefWidth="228.0" promptText="Tổng giá trị đơn hàng: ">
+      <font>
+        <Font size="14.0" />
+      </font>
+    </TextField>
       <Label layoutX="272.0" layoutY="432.0" text="Phí ship">
          <font>
             <Font name="Times New Roman" size="12.0" />
@@ -102,5 +106,6 @@
       <Label layoutX="25.0" layoutY="505.0" text="Đặt cọc" />
       <Label layoutX="25.0" layoutY="540.0" text="Giá thực" />
       <Label layoutX="268.0" layoutY="505.0" text="Còn lại" />
+      <Label layoutX="25.0" layoutY="469.0" prefHeight="17.0" prefWidth="44.0" text="CK" />
   </children>
 </AnchorPane>

@@ -51,7 +51,7 @@ public class StageListener implements ApplicationListener<StageEvent> {
       stage.getIcons().add(new Image(new FileInputStream(iconResource.getFile())));
       stage.setMinWidth(panel.getPrefWidth());
       stage.setMinHeight(panel.getPrefHeight());
-      stage.setMaximized(true);
+      //stage.setMaximized(true);
       //stage.setResizable(false);
       stage.show();
 

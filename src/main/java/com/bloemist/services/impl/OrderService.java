@@ -106,7 +106,7 @@ public class OrderService implements IOrderService {
       orderReport.setVatFee(vatFee);
       orderReport.setActualPrice(actualPrice);
       orderReport.setSalePrice(salePrice);
-      orderReport.setDiscount(discount);
+      //orderReport.setDiscount(discount);
       // change info customer
       orderReport.setClientName(order.getCustomerName());
       orderReport.setClientPhone(order.getCustomerPhone());
