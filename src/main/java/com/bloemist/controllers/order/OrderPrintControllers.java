@@ -50,11 +50,9 @@ public class OrderPrintControllers extends OrderController {
   @FXML
   private RadioButton imageBill;
 
-
   protected OrderPrintControllers(ApplicationEventPublisher publisher, IOrderService orderService) {
     super(publisher);
     this.orderService = orderService;
-
   }
 
   @FXML

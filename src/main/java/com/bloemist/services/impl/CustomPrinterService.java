@@ -1,13 +1,41 @@
 package com.bloemist.services.impl;
 
+import static com.utils.Utils.fileFormat;
+
+import com.bloemist.controllers.order.OrderPrintControllers;
 import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
-import org.springframework.stereotype.Component;
+import com.constant.ApplicationVariable;
+import com.lowagie.text.pdf.BaseFont;
 
+import java.io.*;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
-import java.util.Arrays;
-import java.util.Optional;
+import javax.print.SimpleDoc;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.Sides;
+import javax.print.event.PrintJobAdapter;
+import javax.print.event.PrintJobEvent;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 @Component
 public class CustomPrinterService implements IPrinterService {
@@ -23,7 +51,7 @@ public class CustomPrinterService implements IPrinterService {
         .filter(p -> p.getName().equals(printerName))
         .findFirst();
 
-  /*  String filename = "preview.pdf";
+    String filename = "preview.pdf";
     try (OutputStream outputStream = new FileOutputStream(filename);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
       Document document = Jsoup.parse(
@@ -40,8 +68,6 @@ public class CustomPrinterService implements IPrinterService {
           .text(order.getCustomerPhone());
       document.body().getElementById(OrderPrintControllers.ORDER_DESCRIPTION)
           .text(order.getOrderDescription());
-      document.body().getElementById(OrderPrintControllers.BANNER_DESCRIPTION)
-          .text(order.getBanner());
       document.body().getElementById(OrderPrintControllers.RECEIVE_NAME)
           .text(order.getReceiverName());
       document.body().getElementById(OrderPrintControllers.RECEIVE_PHONE)
@@ -93,10 +119,10 @@ public class CustomPrinterService implements IPrinterService {
 
       renderer.createPDF(byteArrayOutputStream);
 
-      ByteArrayInputStream bufferedInputStream = new ByteArrayInputStream(
+      InputStream bufferedInputStream = new ByteArrayInputStream(
           byteArrayOutputStream.toByteArray());
 
-      Doc myDoc = new SimpleDoc(bufferedInputStream, DocFlavor.INPUT_STREAM.TEXT_PLAIN_UTF_8, null);
+      Doc myDoc = new SimpleDoc(bufferedInputStream, DocFlavor.INPUT_STREAM.AUTOSENSE, null);
       DocPrintJob docPrintJob = printer.createPrintJob();
 
       AtomicBoolean docsPrinted = new AtomicBoolean(Boolean.FALSE);
@@ -108,16 +134,11 @@ public class CustomPrinterService implements IPrinterService {
         }
       });
 
-      docPrintJob.print(myDoc, asset);
-      docPrintJob.print(myDoc, asset);
-      while (!docsPrinted.get()) {
-        Thread.sleep(1000);
-      }
-
+      docPrintJob.print(myDoc, null);
       bufferedInputStream.close();
-    } catch (IOException | InterruptedException | PrintException e) {
+    } catch (IOException | PrintException e) {
       e.printStackTrace();
-    }*/
+    }
   }
 
 }

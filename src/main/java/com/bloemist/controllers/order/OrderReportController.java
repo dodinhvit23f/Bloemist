@@ -3,6 +3,7 @@ package com.bloemist.controllers.order;
 import com.bloemist.dto.Order;
 import com.bloemist.dto.OrderInfo;
 import com.bloemist.events.MessageWarning;
+import com.bloemist.events.StageEvent;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
@@ -27,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -41,7 +43,8 @@ import org.springframework.util.ObjectUtils;
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderReportController extends OrderController {
-
+  @FXML
+  private Pane printPane;
   @FXML
   private TableView<Order> orderTable;
   @FXML
@@ -210,8 +213,15 @@ public class OrderReportController extends OrderController {
     if(isCurrentOrderEmpty()){
       return;
     }
-    switchScene(ApplicationView.PRINT_ORDER);
+    switchScenePrint(ApplicationView.PRINT_ORDER);
   }
+
+  void switchScenePrint(ApplicationView view) {
+    stageManager.setView(view);
+    stageManager.setPane(printPane);
+    publisher.publishEvent(new StageEvent(stageManager));
+  }
+
 
   @FXML
   public void seeImage() throws IOException {
