@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -83,7 +82,7 @@ public class CreateOrderController extends OrderController {
   @FXML
   ComboBox<String> customerSource;
   @FXML
-  ComboBox<Integer> discountRate;
+  TextField discountAmount;
 
   File imageFile;
 
@@ -105,7 +104,6 @@ public class CreateOrderController extends OrderController {
     if (Objects.nonNull(chooseFile)) {
       imageFile = chooseFile;
     }
-
   }
 
   public void nextOrder() {
@@ -132,7 +130,7 @@ public class CreateOrderController extends OrderController {
     var customerName = this.customerName.getText().strip(); //NOSONAR
     var customerPhone = this.customerPhone.getText().strip(); //NOSONAR
     var customerSocialLink = this.socialLink.getText().strip(); //NOSONAR
-    var customerSource = this.customerSource.getSelectionModel().getSelectedItem()
+    var customerSource = this.customerSource.getSelectionModel().getSelectedItem() //NOSONAR
         .strip(); //NOSONAR
     var deliveryAddress = this.deliveryAddress.getText().strip(); //NOSONAR
     var receiverName = this.receiverName.getText().strip(); //NOSONAR
@@ -142,13 +140,13 @@ public class CreateOrderController extends OrderController {
     var orderNote = this.customerRemark.getText().strip(); //NOSONAR
     var banner = this.bannerContent.getText().strip(); //NOSONAR
     var truePrice = this.actualPrice.getText().strip(); //NOSONAR
-    var discount = this.discountRate.getSelectionModel().getSelectedItem();//NOSONAR
     var deliveryFee = this.deliveryFee.getText().strip(); //NOSONAR
     var vatFee = this.vatFee.getText().strip(); //NOSONAR
     var salePrice = Utils.currencyToNumber(this.salePriceValue.getText());//NOSONAR
     var depositAmount = this.depositAmount.getText().strip();//NOSONAR
     var remainAmount = Utils.currencyToNumber(this.outstandingBalanceValue.getText()); //NOSONAR
     var totalAmount = Utils.currencyToNumber(this.totalAmountValue.getText());//NOSONAR
+    var discountAmount = Utils.currencyToNumber(this.discountAmount.getText());//NOSONAR
 
     if (Objects.isNull(imageFile)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
@@ -182,7 +180,7 @@ public class CreateOrderController extends OrderController {
           .orderDescription(orderDescription)
           .customerNote(orderNote)
           .banner(banner)
-          .discount(String.valueOf(discount))
+          .discount(String.valueOf(discountAmount))
           .actualPrice(truePrice)
           .deliveryFee(deliveryFee)
           .vatFee(vatFee)
@@ -201,17 +199,43 @@ public class CreateOrderController extends OrderController {
     }
   }
 
+  public void resetScene() {
+    String zeroCurrency = Utils.currencyFormat(BigInteger.ZERO.doubleValue());
+
+    this.salePriceValue.setText(zeroCurrency);
+    this.outstandingBalanceValue.setText(zeroCurrency);
+    this.totalAmountValue.setText(zeroCurrency);
+    this.actualPrice.setText(String.valueOf(BigInteger.ZERO).intern());
+
+    String zero = String.valueOf(BigInteger.ZERO).intern();
+    this.deliveryFee.setText(zero);
+    this.vatFee.setText(zero);
+    this.depositAmount.setText(zero);
+    this.discountAmount.setText(zero);
+    this.deliveryDate.setValue(LocalDate.now());
+
+    this.customerSource.setValue(Constants.FACEBOOK);
+    this.deliveryHour.setText("00:00 - 00:00");
+  }
+
+  @FXML
+  public void nextInput() {
+    createNew();
+    nextOrder();
+  }
+
+  @FXML
+  public void finishInput() {
+    createNew();
+    cancel();
+  }
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    // set discount rate from 0 to max
-    this.discountRate.setItems(FXCollections
-        .observableArrayList(IntStream.range(BigInteger.ZERO.intValue(), Constants.MAX_DISCOUNT)
-            .boxed().toList()));
-
     this.customerSource.setItems(FXCollections.observableArrayList(Constants.ON_SHOP,
         Constants.FACEBOOK, Constants.INSTAGRAM, Constants.ZALO));
     this.customerSource.setValue(Constants.FACEBOOK);
-    this.discountRate.setValue(BigInteger.ZERO.intValue());
+
     resetScene();
     initEvent();
   }
@@ -225,17 +249,11 @@ public class CreateOrderController extends OrderController {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
       return;
     }
-    var discount = this.discountRate.getSelectionModel().getSelectedItem().doubleValue();
-
+    var discount = NumberUtils.parseNumber(this.discountAmount.getText(), Double.class);
     var truePrice = NumberUtils.parseNumber(this.actualPrice.getText(), Double.class);
     var deliveryFeeAmount = NumberUtils.parseNumber(this.deliveryFee.getText(), Double.class);
     var vatFeeAmount = NumberUtils.parseNumber(this.vatFee.getText(), Double.class);
     var deposit = NumberUtils.parseNumber(this.depositAmount.getText(), Double.class);
-
-    if (vatFeeAmount > Constants.MAX_VAT) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_007));
-      return;
-    }
 
     var salePrice = getSalePrice(truePrice, discount);
     var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);
@@ -245,26 +263,6 @@ public class CreateOrderController extends OrderController {
     this.outstandingBalanceValue.setText(Utils.currencyFormat(totalSaleAmount - deposit));
   }
 
-  public void resetScene() {
-    String zeroCurrency = Utils.currencyFormat(BigInteger.ZERO.doubleValue());
-
-    this.salePriceValue.setText(zeroCurrency);
-    this.outstandingBalanceValue.setText(zeroCurrency);
-    this.totalAmountValue.setText(zeroCurrency);
-    this.actualPrice.setText(String.valueOf(BigInteger.ZERO).intern());
-
-    String zero = String.valueOf(BigInteger.ZERO).intern();
-    this.deliveryFee.setText(zero);
-    this.vatFee.setText(zero);
-    this.depositAmount.setText(zero);
-
-    this.deliveryDate.setValue(LocalDate.now());
-
-    this.discountRate.setValue(BigInteger.ZERO.intValue());
-    this.customerSource.setValue(Constants.FACEBOOK);
-    this.deliveryHour.setText("00:00");
-
-  }
 
   public void initEvent() {
     // set event when actual price lost focus
@@ -272,8 +270,7 @@ public class CreateOrderController extends OrderController {
     addEventLostFocus(this.deliveryFee, this::calculateTotalPrice);
     addEventLostFocus(this.vatFee, this::calculateTotalPrice);
     addEventLostFocus(this.depositAmount, this::calculateTotalPrice);
-    discountRate.getSelectionModel().selectedItemProperty()
-        .addListener((options, oldValue, newValue) -> calculateTotalPrice());
+    addEventLostFocus(this.discountAmount, this::calculateTotalPrice);
   }
 
   @Override

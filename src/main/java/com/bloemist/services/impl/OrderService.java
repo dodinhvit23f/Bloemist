@@ -101,7 +101,7 @@ public class OrderService implements IOrderService {
       var vatFee = NumberUtils.parseNumber(order.getVatFee(), BigDecimal.class);
       var actualPrice = NumberUtils.parseNumber(order.getActualPrice(), BigDecimal.class);
       var salePrice = NumberUtils.parseNumber(order.getSalePrice(), BigDecimal.class);
-      var discount = NumberUtils.parseNumber(order.getDiscount(), Integer.class);
+      var discount = NumberUtils.parseNumber(order.getDiscount(), BigDecimal.class);
 
       orderReport.setDepositAmount(deposit);
       orderReport.setRemainingAmount(remain);

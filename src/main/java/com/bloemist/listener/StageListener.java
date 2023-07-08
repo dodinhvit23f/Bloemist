@@ -44,15 +44,14 @@ public class StageListener implements ApplicationListener<StageEvent> {
       fxmlLoader.setControllerFactory(context::getBean);
 
       var panel = (Pane) fxmlLoader.load();
-      final double padding = 20;
+
       Scene scene = new Scene(panel);
       stage.setScene(scene);
       stage.setTitle(manager.getStageTitle());
       stage.getIcons().add(new Image(new FileInputStream(iconResource.getFile())));
-      stage.setMinWidth(panel.getPrefWidth() + padding);
-      stage.setMinHeight(panel.getPrefHeight() + padding);
-      stage.setMaxWidth(panel.getPrefWidth() + padding * 2);
-      stage.setMaxHeight(panel.getPrefHeight() + padding * 2);
+      stage.setMinWidth(panel.getPrefWidth());
+      stage.setMinHeight(panel.getPrefHeight());
+      //stage.setMaximized(true);
       //stage.setResizable(false);
       stage.show();
 

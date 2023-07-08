@@ -7,12 +7,8 @@ import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.lowagie.text.pdf.BaseFont;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -72,8 +68,6 @@ public class CustomPrinterService implements IPrinterService {
           .text(order.getCustomerPhone());
       document.body().getElementById(OrderPrintControllers.ORDER_DESCRIPTION)
           .text(order.getOrderDescription());
-      document.body().getElementById(OrderPrintControllers.BANNER_DESCRIPTION)
-          .text(order.getBanner());
       document.body().getElementById(OrderPrintControllers.RECEIVE_NAME)
           .text(order.getReceiverName());
       document.body().getElementById(OrderPrintControllers.RECEIVE_PHONE)
@@ -125,12 +119,11 @@ public class CustomPrinterService implements IPrinterService {
 
       renderer.createPDF(byteArrayOutputStream);
 
-      ByteArrayInputStream bufferedInputStream = new ByteArrayInputStream(
+      InputStream bufferedInputStream = new ByteArrayInputStream(
           byteArrayOutputStream.toByteArray());
 
       Doc myDoc = new SimpleDoc(bufferedInputStream, DocFlavor.INPUT_STREAM.AUTOSENSE, null);
       DocPrintJob docPrintJob = printer.createPrintJob();
-      docPrintJob.print(myDoc, asset);
 
       AtomicBoolean docsPrinted = new AtomicBoolean(Boolean.FALSE);
       docPrintJob.addPrintJobListener(new PrintJobAdapter() {
@@ -141,14 +134,9 @@ public class CustomPrinterService implements IPrinterService {
         }
       });
 
-      docPrintJob.print(myDoc, asset);
-
-      while (!docsPrinted.get()) {
-        Thread.sleep(1000);
-      }
-
+      docPrintJob.print(myDoc, null);
       bufferedInputStream.close();
-    } catch (IOException | InterruptedException | PrintException e) {
+    } catch (IOException | PrintException e) {
       e.printStackTrace();
     }
   }

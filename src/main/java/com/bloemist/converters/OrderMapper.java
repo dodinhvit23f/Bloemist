@@ -41,7 +41,7 @@ public interface OrderMapper {
         .deliveryDate(Utils.toDate(order.getDeliveryDate()))
         .deliveryTime(order.getDeliveryHour())
         .samplePictureLink(order.getImagePath())
-        .discount(Integer.parseInt(order.getDiscount()))
+            .discount(convertBigDecimal(order.getDiscount()))
         .actualPrice(convertBigDecimal(order.getActualPrice()))
         .deliveryFee(convertBigDecimal(order.getDeliveryFee()))
         .vatFee(convertBigDecimal(order.getVatFee()))

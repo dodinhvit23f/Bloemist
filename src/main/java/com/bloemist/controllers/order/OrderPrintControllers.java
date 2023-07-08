@@ -50,11 +50,9 @@ public class OrderPrintControllers extends OrderController {
   @FXML
   private RadioButton imageBill;
 
-
   protected OrderPrintControllers(ApplicationEventPublisher publisher, IOrderService orderService) {
     super(publisher);
     this.orderService = orderService;
-
   }
 
   @FXML
@@ -90,10 +88,12 @@ public class OrderPrintControllers extends OrderController {
   }
 
   @Override
-  public void extractData() throws IOException {
+  public void extractData() {
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void initEvent() {
+    throw new UnsupportedOperationException();
   }
 }

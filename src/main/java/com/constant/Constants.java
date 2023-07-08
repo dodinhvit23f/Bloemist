@@ -65,7 +65,7 @@ public final class Constants {
   // MASTER ORDER
   public static final String ERR_MESSAGE_BATCH_INSERT = "ERR_MESSAGE_BATCH_INSERT";
   // PRINT ORDER
-  public static final String ERR_MESSAGE_ORDER="ERR_MESSAGE_ORDER";
+  public static final String ERR_MESSAGE_ORDER = "ERR_MESSAGE_ORDER";
 
 
   public static final String CONNECTION_FAIL = "CONNECTION_FAIL";
@@ -84,9 +84,6 @@ public final class Constants {
   public static final String SUPERVISOR = "supervisor";
   public static final String MANAGER = "manager";
 
-  public static final Integer MAX_DISCOUNT = 20;
-  public static final Double MAX_VAT = 10D;
   public static final String ORDER_CODER_PRE_FIX = "BL";
-  public static final int MAX_RECORD = 30;
   public static final String COMMA = ",";
 }

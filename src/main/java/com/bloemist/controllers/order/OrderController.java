@@ -40,7 +40,6 @@ import org.springframework.util.CollectionUtils;
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class OrderController extends BaseController {
 
-  public static final int INT_100 = 100;
   public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.TRUE);
   public static final int SEVEN_DAYS = 7;
   @Autowired
@@ -53,11 +52,11 @@ public abstract class OrderController extends BaseController {
   }
 
   public Double getSalePrice(Double truePrice, Double discount) {
-    return truePrice - (truePrice * discount / INT_100);
+    return truePrice - discount;
   }
 
   public Double getTotalPrice(Double salePriceValue, Double deliveryFee, Double vatFee) {
-    return salePriceValue + deliveryFee + (salePriceValue * vatFee / INT_100);
+    return salePriceValue + deliveryFee + vatFee;
   }
 
   protected void addEventLostFocus(TextField textField, MethodParameter consumer) {

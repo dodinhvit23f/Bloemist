@@ -60,6 +60,8 @@ public class OrderReportController extends OrderController {
   @FXML
   private TableColumn<Order, String> orderRemarkCol;
   @FXML
+  private TableColumn<Order, String> orderBanner;
+  @FXML
   private TextField customerName;
   @FXML
   private TextField customerPhone;
@@ -87,18 +89,13 @@ public class OrderReportController extends OrderController {
   private TextField empName;
   @FXML
   private TextArea orderDescription;
-  @FXML
-  private TextArea bannerContent;
+
   @FXML
   private TextArea orderNote;
   @FXML
   private TextArea deliveryAddress;
   @FXML
   private DatePicker deliveryDate;
-  @FXML
-  private DatePicker toDate;
-  @FXML
-  private DatePicker fromDate;
 
   private Order currentOrder;
 
@@ -121,7 +118,7 @@ public class OrderReportController extends OrderController {
     var receiverPhone = this.receiverPhone.getText().strip(); //NOSONAR
     var deliveryTime = this.deliveryHour.getText().strip(); //NOSONAR
     var orderDescription = this.orderDescription.getText().strip(); //NOSONAR
-    var banner = this.bannerContent.getText().strip(); //NOSONAR
+    var banner = this.orderBanner.getText().strip(); //NOSONAR
     var discount = this.discountRate.getText(); //NOSONAR
     var deliveryFee = Utils.currencyToNumber(this.deliveryFee.getText().strip()); //NOSONAR
     var vatFee = this.vatFee.getText().strip();//NOSONAR
@@ -265,6 +262,7 @@ public class OrderReportController extends OrderController {
     customerSocialLink.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_SOCIAL_LINK));
     orderDescriptionCol.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DESCRIPTION));
     orderRemarkCol.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NOTE));
+    orderBanner.setCellValueFactory(new PropertyValueFactory<>(Order.BANNER));
     orderCodeCol.setCellValueFactory(new PropertyValueFactory<>(Order.CODE));
     deliveryHourCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_HOUR));
   }
@@ -283,7 +281,6 @@ public class OrderReportController extends OrderController {
     this.vatFee.setText(currentOrder.getVatFee());
     this.depositAmount.setText(currentOrder.getDeposit());
     this.orderDescription.setText(currentOrder.getOrderDescription());
-    this.bannerContent.setText(currentOrder.getBanner());
     this.deliveryAddress.setText(currentOrder.getDeliveryAddress());
     this.orderNote.setText(currentOrder.getCustomerNote());
     this.deliveryDate.setValue(
@@ -315,10 +312,6 @@ public class OrderReportController extends OrderController {
     initEvent();
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable));
-
-    var localDate = LocalDate.now();
-    fromDate.setValue(localDate);
-    toDate.setValue(localDate.minusDays(SEVEN_DAYS));
 
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
       loadPageAsync(null, this.orderTable);
@@ -365,14 +358,7 @@ public class OrderReportController extends OrderController {
         rowhead.createCell(remainCell).setCellValue("Số nợ");
         rowhead.createCell(totalCell).setCellValue("Tổng Tiền");
 
-        ApplicationVariable.getOrders().stream()
-            .filter(order -> Utils.toDate(order.getOrderDate())
-                .compareTo(
-                    Date.from(
-                        toDate.getValue()
-                            .atStartOfDay()
-                            .atZone(ZoneId.systemDefault()).toInstant()))
-                >= BigInteger.ONE.intValue())
+        ApplicationVariable.getOrders()
             .forEach(order -> {
               HSSFRow row = sheet.createRow(Integer.parseInt(order.getStt()));
               row.createCell(statusCell).setCellValue(order.getStatus());
