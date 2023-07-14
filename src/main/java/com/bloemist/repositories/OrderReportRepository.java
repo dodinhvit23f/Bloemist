@@ -22,5 +22,5 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "order.orderStatus ASC")
   List<OrderReport> getOrders(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
-
+  List<OrderReport> findOrderReportByOrderCodeIn(List<String> codes);
 }

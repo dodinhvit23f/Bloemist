@@ -17,6 +17,8 @@ public interface IOrderService {
   @Transactional
   void updateOrder(Order order);
 
+  void updateOrders(List<Order> orders);
+
   @Transactional
   void deleteOrder(String orderCode);
 

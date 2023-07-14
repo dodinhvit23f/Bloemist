@@ -122,7 +122,11 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void updateInfo() {
+    List<Order> selectedOrder = orderTable.getItems()
+        .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
+        .stream().toList();
 
+    orderService.updateOrders(selectedOrder);
   }
 
   @FXML
@@ -413,7 +417,9 @@ public class TotalReportController extends OrderController {
               OrderState.IN_DELIVERY.getStateText(),
               OrderState.IN_DEBIT.getStateText(),
               OrderState.IN_PROCESS.getStateText()));
+          combo.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 
+          });
           return new TableCell<>() {
             @Override
             protected void updateItem(String reason, boolean empty) {
@@ -422,6 +428,7 @@ public class TotalReportController extends OrderController {
                 setGraphic(null);
               } else {
                 combo.setValue(reason);
+                System.out.println(reason);
                 setGraphic(combo);
               }
             }
@@ -455,22 +462,23 @@ public class TotalReportController extends OrderController {
     setEditEventTableCell(actualDeliveryFee);
     setEditEventTableCell(actualVatFee);
     setEditEventTableCell(categoryFee);
+
   }
 
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
     tableColumn.setOnEditStart(event -> {
-      var cellEditStartEvent = event;
-      textArea.setText(cellEditStartEvent.getOldValue());
-      orderRow = cellEditStartEvent.getTablePosition().getRow();
-      currentOrder = cellEditStartEvent.getTableView().getItems().get(orderRow);
+      if (ObjectUtils.isEmpty(textArea.getText())) {
+        textArea.setText(event.getOldValue());
+      }
+      orderRow = event.getTablePosition().getRow();
+      currentOrder = event.getTableView().getItems().get(orderRow);
       editableColumn = tableColumn;
     });
 
     tableColumn.setOnEditCommit(event -> {
-      var cellEditCommitEvent = event;
-      if (Objects.nonNull(cellEditCommitEvent.getNewValue())) {
-        textArea.setText(cellEditCommitEvent.getNewValue());
-        setValueToColumn(editableColumn, currentOrder, cellEditCommitEvent.getNewValue());
+      if (Objects.nonNull(event.getNewValue())) {
+        textArea.setText(event.getNewValue());
+        setValueToColumn(editableColumn, currentOrder, event.getNewValue());
       }
     });
 
@@ -478,10 +486,17 @@ public class TotalReportController extends OrderController {
   }
 
   private void setAfterEditEvent() {
+    textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+      if (Objects.nonNull(currentOrder)) {
+        setValueToColumn(editableColumn, currentOrder, newValue);
+        orderTable.refresh();
+      }
+    });
+
     textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (Boolean.FALSE.equals(newValue)) {
-        setValueToColumn(editableColumn, currentOrder, textArea.getText());
-        orderTable.refresh();
+        editableColumn = null;
+        textArea.setText("");
       }
     });
   }
@@ -497,10 +512,6 @@ public class TotalReportController extends OrderController {
     }
     if (orderRemarkCol.equals(tableColumn)) {
       order.setCustomerNote(value);
-      return;
-    }
-    if (statusCol.equals(tableColumn)) {
-      order.setStatus(value);
       return;
     }
     if (orderDescriptionCol.equals(tableColumn)) {

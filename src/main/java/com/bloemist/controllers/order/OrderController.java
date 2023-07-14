@@ -176,6 +176,7 @@ public abstract class OrderController extends BaseController {
   public void onScrollFinished(TableView<Order> orderTable) {
     var tvScrollBar = (ScrollBar) orderTable.lookup(".scroll-bar:vertical");
     tvScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
+      tvScrollBar.setDisable(Boolean.TRUE);
       if (newValue.doubleValue() == BigInteger.ONE.doubleValue()) {
         loadPageAsync(Boolean.FALSE, orderTable);
       }
@@ -186,6 +187,7 @@ public abstract class OrderController extends BaseController {
           loadPageAsync(Boolean.TRUE, orderTable);
         }
       }
+      tvScrollBar.setDisable(Boolean.FALSE);
     });
   }
 

@@ -21,6 +21,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -97,6 +98,12 @@ public class OrderReportController extends OrderController {
   @FXML
   private DatePicker deliveryDate;
 
+  @FXML
+  private Label orderCode;
+
+  @FXML
+  private Label orderDate;
+
   private Order currentOrder;
 
   protected OrderReportController(ApplicationEventPublisher publisher) {
@@ -119,7 +126,7 @@ public class OrderReportController extends OrderController {
     var deliveryTime = this.deliveryHour.getText().strip(); //NOSONAR
     var orderDescription = this.orderDescription.getText().strip(); //NOSONAR
     var banner = this.orderBanner.getText().strip(); //NOSONAR
-    var discount = this.discountRate.getText(); //NOSONAR
+    var discount = Utils.currencyToNumber(this.discountRate.getText().strip()); //NOSONAR
     var deliveryFee = Utils.currencyToNumber(this.deliveryFee.getText().strip()); //NOSONAR
     var vatFee = this.vatFee.getText().strip();//NOSONAR
     var depositAmount = Utils.currencyToNumber(this.depositAmount.getText().strip());//NOSONAR
@@ -192,7 +199,6 @@ public class OrderReportController extends OrderController {
       currentOrder.setDeposit(this.depositAmount.getText());
       currentOrder.setRemain(this.outstandingBalance.getText());
       currentOrder.setTotal(this.totalAmount.getText());
-      orderTable.refresh();
     }
   }
 
@@ -286,6 +292,8 @@ public class OrderReportController extends OrderController {
     this.deliveryDate.setValue(
         LocalDate.ofInstant(Utils.toDate(currentOrder.getDeliveryDate()).toInstant(),
             ZoneId.systemDefault()));
+    this.orderCode.setText(currentOrder.getCode());
+    this.orderDate.setText(currentOrder.getOrderDate());
   }
 
   private boolean isCurrentOrderEmpty() {

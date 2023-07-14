@@ -44,7 +44,7 @@ public final class Utils {
   }
 
   public static boolean isNumber(String number) {
-    return number.chars().filter(character -> character != '.').allMatch(Character::isDigit);
+    return number.chars().filter(character -> character != '.' && character != ',').allMatch(Character::isDigit);
   }
 
   public static String currencyToNumber(String currency) {

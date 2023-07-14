@@ -1,17 +1,14 @@
 package com.bloemist.converters;
 
 import com.bloemist.dto.Order;
+import com.bloemist.entity.OrderReport;
 import com.constant.OrderState;
 import com.utils.Utils;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
-
 import org.mapstruct.Mapper;
-import com.bloemist.entity.OrderReport;
 import org.mapstruct.factory.Mappers;
-
 import org.springframework.util.ObjectUtils;
 
 
@@ -78,7 +75,7 @@ public interface OrderMapper {
         .deliveryFee(Utils.currencyFormat(orderReport.getDeliveryFee().doubleValue()))
         .vatFee(String.valueOf(orderReport.getVatFee().doubleValue()))
         .actualPrice(Utils.currencyFormat(orderReport.getActualPrice().doubleValue()))
-        .discount(String.valueOf(orderReport.getDiscount()))
+        .discount(Utils.currencyFormat(orderReport.getDiscount().doubleValue()))
         .salePrice(Utils.currencyFormat(orderReport.getSalePrice().doubleValue()))
         .remain(Utils.currencyFormat(orderReport.getRemainingAmount().doubleValue()))
         .deposit(Utils.currencyFormat(orderReport.getDepositAmount().doubleValue()))

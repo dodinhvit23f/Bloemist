@@ -1,5 +1,7 @@
 package com.bloemist.services.impl;
 
+import static com.utils.Utils.currencyToNumber;
+
 import com.bloemist.converters.OrderMapper;
 import com.bloemist.dto.Order;
 import com.bloemist.entity.OrderReport;
@@ -16,7 +18,11 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -92,42 +98,70 @@ public class OrderService implements IOrderService {
 
     var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
     optionalOrderReport.ifPresentOrElse(orderReport -> {
-      // change money
-
-      var deposit = NumberUtils.parseNumber(order.getDeposit(), BigDecimal.class);
-      var remain = NumberUtils.parseNumber(order.getRemain(), BigDecimal.class);
-      var total = NumberUtils.parseNumber(order.getTotal(), BigDecimal.class);
-      var deliveryFee = NumberUtils.parseNumber(order.getDeliveryFee(), BigDecimal.class);
-      var vatFee = NumberUtils.parseNumber(order.getVatFee(), BigDecimal.class);
-      var actualPrice = NumberUtils.parseNumber(order.getActualPrice(), BigDecimal.class);
-      var salePrice = NumberUtils.parseNumber(order.getSalePrice(), BigDecimal.class);
-      var discount = NumberUtils.parseNumber(order.getDiscount(), BigDecimal.class);
-
-      orderReport.setDepositAmount(deposit);
-      orderReport.setRemainingAmount(remain);
-      orderReport.setTotalAmount(total);
-      orderReport.setDeliveryFee(deliveryFee);
-      orderReport.setVatFee(vatFee);
-      orderReport.setActualPrice(actualPrice);
-      orderReport.setSalePrice(salePrice);
-      orderReport.setDiscount(discount);
-      // change info customer
-      orderReport.setClientName(order.getCustomerName());
-      orderReport.setClientPhone(order.getCustomerPhone());
-      orderReport.setClientSocialLink(order.getCustomerSocialLink());
-      orderReport.setClientSource(order.getCustomerSource());
-      // change delivery info
-      orderReport.setDeliveryAddress(order.getDeliveryAddress());
-      orderReport.setReceiver(order.getReceiverName());
-      orderReport.setReceiverPhone(order.getReceiverPhone());
-      orderReport.setDeliveryTime(order.getDeliveryHour());
-      // change order con
-      orderReport.setOrderDescription(order.getOrderDescription());
-      orderReport.setBannerContent(order.getBanner());
-      orderReport.setRemark(order.getCustomerNote());
-
+      updateFieldsCanChange(order, orderReport);
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
     }, () -> publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004)));
+  }
+
+  private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
+    var deposit = NumberUtils.parseNumber(currencyToNumber(order.getDeposit()), BigDecimal.class);
+    var remain = NumberUtils.parseNumber(currencyToNumber(order.getRemain()), BigDecimal.class);
+    var total = NumberUtils.parseNumber(currencyToNumber(order.getTotal()), BigDecimal.class);
+    var deliveryFee = NumberUtils.parseNumber(currencyToNumber(order.getDeliveryFee()), BigDecimal.class);
+    var vatFee = NumberUtils.parseNumber(currencyToNumber(order.getVatFee()), BigDecimal.class);
+    var actualPrice = NumberUtils.parseNumber(currencyToNumber(order.getActualPrice()), BigDecimal.class);
+    var salePrice = NumberUtils.parseNumber(currencyToNumber(order.getSalePrice()), BigDecimal.class);
+    var discount = NumberUtils.parseNumber(currencyToNumber(order.getDiscount()), BigDecimal.class);
+
+    orderReport.setDepositAmount(deposit);
+    orderReport.setRemainingAmount(remain);
+    orderReport.setTotalAmount(total);
+    orderReport.setDeliveryFee(deliveryFee);
+    orderReport.setVatFee(vatFee);
+    orderReport.setActualPrice(actualPrice);
+    orderReport.setSalePrice(salePrice);
+    orderReport.setDiscount(discount);
+    // change info customer
+    orderReport.setClientName(order.getCustomerName());
+    orderReport.setClientPhone(order.getCustomerPhone());
+    orderReport.setClientSocialLink(order.getCustomerSocialLink());
+    orderReport.setClientSource(order.getCustomerSource());
+    // change delivery info
+    orderReport.setDeliveryAddress(order.getDeliveryAddress());
+    orderReport.setReceiver(order.getReceiverName());
+    orderReport.setReceiverPhone(order.getReceiverPhone());
+    orderReport.setDeliveryTime(order.getDeliveryHour());
+    // change order con
+    orderReport.setOrderDescription(order.getOrderDescription());
+    orderReport.setBannerContent(order.getBanner());
+    orderReport.setRemark(order.getCustomerNote());
+  }
+
+  @Override
+  public void updateOrders(List<Order> orders) {
+    Optional<Order> failOrder = orders.stream()
+        .filter(this::validOrder)
+        .findFirst();
+
+    Map<String, Order> orderMap = orders.stream()
+        .collect(Collectors.toMap(Order::getCode, Function.identity()));
+
+    failOrder.ifPresent(order -> {
+      final List<String> codes = orders.stream().map(Order::getCode).toList();
+      Map<String, OrderReport> orderReports = orderReportRepository
+          .findOrderReportByOrderCodeIn(codes)
+          .stream()
+          .collect(Collectors.toMap(OrderReport::getOrderCode, Function.identity()));
+
+      codes.forEach(code -> {
+        if(orderReports.containsKey(code)){
+          updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
+        }
+      });
+
+      orderReportRepository.saveAll(orderReports.values());
+    });
+
   }
 
   @Override
@@ -191,16 +225,6 @@ public class OrderService implements IOrderService {
         || !Utils.isNumber(orderInfo.getVatFee())
         || !Utils.isNumber(orderInfo.getDeposit())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
-      return Boolean.FALSE;
-    }
-
-    if (orderInfo.getDeliveryHour().length() != 5) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_006));
-      return Boolean.FALSE;
-    }
-
-    if (!timeService.validateTime(orderInfo.getDeliveryHour().split(":"))) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_005));
       return Boolean.FALSE;
     }
 

@@ -2,9 +2,9 @@ spring:
   main:
     web-application-type: none
   datasource:
-    username: ${USER_NAME :database}
-    password: ${PASSWORD :secret@passs}
-    url: jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=name
+    username: ${USER_NAME :bloemist}
+    password: ${PASSWORD :ej5iri53&Y35}
+    url: jdbc:sqlserver://66.42.53.96:1434;encrypt=true;trustServerCertificate=true;databaseName=bloemist
   jpa:
     properties:
       hibernate:
