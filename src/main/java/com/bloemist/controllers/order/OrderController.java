@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -115,7 +116,7 @@ public abstract class OrderController extends BaseController {
 
     orderLoading.thenAccept(orders -> {
       if (Objects.isNull(isNew)) {
-        ApplicationVariable.setOrders(orders);
+        ApplicationVariable.setOrders(new ArrayList<>(orders));
         setDataOrderTable(orderTable);
         return;
       }
@@ -153,7 +154,7 @@ public abstract class OrderController extends BaseController {
       return order;
     }).toList();
 
-    ApplicationVariable.setOrders(orders);
+    ApplicationVariable.setOrders(new ArrayList<>(orders));
     setDataOrderTable(orderTable);
   }
 

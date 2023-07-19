@@ -10,6 +10,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -216,8 +217,8 @@ public class OrderReportController extends OrderController {
       return;
     }
     var imagePath = currentOrder.getImagePath();
-    if (Objects.nonNull(imagePath) && new File(imagePath).exists()) {
-      Desktop.getDesktop().open(new File(imagePath));
+    if (Objects.nonNull(imagePath)) {
+      Desktop.getDesktop().browse(URI.create(imagePath));
     }
   }
 
