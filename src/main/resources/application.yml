@@ -3,8 +3,8 @@ spring:
     web-application-type: none
   datasource:
     username: ${USER_NAME :bloemist}
-    password: ${PASSWORD :ej5iri53&Y35}
-    url: jdbc:sqlserver://66.42.53.96:1434;encrypt=true;trustServerCertificate=true;databaseName=bloemist
+    password: ${PASSWORD :}
+    url:
   jpa:
     properties:
       hibernate:
@@ -22,6 +22,9 @@ spring:
           auth: true
           starttls:
             enable: true
+google:
+  credential:
+    path: classpath:google_credential.json
 
 application:
   image-url: Img/icon.ico
