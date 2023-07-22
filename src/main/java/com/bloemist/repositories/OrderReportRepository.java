@@ -16,7 +16,9 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
 
   @Query("SELECT order "
       + "FROM OrderReport order "
-      + "WHERE  order.orderStatus <> 6 "
+      + "WHERE  order.orderStatus <> 6 AND "
+      + "order.orderDate >= :startTime AND "
+      + "order.orderDate <= :endTime "
       + "ORDER BY order.deliveryDate ASC,"
       + "order.deliveryTime ASC, "
       + "order.orderStatus ASC")

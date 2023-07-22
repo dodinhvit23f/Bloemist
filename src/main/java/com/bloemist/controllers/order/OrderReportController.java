@@ -262,6 +262,11 @@ public class OrderReportController extends OrderController {
         });
   }
 
+  @FXML
+  private void reload(){
+    loadPageAsync(Boolean.TRUE, this.orderTable);
+  }
+
   private void setCellValueFactory() {
     statusCol.setCellValueFactory(new PropertyValueFactory<>(Order.STATUS));
     deliveryDateCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_DATE));

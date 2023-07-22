@@ -16,10 +16,11 @@ import com.constant.OrderState;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.Permission;
 import com.utils.Utils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -221,11 +222,14 @@ public class OrderService implements IOrderService {
   }
 
   @Override
-  public List<Order> getPage(Date startTime, Date endTime) {
+  public List<Order> getPage(LocalDateTime startTime, LocalDateTime endTime) {
     AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
 
+    final var startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
+    final var endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
+
     var pageOrderReport = orderReportRepository
-        .getOrders(startTime, endTime);
+        .getOrders(startDate, endDate);
 
     return pageOrderReport.stream()
         .map(orderReport -> {

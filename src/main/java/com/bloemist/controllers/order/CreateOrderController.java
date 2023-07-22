@@ -232,7 +232,8 @@ public class CreateOrderController extends OrderController {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    this.customerSource.setItems(FXCollections.observableArrayList(Constants.ON_SHOP,
+    this.customerSource.setItems(FXCollections.observableArrayList(Constants.REGULAR_CUSTOMER,
+        Constants.CUSTOMER, Constants.TIKTOK, Constants.HOTLINE,
         Constants.FACEBOOK, Constants.INSTAGRAM, Constants.ZALO));
     this.customerSource.setValue(Constants.FACEBOOK);
 

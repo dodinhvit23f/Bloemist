@@ -48,7 +48,7 @@
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-      <Button layoutX="198.0" layoutY="730.0" mnemonicParsing="false" onAction="#printOrder" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: BEIGE;" text="Tải lại">
+      <Button layoutX="198.0" layoutY="730.0" mnemonicParsing="false" onAction="#reload" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: BEIGE;" text="Tải lại">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

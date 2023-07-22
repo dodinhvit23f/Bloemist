@@ -78,8 +78,10 @@ public final class Constants {
   public static final String FACEBOOK = "Facebook";
   public static final String INSTAGRAM = "Instagram";
   public static final String ZALO = "Zalo";
-  public static final String ON_SHOP = "On shop";
-
+  public static final String CUSTOMER = "Khách";
+  public static final String REGULAR_CUSTOMER = "Khách lẻ";
+  public static final String TIKTOK = "Tiktok";
+  public static final String HOTLINE = "HOTLINE";
   public static final String STAFF = "staff";
   public static final String SUPERVISOR = "supervisor";
   public static final String MANAGER = "manager";

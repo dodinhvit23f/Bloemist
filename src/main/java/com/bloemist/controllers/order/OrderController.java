@@ -9,12 +9,10 @@ import com.constant.ApplicationVariable;
 import com.utils.Utils;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,12 +35,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class OrderController extends BaseController {
 
   public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.TRUE);
-  public static final int SEVEN_DAYS = 7;
+  public static final String DD_MM_YYYY = "dd-MM-uuuu";
   @Autowired
   IOrderService orderService;
   @Autowired
@@ -79,39 +78,50 @@ public abstract class OrderController extends BaseController {
   }
 
   protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable) {
+
+    LocalDateTime endTime;
+    if (ObjectUtils.isEmpty(ApplicationVariable.getOrders())) {
+      endTime = LocalDateTime.now();
+    } else {
+      if(Boolean.TRUE.equals(isNew)){
+        var latestOrder = ApplicationVariable.getOrders()
+            .stream()
+            .max(Comparator.comparing(Order::getOrderDate))
+            .get();
+
+        endTime = LocalDate.parse(latestOrder.getOrderDate(),
+            DateTimeFormatter.ofPattern(DD_MM_YYYY)).atStartOfDay();
+      }else{
+        var oldestOrder = ApplicationVariable.getOrders()
+            .stream()
+            .min(Comparator.comparing(Order::getOrderDate))
+            .get();
+
+        endTime = LocalDateTime.parse(oldestOrder.getOrderDate(),
+            DateTimeFormatter.ofPattern(DD_MM_YYYY));
+      }
+
+    }
+
+    LocalDateTime startTime = endTime.minusMonths(BigInteger.ONE.intValue())
+        .toLocalDate()
+        .atStartOfDay();
     CompletableFuture<List<Order>> orderLoading = CompletableFuture
         .supplyAsync(() -> {
-          var now = Instant.now();
+
           if (Objects.isNull(isNew)) {
-            return orderService
-                .getPage(Date.from(now.minus(SEVEN_DAYS, ChronoUnit.DAYS)),
-                    Date.from(now));
+            return orderService.getPage(startTime, endTime);
           }
           // load new record
           if (Boolean.TRUE.equals(isNew)) {
-            return orderService.getPage(Date.from(
-                    LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
-                Date.from(now));
+            return orderService.getPage(endTime, LocalDateTime.now());
           }
           // load old record
           if (isEnd.get()) {
             return Collections.emptyList();
           }
 
-          var min = ApplicationVariable.getOrders().stream().min(
-              Comparator.comparing(Order::getDeliveryDate)).orElseThrow();
-
-          return orderService.getPage(
-              Date.from(LocalDateTime.of(
-                      now.get(ChronoField.YEAR),
-                      now.get(ChronoField.MONTH_OF_YEAR),
-                      now.get(ChronoField.DAY_OF_MONTH),
-                      BigInteger.ZERO.intValue(),
-                      BigInteger.ZERO.intValue(),
-                      BigInteger.ZERO.intValue())
-                  .minus(SEVEN_DAYS, ChronoUnit.DAYS)
-                  .atZone(ZoneId.systemDefault()).toInstant()),
-              Utils.toDate(min.getDeliveryDate()));
+          return orderService.getPage(startTime, endTime);
         });
 
     orderLoading.thenAccept(orders -> {

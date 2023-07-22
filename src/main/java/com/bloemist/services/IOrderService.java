@@ -1,8 +1,8 @@
 package com.bloemist.services;
 
 import com.bloemist.dto.Order;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ public interface IOrderService {
   void changeOrderStateInfo(Order order);
 
   @Transactional(readOnly = true)
-  List<Order> getPage(Date startTime, Date endTime);
+  List<Order> getPage(LocalDateTime startTime, LocalDateTime endTime);
 
   boolean validOrder(Order orderInfo);
 }
