@@ -2,9 +2,10 @@ spring:
   main:
     web-application-type: none
   datasource:
-    username: ${USER_NAME :bloemist}
-    password: ${PASSWORD :}
-    url:
+    username: ${USER_NAME :postgres}
+    password: ${PASSWORD :123}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
   jpa:
     properties:
       hibernate:

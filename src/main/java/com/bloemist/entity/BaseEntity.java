@@ -25,7 +25,7 @@ import lombok.experimental.SuperBuilder;
 public abstract class BaseEntity  implements Serializable{
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", updatable = false)
   private Long id;
 }
