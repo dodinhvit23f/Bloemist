@@ -25,13 +25,12 @@ import lombok.experimental.SuperBuilder;
 public abstract class BaseEntity implements Serializable {
 
   @Id
-  @GeneratedValue(generator = "sequenceIdGenerator")
-  @GenericGenerator(
-      name = "sequenceIdGenerator",
-      strategy = "sequence",
-      parameters = @Parameter(
-          name = SequenceStyleGenerator.DEF_SEQUENCE_SUFFIX,
-          value = "true"))
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceIdGenerator")
+  @GenericGenerator(name = "sequenceIdGenerator", strategy = "sequence", parameters = {
+      @Parameter(name = SequenceStyleGenerator.CONFIG_SEQUENCE_PER_ENTITY_SUFFIX, value = SequenceStyleGenerator.DEF_SEQUENCE_SUFFIX),
+      @Parameter(name = SequenceStyleGenerator.CONFIG_PREFER_SEQUENCE_PER_ENTITY, value = "true"),
+      @Parameter(name = SequenceStyleGenerator.INITIAL_PARAM, value = "1"),
+      @Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1")})
   @Column(name = "id", updatable = false)
   private Long id;
 }
