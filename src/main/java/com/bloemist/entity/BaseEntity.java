@@ -22,10 +22,16 @@ import lombok.experimental.SuperBuilder;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class BaseEntity  implements Serializable{
+public abstract class BaseEntity implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(generator = "sequenceIdGenerator")
+  @GenericGenerator(
+      name = "sequenceIdGenerator",
+      strategy = "sequence",
+      parameters = @Parameter(
+          name = SequenceStyleGenerator.DEF_SEQUENCE_SUFFIX,
+          value = "true"))
   @Column(name = "id", updatable = false)
   private Long id;
 }
