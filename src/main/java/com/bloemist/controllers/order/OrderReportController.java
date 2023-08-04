@@ -17,6 +17,8 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -27,6 +29,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -63,6 +66,9 @@ public class OrderReportController extends OrderController {
   private TableColumn<Order, String> orderRemarkCol;
   @FXML
   private TableColumn<Order, String> orderBanner;
+  @FXML
+  private TableColumn<Order, Boolean> choice;
+
   @FXML
   private TextField customerName;
   @FXML
@@ -129,7 +135,7 @@ public class OrderReportController extends OrderController {
     var banner = this.orderBanner.getText().strip(); //NOSONAR
     var discount = Utils.currencyToNumber(this.discountRate.getText().strip()); //NOSONAR
     var deliveryFee = Utils.currencyToNumber(this.deliveryFee.getText().strip()); //NOSONAR
-    var vatFee = this.vatFee.getText().strip();//NOSONAR
+    var vatFee = Utils.currencyToNumber(this.vatFee.getText().strip());//NOSONAR
     var depositAmount = Utils.currencyToNumber(this.depositAmount.getText().strip());//NOSONAR
     var truePrice = Utils.currencyToNumber(this.actualPrice.getText().strip());//NOSONAR
     var remainAmount = Utils.currencyToNumber(this.outstandingBalance.getText());//NOSONAR
@@ -208,7 +214,7 @@ public class OrderReportController extends OrderController {
     if (isCurrentOrderEmpty()) {
       return;
     }
-    switchScene(ApplicationView.PRINT_ORDER);
+    switchScene(ApplicationView.PRINT_ORDER, ApplicationView.INQUIRY_ORDER);
   }
 
   @FXML
@@ -277,6 +283,7 @@ public class OrderReportController extends OrderController {
     orderBanner.setCellValueFactory(new PropertyValueFactory<>(Order.BANNER));
     orderCodeCol.setCellValueFactory(new PropertyValueFactory<>(Order.CODE));
     deliveryHourCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_HOUR));
+    choice.setCellFactory(CheckBoxTableCell.forTableColumn(choice));
   }
 
   private void setOrderData() {
@@ -300,6 +307,13 @@ public class OrderReportController extends OrderController {
             ZoneId.systemDefault()));
     this.orderCode.setText(currentOrder.getCode());
     this.orderDate.setText(currentOrder.getOrderDate());
+
+    this.choice.setCellValueFactory(param -> {
+      Order order = param.getValue();
+      final SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(order.getIsSelected());
+      booleanProp.addListener((observable, oldValue, newValue) -> order.setIsSelected(newValue));
+      return booleanProp;
+    });
   }
 
   private boolean isCurrentOrderEmpty() {

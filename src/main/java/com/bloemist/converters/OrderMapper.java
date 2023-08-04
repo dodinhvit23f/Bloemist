@@ -4,56 +4,53 @@ import com.bloemist.dto.Order;
 import com.bloemist.entity.OrderReport;
 import com.constant.OrderState;
 import com.utils.Utils;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Objects;
+
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
+
 import org.springframework.util.ObjectUtils;
 
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface OrderMapper {
 
   OrderMapper MAPPER = Mappers.getMapper(OrderMapper.class);
 
-  default OrderReport orderToOrderReport(Order order) {
-    var status = OrderState.PENDING.getState();
-    if (!ObjectUtils.isEmpty(order.getStatus())) {
-      status = OrderState.getState(order.getStatus());
-    }
+  @Mapping(source = Order.CUSTOMER_NAME, target = "clientName")
+  @Mapping(source = Order.CUSTOMER_PHONE, target = "clientPhone")
+  @Mapping(source = Order.CUSTOMER_SOCIAL_LINK, target = "clientSocialLink")
+  @Mapping(source = Order.CUSTOMER_SOURCE, target = "clientSource")
+  @Mapping(source = Order.RECEIVER_NAME, target = "receiver")
+  @Mapping(source = Order.RECEIVER_PHONE, target = "receiverPhone")
+  @Mapping(source = Order.ORDER_DESCRIPTION, target = "orderDescription")
+  @Mapping(source = Order.CUSTOMER_NOTE, target = "remark")
+  @Mapping(source = Order.BANNER, target = "bannerContent")
+  @Mapping(source = Order.DELIVERY_ADDRESS, target = "deliveryAddress")
+  @Mapping(target = "orderDate", expression = "java(com.utils.Utils.toDate(order.getOrderDate()))")
+  @Mapping(target = "deliveryDate", expression = "java(com.utils.Utils.toDate(order.getDeliveryDate()))")
+  @Mapping(source = Order.DELIVERY_HOUR, target = "deliveryTime")
+  @Mapping(source = Order.IMAGE_PATH, target = "samplePictureLink")
+  @Mapping(target = "discount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getDiscount()))")
+  @Mapping(target = "actualPrice", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getActualPrice()))")
+  @Mapping(target = "deliveryFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getDeliveryFee()))")
+  @Mapping(target = "vatFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getVatFee()))")
+  @Mapping(target = "salePrice", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getSalePrice()))")
+  @Mapping(target = "depositAmount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getDeposit()))")
+  @Mapping(target = "remainingAmount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getRemain()))")
+  @Mapping(target = "totalAmount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getTotal()))")
+  @Mapping(target = "actualDeliveryFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getActualDeliveryFee()))")
+  @Mapping(target = "actualVatFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getActualVatFee()))")
+  @Mapping(target = "materialsFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getMaterialsFee()))")
+  @Mapping(target = "orderStatus", ignore = true)
+  void mapOrderToOrderReport(@MappingTarget OrderReport orderReport, Order order);
 
-    return OrderReport.builder()
-        .clientName(order.getCustomerName())
-        .clientPhone(order.getCustomerPhone())
-        .clientSocialLink(order.getCustomerSocialLink())
-        .clientSource(order.getCustomerSource())
-        .receiver(order.getReceiverName())
-        .receiverPhone(order.getCustomerPhone())
-        .orderDescription(order.getOrderDescription())
-        .remark(order.getCustomerNote())
-        .bannerContent(order.getBanner())
-        .deliveryAddress(order.getDeliveryAddress())
-        .orderDate(Utils.toDate(order.getOrderDate()))
-        .deliveryDate(Utils.toDate(order.getDeliveryDate()))
-        .deliveryTime(order.getDeliveryHour())
-        .samplePictureLink(order.getImagePath())
-            .discount(convertBigDecimal(order.getDiscount()))
-        .actualPrice(convertBigDecimal(order.getActualPrice()))
-        .deliveryFee(convertBigDecimal(order.getDeliveryFee()))
-        .vatFee(convertBigDecimal(order.getVatFee()))
-        .salePrice(convertBigDecimal(order.getSalePrice()))
-        .depositAmount(convertBigDecimal(order.getDeposit()))
-        .remainingAmount(convertBigDecimal(order.getRemain()))
-        .totalAmount(convertBigDecimal(order.getTotal()))
-        .actualDeliveryFee(convertBigDecimal(order.getActualDeliveryFee()))
-        .actualVatFee(convertBigDecimal(order.getActualVatFee()))
-        .materialsFee(convertBigDecimal(order.getMaterialsFee()))
-        .orderStatus(status)
-        .build();
-  }
-
-  private static BigDecimal convertBigDecimal(String s) {
+  static BigDecimal convertBigDecimal(String s) {
     return Objects.isNull(s) ? BigDecimal.ZERO : new BigDecimal(s);
   }
 

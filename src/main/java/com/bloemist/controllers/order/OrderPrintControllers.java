@@ -4,17 +4,21 @@ import com.bloemist.dto.Order;
 import com.bloemist.services.IOrderService;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
+
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -84,7 +88,7 @@ public class OrderPrintControllers extends OrderController {
 
   @Override
   public void cancel() {
-    switchScene(ApplicationView.INQUIRY_ORDER);
+    switchScene(stageManager.getPreviousView());
   }
 
   @Override

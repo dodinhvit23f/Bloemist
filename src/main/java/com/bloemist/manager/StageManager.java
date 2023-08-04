@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import com.bloemist.message.Message;
 import com.constant.ApplicationView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,15 +27,16 @@ public class StageManager implements Serializable {
   Stage stage;
   ApplicationView view;
   String path;
-  Pane pane;
+  ApplicationView previousView;
 
-  public StageManager(Message message, Stage stage, ApplicationView view, String path, Pane pane) {
+  public StageManager(Message message, Stage stage, ApplicationView view, String path,
+                      ApplicationView previousView) {
     super();
     this.message = message;
     this.stage = stage;
     this.view = view;
     this.path = path;
-    this.pane = pane;
+    this.previousView = previousView;
   }
 
   public StageManager() {
@@ -65,8 +68,8 @@ public class StageManager implements Serializable {
     return message.getMessage(view.getTitle());
   }
 
-  public void setPane(Pane pane) {
-    this.pane = pane;
+  public void setPreviousView(ApplicationView view) {
+    this.previousView = view;
   }
 
 }

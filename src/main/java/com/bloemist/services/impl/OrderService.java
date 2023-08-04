@@ -17,6 +17,7 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.utils.Utils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -30,9 +31,11 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
@@ -52,7 +55,8 @@ public class OrderService implements IOrderService {
   OrderReportRepository orderReportRepository;
   ITimeService timeService;
   ApplicationEventPublisher publisher;
-  Drive googleDrive;
+  OrderMapper orderMapper;
+  // Drive googleDrive;
 
   @Override
   public void createNewOrder(Order customerOrder) {
@@ -60,11 +64,13 @@ public class OrderService implements IOrderService {
       return;
     }
 
-    OrderReport orderReport = OrderMapper.MAPPER.orderToOrderReport(customerOrder);
+    OrderReport orderReport = new OrderReport();
+    orderMapper.mapOrderToOrderReport(orderReport, customerOrder);
     orderReport.setOrderCode(getOrderCode());
+    orderReport.setOrderStatus(OrderState.PENDING.getState());
 
     try {
-      File fileMetadata = new File();
+     /* File fileMetadata = new File();
       fileMetadata.setName(String.format("%s.jpg", orderReport.getOrderCode()));
       fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
       fileMetadata.setMimeType(MEDIA);
@@ -76,7 +82,7 @@ public class OrderService implements IOrderService {
           .setFields(String.join(",", ID, WEB_VIEW_LINK))
           .execute();
 
-      orderReport.setSamplePictureLink(fileMetadata.getWebViewLink());
+      orderReport.setSamplePictureLink(fileMetadata.getWebViewLink());*/
       orderReportRepository.save(orderReport);
 
       customerOrder.setCode(orderReport.getOrderCode());
@@ -94,12 +100,12 @@ public class OrderService implements IOrderService {
   public void createNewOrders(Collection<Order> orders) {
 
     List<OrderReport> orderReports = orders.stream()
-        .map(OrderMapper.MAPPER::orderToOrderReport)
-        .map(orderReport -> {
+        .map(order -> {
+          OrderReport orderReport = new OrderReport();
+          orderMapper.mapOrderToOrderReport(orderReport, order);
           orderReport.setOrderCode(getOrderCode());
           return orderReport;
-        })
-        .toList();
+        }).toList();
 
     try {
       orderReportRepository.saveAll(orderReports);

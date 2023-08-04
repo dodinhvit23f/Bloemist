@@ -5,13 +5,16 @@ import com.bloemist.events.StageEvent;
 import com.bloemist.manager.StageManager;
 import com.bloemist.message.Mail;
 import com.constant.ApplicationView;
+
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
+
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
@@ -29,6 +32,11 @@ public abstract class BaseController implements Initializable {
   @Autowired
   protected BaseController(ApplicationEventPublisher publisher) {
     this.publisher = publisher;
+  }
+
+  protected void switchScene(ApplicationView view, ApplicationView previousView) {
+    stageManager.setPreviousView(previousView);
+    switchScene(view);
   }
 
   protected void switchScene(ApplicationView view) {
