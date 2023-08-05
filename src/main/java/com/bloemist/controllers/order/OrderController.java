@@ -44,7 +44,7 @@ import org.springframework.util.ObjectUtils;
 public abstract class OrderController extends BaseController {
 
   public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.TRUE);
-  public static final String DD_MM_YYYY = "dd-MM-uuuu";
+  public static final String DD_MM_YYYY = "dd-MM-yyyy";
   @Autowired
   IOrderService orderService;
   @Autowired
@@ -100,8 +100,8 @@ public abstract class OrderController extends BaseController {
             .min(Comparator.comparing(Order::getOrderDate))
             .get();
 
-        endTime = LocalDateTime.parse(oldestOrder.getOrderDate(),
-            DateTimeFormatter.ofPattern(DD_MM_YYYY));
+        endTime = LocalDate.parse(oldestOrder.getOrderDate(),
+            DateTimeFormatter.ofPattern(DD_MM_YYYY)).atStartOfDay();
       }
 
     }

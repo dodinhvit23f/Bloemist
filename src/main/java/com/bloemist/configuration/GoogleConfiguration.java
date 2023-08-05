@@ -52,14 +52,19 @@ public class GoogleConfiguration {
 
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
         httpTransport, GsonFactory.getDefaultInstance(), googleClientSecrets, SCOPES)
-        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+        .setDataStoreFactory(
+            new FileDataStoreFactory(
+                new java.io.File(
+                    this.getClass().getClassLoader().getResource(TOKENS_DIRECTORY_PATH).getFile())))
         .setAccessType(OFFLINE)
         .build();
 
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(PORT).build();
 
-    return new AuthorizationCodeInstalledApp(flow, receiver).authorize(
-        googleClientSecrets.getDetails().getClientId());
+    Credential credential = new AuthorizationCodeInstalledApp(flow, receiver)
+        .authorize(googleClientSecrets.getDetails().getClientId());
+
+    return credential;
   }
 
   @Bean

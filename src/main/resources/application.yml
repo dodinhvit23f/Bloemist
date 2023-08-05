@@ -26,7 +26,7 @@ spring:
             enable: true
 google:
   credential:
-    path: classpath:google_credential.json
+    path: classpath:tokens/google_credential.json
 
 application:
   image-url: Img/icon.ico

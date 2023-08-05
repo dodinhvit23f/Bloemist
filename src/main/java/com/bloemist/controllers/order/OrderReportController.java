@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -270,7 +271,8 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private void reload(){
-    loadPageAsync(Boolean.TRUE, this.orderTable);
+    this.orderTable.setItems(FXCollections.observableArrayList());
+    loadPageAsync(null, this.orderTable);
   }
 
   private void setCellValueFactory() {
@@ -284,6 +286,13 @@ public class OrderReportController extends OrderController {
     orderCodeCol.setCellValueFactory(new PropertyValueFactory<>(Order.CODE));
     deliveryHourCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_HOUR));
     choice.setCellFactory(CheckBoxTableCell.forTableColumn(choice));
+    choice.setEditable(Boolean.TRUE);
+    choice.setCellValueFactory(param -> {
+      Order order = param.getValue();
+      final SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(order.getIsSelected());
+      booleanProp.addListener((observable, oldValue, newValue) -> order.setIsSelected(newValue));
+      return booleanProp;
+    });
   }
 
   private void setOrderData() {
@@ -308,12 +317,6 @@ public class OrderReportController extends OrderController {
     this.orderCode.setText(currentOrder.getCode());
     this.orderDate.setText(currentOrder.getOrderDate());
 
-    this.choice.setCellValueFactory(param -> {
-      Order order = param.getValue();
-      final SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(order.getIsSelected());
-      booleanProp.addListener((observable, oldValue, newValue) -> order.setIsSelected(newValue));
-      return booleanProp;
-    });
   }
 
   private boolean isCurrentOrderEmpty() {
