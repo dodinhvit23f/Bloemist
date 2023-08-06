@@ -135,21 +135,21 @@ public class TotalReportController extends OrderController {
         .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
         .stream()
         .map(order -> {
-          order.setTotal(getTotalPrice(Double.valueOf(Utils.currencyToNumber(order.getSalePrice())),
-              Double.valueOf(Utils.currencyToNumber(order.getDeliveryFee())),
-              Double.valueOf(Utils.currencyToNumber(order.getVatFee()))).toString());
+          order.setTotal(getTotalPrice(Double.valueOf(Utils.currencyToStringNumber(order.getSalePrice())),
+              Double.valueOf(Utils.currencyToStringNumber(order.getDeliveryFee())),
+              Double.valueOf(Utils.currencyToStringNumber(order.getVatFee()))).toString());
           order.setRemain(String.valueOf(Double.parseDouble(order.getTotal()) - Double.parseDouble(
-              Utils.currencyToNumber(order.getDeposit()))));
+              Utils.currencyToStringNumber(order.getDeposit()))));
 
-          order.setActualPrice(Utils.currencyToNumber(order.getActualPrice()));
-          order.setActualVatFee(Utils.currencyToNumber(order.getActualVatFee()));
-          order.setActualDeliveryFee(Utils.currencyToNumber(order.getActualDeliveryFee()));
-          order.setSalePrice(Utils.currencyToNumber(order.getSalePrice()));
-          order.setDeliveryFee(Utils.currencyToNumber(order.getDeliveryFee()));
-          order.setDeposit(Utils.currencyToNumber(order.getDeposit()));
-          order.setDiscount(Utils.currencyToNumber(order.getDiscount()));
-          order.setVatFee(Utils.currencyToNumber(order.getVatFee()));
-          order.setMaterialsFee(Utils.currencyToNumber(order.getMaterialsFee()));
+          order.setActualPrice(Utils.currencyToStringNumber(order.getActualPrice()));
+          order.setActualVatFee(Utils.currencyToStringNumber(order.getActualVatFee()));
+          order.setActualDeliveryFee(Utils.currencyToStringNumber(order.getActualDeliveryFee()));
+          order.setSalePrice(Utils.currencyToStringNumber(order.getSalePrice()));
+          order.setDeliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()));
+          order.setDeposit(Utils.currencyToStringNumber(order.getDeposit()));
+          order.setDiscount(Utils.currencyToStringNumber(order.getDiscount()));
+          order.setVatFee(Utils.currencyToStringNumber(order.getVatFee()));
+          order.setMaterialsFee(Utils.currencyToStringNumber(order.getMaterialsFee()));
           //order.setCustomerSource(y);
 
           return order;
@@ -163,7 +163,7 @@ public class TotalReportController extends OrderController {
               .customerSocialLink(order.getCustomerSocialLink())
               .deliveryAddress(order.getDeliveryAddress())
               .deliveryHour(order.getDeliveryHour())
-              .deliveryFee(Utils.currencyToNumber(order.getDeliveryFee()))
+              .deliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()))
               .vatFee(order.getVatFee())
               .actualPrice(order.getActualPrice())
               .salePrice(order.getSalePrice())

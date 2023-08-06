@@ -12,9 +12,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -214,8 +211,11 @@ public abstract class OrderController extends BaseController {
         .toList()));
   }
 
-  protected void printA5(String printerName, Order order) throws IOException {
-    printerService.printA5Order(printerName, order);
+  protected void printA5(String printerName, Order order){
+    try {
+      printerService.printA5Order(printerName, order);
+    } catch (IOException e) {
+    }
   }
 
   @FXML

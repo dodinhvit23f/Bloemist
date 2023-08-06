@@ -1,7 +1,6 @@
 package com.bloemist.services.impl;
 
-import static com.utils.Utils.currencyToNumber;
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import static com.utils.Utils.currencyToStringNumber;
 
 import com.bloemist.converters.OrderMapper;
 import com.bloemist.dto.Order;
@@ -13,9 +12,6 @@ import com.bloemist.services.IOrderService;
 import com.bloemist.services.ITimeService;
 import com.constant.Constants;
 import com.constant.OrderState;
-import com.google.api.client.http.FileContent;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
 import com.utils.Utils;
 
 import java.math.BigDecimal;
@@ -23,7 +19,6 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +54,9 @@ public class OrderService implements IOrderService {
   // Drive googleDrive;
 
   @Override
-  public void createNewOrder(Order customerOrder) {
+  public Optional<Boolean> createNewOrder(Order customerOrder) {
     if (Boolean.FALSE.equals(validOrder(customerOrder))) {
-      return;
+      return Optional.empty();
     }
 
     OrderReport orderReport = new OrderReport();
@@ -88,12 +83,15 @@ public class OrderService implements IOrderService {
       customerOrder.setCode(orderReport.getOrderCode());
       customerOrder.setPriority(orderReport.getOrderStatus());
       customerOrder.setImagePath(orderReport.getSamplePictureLink());
+      customerOrder.setIsSelected(Boolean.FALSE);
 
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
     } catch (Exception ex) {
       ex.printStackTrace();
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
+      return Optional.empty();
     }
+    return Optional.of(Boolean.TRUE);
   }
 
   @Override
@@ -127,30 +125,37 @@ public class OrderService implements IOrderService {
   }
 
   @Override
-  public void updateOrder(Order order) {
+  public Optional<Boolean> updateOrder(Order order) {
     if (Boolean.FALSE.equals(validOrder(order))) {
-      return;
+      return Optional.empty();
     }
 
     var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
-    optionalOrderReport.ifPresentOrElse(orderReport -> {
-      updateFieldsCanChange(order, orderReport);
+    if (optionalOrderReport.isPresent()) {
+      updateFieldsCanChange(order, optionalOrderReport.get());
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
-    }, () -> publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004)));
+      return Optional.of(Boolean.TRUE);
+    }
+    publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004));
+    return Optional.empty();
   }
 
   private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
-    var deposit = NumberUtils.parseNumber(currencyToNumber(order.getDeposit()), BigDecimal.class);
-    var remain = NumberUtils.parseNumber(currencyToNumber(order.getRemain()), BigDecimal.class);
-    var total = NumberUtils.parseNumber(currencyToNumber(order.getTotal()), BigDecimal.class);
-    var deliveryFee = NumberUtils.parseNumber(currencyToNumber(order.getDeliveryFee()),
+    var deposit = NumberUtils.parseNumber(currencyToStringNumber(order.getDeposit()),
         BigDecimal.class);
-    var vatFee = NumberUtils.parseNumber(currencyToNumber(order.getVatFee()), BigDecimal.class);
-    var actualPrice = NumberUtils.parseNumber(currencyToNumber(order.getActualPrice()),
+    var remain = NumberUtils.parseNumber(currencyToStringNumber(order.getRemain()),
         BigDecimal.class);
-    var salePrice = NumberUtils.parseNumber(currencyToNumber(order.getSalePrice()),
+    var total = NumberUtils.parseNumber(currencyToStringNumber(order.getTotal()), BigDecimal.class);
+    var deliveryFee = NumberUtils.parseNumber(currencyToStringNumber(order.getDeliveryFee()),
         BigDecimal.class);
-    var discount = NumberUtils.parseNumber(currencyToNumber(order.getDiscount()), BigDecimal.class);
+    var vatFee = NumberUtils.parseNumber(currencyToStringNumber(order.getVatFee()),
+        BigDecimal.class);
+    var actualPrice = NumberUtils.parseNumber(currencyToStringNumber(order.getActualPrice()),
+        BigDecimal.class);
+    var salePrice = NumberUtils.parseNumber(currencyToStringNumber(order.getSalePrice()),
+        BigDecimal.class);
+    var discount = NumberUtils.parseNumber(currencyToStringNumber(order.getDiscount()),
+        BigDecimal.class);
 
     orderReport.setDepositAmount(deposit);
     orderReport.setRemainingAmount(remain);

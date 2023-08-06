@@ -134,13 +134,13 @@ public class OrderReportController extends OrderController {
     var deliveryTime = this.deliveryHour.getText().strip(); //NOSONAR
     var orderDescription = this.orderDescription.getText().strip(); //NOSONAR
     var banner = this.orderBanner.getText().strip(); //NOSONAR
-    var discount = Utils.currencyToNumber(this.discountRate.getText().strip()); //NOSONAR
-    var deliveryFee = Utils.currencyToNumber(this.deliveryFee.getText().strip()); //NOSONAR
-    var vatFee = Utils.currencyToNumber(this.vatFee.getText().strip());//NOSONAR
-    var depositAmount = Utils.currencyToNumber(this.depositAmount.getText().strip());//NOSONAR
-    var truePrice = Utils.currencyToNumber(this.actualPrice.getText().strip());//NOSONAR
-    var remainAmount = Utils.currencyToNumber(this.outstandingBalance.getText());//NOSONAR
-    var totalAmount = Utils.currencyToNumber(this.totalAmount.getText());//NOSONAR
+    var discount = Utils.currencyToStringNumber(this.discountRate.getText().strip()); //NOSONAR
+    var deliveryFee = Utils.currencyToStringNumber(this.deliveryFee.getText().strip()); //NOSONAR
+    var vatFee = Utils.currencyToStringNumber(this.vatFee.getText().strip());//NOSONAR
+    var depositAmount = Utils.currencyToStringNumber(this.depositAmount.getText().strip());//NOSONAR
+    var truePrice = Utils.currencyToStringNumber(this.actualPrice.getText().strip());//NOSONAR
+    var remainAmount = Utils.currencyToStringNumber(this.outstandingBalance.getText());//NOSONAR
+    var totalAmount = Utils.currencyToStringNumber(this.totalAmount.getText());//NOSONAR
     var customerNote = this.orderNote.getText().strip();
 
     if (!Utils.isNumber(discount)) {
@@ -161,7 +161,7 @@ public class OrderReportController extends OrderController {
       receiverPhone = customerPhone;
     }
 
-    var salePrice = getSalePrice(NumberUtils.parseNumber(truePrice, Double.class),
+    Double salePrice = getSalePrice(NumberUtils.parseNumber(truePrice, Double.class),
         NumberUtils.parseNumber(discount, Double.class));
 
     Alert alert = confirmDialog();
@@ -196,18 +196,25 @@ public class OrderReportController extends OrderController {
       currentOrder.setCustomerName(customerName);
       currentOrder.setCustomerPhone(customerPhone);
       currentOrder.setDeliveryAddress(deliveryAddress);
-      currentOrder.setReceiverName(receiverName);
       currentOrder.setReceiverPhone(receiverPhone);
+      currentOrder.setReceiverName(receiverName);
+      currentOrder.setDeliveryDate(Utils.formatDate(deliveryDateTime));
       currentOrder.setOrderDescription(orderDescription);
+      currentOrder.setDeliveryHour(deliveryTime);
+      currentOrder.setCustomerNote(customerNote);
       currentOrder.setBanner(banner);
       currentOrder.setDiscount(discount);
-      currentOrder.setActualPrice(this.actualPrice.getText());
-      currentOrder.setDeliveryFee(this.deliveryFee.getText());
-      currentOrder.setVatFee(this.vatFee.getText());
-      currentOrder.setDeposit(this.depositAmount.getText());
-      currentOrder.setRemain(this.outstandingBalance.getText());
-      currentOrder.setTotal(this.totalAmount.getText());
+      currentOrder.setActualPrice(truePrice);
+      currentOrder.setDeliveryFee(deliveryFee);
+      currentOrder.setVatFee(vatFee);
+      currentOrder.setSalePrice(salePrice.toString());
+      currentOrder.setDeposit(depositAmount);
+      currentOrder.setRemain(remainAmount);
+      currentOrder.setTotal(totalAmount);
+
+      orderService.updateOrder(currentOrder);
     }
+    orderTable.refresh();
   }
 
   @FXML
@@ -236,15 +243,15 @@ public class OrderReportController extends OrderController {
     }
 
     var discount = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.discountRate.getText()), Double.class);
+        .parseNumber(Utils.currencyToStringNumber(this.discountRate.getText()), Double.class);
     var truePrice = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.actualPrice.getText()), Double.class);
+        .parseNumber(Utils.currencyToStringNumber(this.actualPrice.getText()), Double.class);
     var deliveryFeeAmount = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.deliveryFee.getText()), Double.class);
+        .parseNumber(Utils.currencyToStringNumber(this.deliveryFee.getText()), Double.class);
     var vatFeeAmount = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.vatFee.getText()), Double.class);
+        .parseNumber(Utils.currencyToStringNumber(this.vatFee.getText()), Double.class);
     var deposit = NumberUtils
-        .parseNumber(Utils.currencyToNumber(this.depositAmount.getText()), Double.class);
+        .parseNumber(Utils.currencyToStringNumber(this.depositAmount.getText()), Double.class);
 
     var salePrice = getSalePrice(truePrice, discount);
     var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);
@@ -270,7 +277,7 @@ public class OrderReportController extends OrderController {
   }
 
   @FXML
-  private void reload(){
+  private void reload() {
     this.orderTable.setItems(FXCollections.observableArrayList());
     loadPageAsync(null, this.orderTable);
   }
@@ -320,7 +327,7 @@ public class OrderReportController extends OrderController {
   }
 
   private boolean isCurrentOrderEmpty() {
-    if (ObjectUtils.isEmpty(currentOrder.getCode())) {
+    if (ApplicationVariable.getOrders().stream().filter(Order::getIsSelected).findAny().isEmpty()) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_STATUS));
       return Boolean.TRUE;
     }
@@ -425,10 +432,10 @@ public class OrderReportController extends OrderController {
   }
 
   private boolean validOrderPrice() {
-    if (!Utils.isNumber(Utils.currencyToNumber(this.actualPrice.getText()).strip())
-        || !Utils.isNumber(Utils.currencyToNumber(this.deliveryFee.getText().strip()))
-        || !Utils.isNumber(Utils.currencyToNumber(this.vatFee.getText().strip()))
-        || !Utils.isNumber(Utils.currencyToNumber(this.depositAmount.getText().strip()))) {
+    if (!Utils.isNumber(Utils.currencyToStringNumber(this.actualPrice.getText()).strip())
+        || !Utils.isNumber(Utils.currencyToStringNumber(this.deliveryFee.getText().strip()))
+        || !Utils.isNumber(Utils.currencyToStringNumber(this.vatFee.getText().strip()))
+        || !Utils.isNumber(Utils.currencyToStringNumber(this.depositAmount.getText().strip()))) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
       return Boolean.TRUE;
     }

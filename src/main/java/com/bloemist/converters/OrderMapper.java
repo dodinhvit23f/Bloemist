@@ -3,8 +3,8 @@ package com.bloemist.converters;
 import com.bloemist.dto.Order;
 import com.bloemist.entity.OrderReport;
 import com.constant.OrderState;
-import com.utils.Utils;
 
+import com.utils.Utils;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Objects;
@@ -17,7 +17,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.util.ObjectUtils;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = {ObjectUtils.class, Utils.class, OrderMapper.class})
 public interface OrderMapper {
 
   OrderMapper MAPPER = Mappers.getMapper(OrderMapper.class);
@@ -26,27 +26,27 @@ public interface OrderMapper {
   @Mapping(source = Order.CUSTOMER_PHONE, target = "clientPhone")
   @Mapping(source = Order.CUSTOMER_SOCIAL_LINK, target = "clientSocialLink")
   @Mapping(source = Order.CUSTOMER_SOURCE, target = "clientSource")
-  @Mapping(source = Order.RECEIVER_NAME, target = "receiver")
-  @Mapping(source = Order.RECEIVER_PHONE, target = "receiverPhone")
+  @Mapping(target = "receiver", expression = "java(ObjectUtils.isEmpty(order.getReceiverName()) ? order.getCustomerName() : order.getReceiverName())")
+  @Mapping(target = "receiverPhone", expression = "java(ObjectUtils.isEmpty(order.getReceiverPhone()) ? order.getCustomerPhone() : order.getReceiverPhone())")
   @Mapping(source = Order.ORDER_DESCRIPTION, target = "orderDescription")
   @Mapping(source = Order.CUSTOMER_NOTE, target = "remark")
   @Mapping(source = Order.BANNER, target = "bannerContent")
   @Mapping(source = Order.DELIVERY_ADDRESS, target = "deliveryAddress")
-  @Mapping(target = "orderDate", expression = "java(com.utils.Utils.toDate(order.getOrderDate()))")
-  @Mapping(target = "deliveryDate", expression = "java(com.utils.Utils.toDate(order.getDeliveryDate()))")
+  @Mapping(target = "orderDate", expression = "java(Utils.toDate(order.getOrderDate()))")
+  @Mapping(target = "deliveryDate", expression = "java(Utils.toDate(order.getDeliveryDate()))")
   @Mapping(source = Order.DELIVERY_HOUR, target = "deliveryTime")
   @Mapping(source = Order.IMAGE_PATH, target = "samplePictureLink")
-  @Mapping(target = "discount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getDiscount()))")
-  @Mapping(target = "actualPrice", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getActualPrice()))")
-  @Mapping(target = "deliveryFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getDeliveryFee()))")
-  @Mapping(target = "vatFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getVatFee()))")
-  @Mapping(target = "salePrice", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getSalePrice()))")
-  @Mapping(target = "depositAmount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getDeposit()))")
-  @Mapping(target = "remainingAmount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getRemain()))")
-  @Mapping(target = "totalAmount", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getTotal()))")
-  @Mapping(target = "actualDeliveryFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getActualDeliveryFee()))")
-  @Mapping(target = "actualVatFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getActualVatFee()))")
-  @Mapping(target = "materialsFee", expression = "java(com.bloemist.converters.OrderMapper.convertBigDecimal(order.getMaterialsFee()))")
+  @Mapping(target = "discount", expression = "java(OrderMapper.convertBigDecimal(order.getDiscount()))")
+  @Mapping(target = "actualPrice", expression = "java(OrderMapper.convertBigDecimal(order.getActualPrice()))")
+  @Mapping(target = "deliveryFee", expression = "java(OrderMapper.convertBigDecimal(order.getDeliveryFee()))")
+  @Mapping(target = "vatFee", expression = "java(OrderMapper.convertBigDecimal(order.getVatFee()))")
+  @Mapping(target = "salePrice", expression = "java(OrderMapper.convertBigDecimal(order.getSalePrice()))")
+  @Mapping(target = "depositAmount", expression = "java(OrderMapper.convertBigDecimal(order.getDeposit()))")
+  @Mapping(target = "remainingAmount", expression = "java(OrderMapper.convertBigDecimal(order.getRemain()))")
+  @Mapping(target = "totalAmount", expression = "java(OrderMapper.convertBigDecimal(order.getTotal()))")
+  @Mapping(target = "actualDeliveryFee", expression = "java(OrderMapper.convertBigDecimal(order.getActualDeliveryFee()))")
+  @Mapping(target = "actualVatFee", expression = "java(OrderMapper.convertBigDecimal(order.getActualVatFee()))")
+  @Mapping(target = "materialsFee", expression = "java(OrderMapper.convertBigDecimal(order.getMaterialsFee()))")
   @Mapping(target = "orderStatus", ignore = true)
   void mapOrderToOrderReport(@MappingTarget OrderReport orderReport, Order order);
 

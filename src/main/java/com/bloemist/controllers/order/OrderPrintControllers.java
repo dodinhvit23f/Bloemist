@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -21,6 +23,7 @@ import javax.print.PrintServiceLookup;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 @Component
 public class OrderPrintControllers extends OrderController {
@@ -42,6 +45,7 @@ public class OrderPrintControllers extends OrderController {
   public static final String REMAIN_AMOUNT = "remain_amount";
   public static final String STAFF_NAME = "staff_name";
   public static final String SRC = "src";
+  public static final String VAT_FEE = "vat_fee";
   public static final String PRODUCT = "product";
   IOrderService orderService;
   Order order;
@@ -61,16 +65,22 @@ public class OrderPrintControllers extends OrderController {
 
   @FXML
   public void applyPrint() throws IOException {
-    order = ApplicationVariable.currentOrder;
+    Set<Order> printOrders = ApplicationVariable.getOrders().stream().filter(o -> o.getIsSelected())
+        .collect(Collectors.toSet());
 
-    if (Objects.isNull(this.order)) {
+    if (ObjectUtils.isEmpty(printOrders)) {
       return;
     }
 
     if (a5Bill.isSelected()) {
-      printA5(choicePrinter.getValue(), this.order);
-    }
+      if (imageBill.isSelected()) {
 
+      }else {
+        printOrders.forEach(
+            orderForPrint -> printA5(choicePrinter.getValue(), orderForPrint)
+        );
+      }
+    }
   }
 
   @Override

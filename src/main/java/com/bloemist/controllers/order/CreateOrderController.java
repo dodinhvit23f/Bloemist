@@ -1,6 +1,7 @@
 package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
+import com.bloemist.entity.OrderReport;
 import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
@@ -16,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import javafx.collections.FXCollections;
@@ -125,7 +127,7 @@ public class CreateOrderController extends OrderController {
     resetScene();
   }
 
-  public void createNew() {
+  public Optional<OrderReport> createNew() {
 
     var customerName = this.customerName.getText().strip(); //NOSONAR
     var customerPhone = this.customerPhone.getText().strip(); //NOSONAR
@@ -142,15 +144,16 @@ public class CreateOrderController extends OrderController {
     var truePrice = this.actualPrice.getText().strip(); //NOSONAR
     var deliveryFee = this.deliveryFee.getText().strip(); //NOSONAR
     var vatFee = this.vatFee.getText().strip(); //NOSONAR
-    var salePrice = Utils.currencyToNumber(this.salePriceValue.getText());//NOSONAR
+    var salePrice = Utils.currencyToStringNumber(this.salePriceValue.getText());//NOSONAR
     var depositAmount = this.depositAmount.getText().strip();//NOSONAR
-    var remainAmount = Utils.currencyToNumber(this.outstandingBalanceValue.getText()); //NOSONAR
-    var totalAmount = Utils.currencyToNumber(this.totalAmountValue.getText());//NOSONAR
-    var discountAmount = Utils.currencyToNumber(this.discountAmount.getText());//NOSONAR
+    var remainAmount = Utils.currencyToStringNumber(
+        this.outstandingBalanceValue.getText()); //NOSONAR
+    var totalAmount = Utils.currencyToStringNumber(this.totalAmountValue.getText());//NOSONAR
+    var discountAmount = Utils.currencyToStringNumber(this.discountAmount.getText());//NOSONAR
 
     if (Objects.isNull(imageFile)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
-      return;
+      return Optional.empty();
     }
 
     Date deliveryDateTime = getDeliveryDate(this.deliveryDate);
@@ -192,11 +195,16 @@ public class CreateOrderController extends OrderController {
           .actualVatFee("0")
           .actualDeliveryFee("0")
           .build();
-      orderService.createNewOrder(order);
 
-      ApplicationVariable.add(order);
-      CompletableFuture.runAsync(ApplicationVariable::sortOrders);
+      Optional<Boolean> orderReport = orderService.createNewOrder(order);
+
+      if (orderReport.isPresent()) {
+        ApplicationVariable.add(order);
+        CompletableFuture.runAsync(ApplicationVariable::sortOrders);
+        return Optional.of(new OrderReport());
+      }
     }
+    return Optional.empty();
   }
 
   public void resetScene() {
@@ -220,14 +228,14 @@ public class CreateOrderController extends OrderController {
 
   @FXML
   public void nextInput() {
-    createNew();
-    nextOrder();
+    createNew().ifPresent(action -> nextOrder());
   }
 
   @FXML
   public void finishInput() {
-    createNew();
-    cancel();
+    if (createNew().isPresent()) {
+      cancel();
+    }
   }
 
   @Override

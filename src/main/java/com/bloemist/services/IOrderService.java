@@ -1,21 +1,23 @@
 package com.bloemist.services;
 
 import com.bloemist.dto.Order;
+import com.bloemist.entity.OrderReport;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface IOrderService {
 
   @Transactional
-  void createNewOrder(Order order);
+  Optional<Boolean> createNewOrder(Order order);
 
   @Transactional
   void createNewOrders(Collection<Order> order);
 
   @Transactional
-  void updateOrder(Order order);
+  Optional<Boolean> updateOrder(Order order);
 
   void updateOrders(List<Order> orders);
 

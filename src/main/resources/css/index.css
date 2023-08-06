@@ -1,0 +1,250 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: content-box;
+    font-size: small;
+}
+
+#logo {
+    height: 150px;
+    width: 150px;
+    object-fit: contain;
+}
+
+.invoice {
+    margin: auto;
+    height: 210mm;
+    width: 148mm;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    width: 100%;
+    height: 14%;
+}
+.header-left {
+    display: flex;
+    width: 40%;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-right {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-right h1  {
+    text-transform: uppercase;
+    font-size: 20px;
+    margin-left: 100px;
+}
+
+.header-right h3  {
+    text-transform: uppercase;
+    font-size: 15px;
+    margin-bottom: 10px;
+    margin-left: 140px;
+}
+
+.flex {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+.flex p {
+    padding: 0px 4px;
+}
+.container {
+    padding: 10px;
+}
+
+.form > label {
+    font-weight: bold;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.title h3 {
+    font-size: 20px;
+    text-transform: uppercase;
+    margin: auto;
+}
+
+.invoice-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.invoice-day p {
+    font-style: italic;
+    font-size: 15px;
+}
+
+
+.user {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    font-size: 15px;
+    margin-bottom: 10px ;
+}
+
+.user label {
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+
+}
+
+.user input {
+    padding: 4px 8px;
+    outline: none;
+
+}
+
+.name {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    padding: 5px;
+}
+
+.name label{
+    flex: 1;
+}
+.name input {
+    flex: 2;
+    float: right;
+
+}
+
+.phone {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    padding: 5px;
+}
+
+.phone label {
+    flex: 1;
+}
+.phone input {
+    flex: 2;
+    float: right;
+}
+
+.desc {
+    display: flex;
+    flex-direction: column;
+}
+
+.desc p {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+
+.desc textarea {
+    margin: auto;
+    height: 100px;
+    padding: 4px 8px;
+    width: 95%;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.info p {
+    font-weight: bold;
+    text-transform: capitalize;
+
+}   
+.info textarea {
+    margin: auto;
+    height: 100px;
+    padding: 4px 8px;
+    width: 95%;
+    margin-bottom: 10px;
+}
+
+.info_note {
+    display: flex;
+
+}
+
+.info_note input {
+    padding: 2px 4px;
+    margin: 5px 5px;
+    margin-right: 20px;
+
+    }
+
+
+.time {
+    display: flex;
+}
+
+.other {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.other-child {
+    display: flex;
+    width: 50%;
+    padding: 4px 0px;
+}
+
+.other-child label {
+    min-width: 25% ;
+}
+
+.other-child input {
+    max-width: 40% ;
+}
+
+.time {
+    display: flex;
+    justify-content: start;
+}
+
+.time-child {
+    margin: 5px 15px;
+    font-weight: bold;
+}
+
+.time-child input {
+    padding: 2px 4px;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-around;
+    font-weight: bold;
+    height: 64px;
+}
+
+.sign {
+    float: right;
+    margin-right: 5px ;
+    padding: 2px 4px;
+    
+}
+ 
+
+
