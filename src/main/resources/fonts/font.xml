@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+	<fontFamily name="VN-Arial">
+		<normal><![CDATA[fonts/TIME.ttf]]></normal>
+		<bold><![CDATA[fonts/TIMEBD.ttf]]></bold>
+		<italic><![CDATA[fonts/TIMEBI.ttf]]></italic>
+		<boldItalic><![CDATA[fonts/TIMESI.ttf]]></boldItalic>
+		<pdfEncoding><![CDATA[Identity-H]]></pdfEncoding>
+		<pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+		<exportFonts/>
+	</fontFamily>
+</fontFamilies>
