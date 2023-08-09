@@ -4,6 +4,7 @@ import com.bloemist.controllers.order.OrderPrintControllers;
 import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
+import com.utils.Utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -59,6 +61,7 @@ public class CustomPrinterService implements IPrinterService {
   public static final String PREVIEW_PDF = "preview.pdf";
   public static final String A5_BILL_JASPER = "a5_bill.jasper";
   public static final String REPORT_LOCALE = "REPORT_LOCALE";
+  public static final String TODAY = "today";
 
   @Override
   public void printA5Order(String printerName, Order order) {
@@ -85,20 +88,20 @@ public class CustomPrinterService implements IPrinterService {
       parameters.put(Order.DEPOSIT, order.getDeposit());
       parameters.put(Order.REMAIN, order.getRemain());
       parameters.put(Order.VAT_FEE, order.getRemain());
+      parameters.put(Order.CODE, order.getCode());
+      parameters.put(TODAY, Utils.formatDate(new Date()));
       parameters.put(Order.DELIVERY_ADDRESS, order.getDeliveryAddress());
       parameters.put(OrderPrintControllers.STAFF_NAME,
           Objects.isNull(ApplicationVariable.getUser()) ? ""
               : ApplicationVariable.getUser().getFullName());
       parameters.put(REPORT_LOCALE, new Locale("vi-VN"));
 
-      if (!new File(A5_BILL_JASPER).exists()) {
-        InputStream a5Stream
-            = new FileInputStream(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
-        JasperReport jasperReport
-            = JasperCompileManager.compileReport(a5Stream);
-        JRSaver.saveObject(jasperReport, A5_BILL_JASPER);
-      }
-      JasperPrint jasperPrint = JasperFillManager.fillReport(A5_BILL_JASPER, parameters);
+      InputStream a5Stream
+          = new FileInputStream(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
+      JasperReport jasperReport
+          = JasperCompileManager.compileReport(a5Stream);
+
+      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
       JRPdfExporter exporter = new JRPdfExporter();
 
       exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
