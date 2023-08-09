@@ -1,31 +1,25 @@
 package com.bloemist.services.impl;
 
-import static com.utils.Utils.fileFormat;
-
 import com.bloemist.controllers.order.OrderPrintControllers;
 import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
-import com.itextpdf.html2pdf.ConverterProperties;
-import com.itextpdf.html2pdf.HtmlConverter;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.print.Doc;
 import javax.print.DocFlavor;
-import javax.print.DocFlavor.INPUT_STREAM;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
@@ -35,27 +29,36 @@ import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.OrientationRequested;
-import javax.print.attribute.standard.Sides;
 import javax.print.event.PrintJobAdapter;
 import javax.print.event.PrintJobEvent;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.export.SimplePdfReportConfiguration;
+import net.sf.jasperreports.export.type.PdfPermissionsEnum;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 @Component
 public class CustomPrinterService implements IPrinterService {
 
-  private static final String A5_BILL = "classpath:bill/a5_bill.html";
+  private static final String A5_BILL = "classpath:bill/a5_bill.jrxml";
   private static final String CSS_A5_BILL = "classpath:css/index.css";
   private static final String BLOEMIST_LOGO = "classpath:Img/logo.png";
   private static final String PDF_FONT = "classpath:fonts/pdf.ttf";
   public static final String FILE = "file:///";
   public static final String CSS_LINK = "css-link";
   public static final String HREF = "href";
-  public static final String PREVIEW_HTML = "preview.html";
   public static final String PREVIEW_PDF = "preview.pdf";
+  public static final String A5_BILL_JASPER = "a5_bill.jasper";
+  public static final String REPORT_LOCALE = "REPORT_LOCALE";
 
   @Override
   public void printA5Order(String printerName, Order order) {
@@ -65,71 +68,60 @@ public class CustomPrinterService implements IPrinterService {
         .findFirst();
 
     String filename = PREVIEW_PDF;
-    try (OutputStream outputStream = new FileOutputStream(filename);) {
-      Document document = Jsoup.parse(
-          new File(ResourceUtils.getFile(CustomPrinterService.A5_BILL).toURI()),
-          StandardCharsets.UTF_8.name());
+    Map<String, Object> parameters = new HashMap<>();
+    try {
 
-      document.body().getElementById(OrderPrintControllers.LOGO)
-          .attr(
-              OrderPrintControllers.SRC, FILE + fileFormat(CustomPrinterService.BLOEMIST_LOGO));
-      document.body().getElementById(OrderPrintControllers.CUSTOMER_NAME)
-          .val(order.getCustomerName());
-      document.body().getElementById(OrderPrintControllers.CUSTOMER_PHONE)
-          .val(order.getCustomerPhone());
-      document.body().getElementById(OrderPrintControllers.ORDER_DESCRIPTION)
-          .text(order.getOrderDescription());
-      document.body().getElementById(OrderPrintControllers.RECEIVE_NAME)
-          .val(order.getReceiverName());
-      document.body().getElementById(OrderPrintControllers.RECEIVE_PHONE)
-          .val(order.getReceiverPhone());
-      document.body().getElementById(OrderPrintControllers.RECEIVE_TIME)
-          .val(order.getDeliveryHour());
-      document.body().getElementById(OrderPrintControllers.RECEIVE_DATE)
-          .val(order.getDeliveryDate());
-      document.body().getElementById(OrderPrintControllers.SALE_PRICE).val(order.getSalePrice());
-      document.body().getElementById(OrderPrintControllers.DELIVERY_FEE)
-          .val(order.getDeliveryFee());
-      document.body().getElementById(OrderPrintControllers.SALE_OFF).val(order.getDiscount());
-      document.body().getElementById(OrderPrintControllers.TOTAL_PRICE).val(order.getTotal());
-      document.body().getElementById(OrderPrintControllers.DEPOSIT_AMOUNT).val(order.getDeposit());
-      document.body().getElementById(OrderPrintControllers.REMAIN_AMOUNT).val(order.getRemain());
-      document.body().getElementById(OrderPrintControllers.VAT_FEE).val(order.getRemain());
-      document.body().getElementById(OrderPrintControllers.STAFF_NAME).val(
+      parameters.put(Order.CUSTOMER_NAME, order.getCustomerName());
+      parameters.put(Order.CUSTOMER_PHONE, order.getCustomerPhone());
+      parameters.put(Order.ORDER_DESCRIPTION, order.getOrderDescription());
+      parameters.put(Order.RECEIVER_NAME, order.getReceiverName());
+      parameters.put(Order.RECEIVER_PHONE, order.getReceiverPhone());
+      parameters.put(Order.DELIVERY_HOUR, order.getDeliveryHour());
+      parameters.put(Order.DELIVERY_DATE, order.getDeliveryDate());
+      parameters.put(Order.SALE_PRICE, order.getSalePrice());
+      parameters.put(Order.DELIVERY_FEE, order.getDeliveryFee());
+      parameters.put(Order.DISCOUNT, order.getDiscount());
+      parameters.put(Order.TOTAL, order.getTotal());
+      parameters.put(Order.DEPOSIT, order.getDeposit());
+      parameters.put(Order.REMAIN, order.getRemain());
+      parameters.put(Order.VAT_FEE, order.getRemain());
+      parameters.put(Order.DELIVERY_ADDRESS, order.getDeliveryAddress());
+      parameters.put(OrderPrintControllers.STAFF_NAME,
           Objects.isNull(ApplicationVariable.getUser()) ? ""
               : ApplicationVariable.getUser().getFullName());
+      parameters.put(REPORT_LOCALE, new Locale("vi-VN"));
 
-      document.getElementById(CSS_LINK)
-          .attr(HREF,
-              FILE + ResourceUtils.getFile(CustomPrinterService.CSS_A5_BILL).getAbsolutePath()
-                  .replace("\\", "/"));
+      if (!new File(A5_BILL_JASPER).exists()) {
+        InputStream a5Stream
+            = new FileInputStream(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
+        JasperReport jasperReport
+            = JasperCompileManager.compileReport(a5Stream);
+        JRSaver.saveObject(jasperReport, A5_BILL_JASPER);
+      }
+      JasperPrint jasperPrint = JasperFillManager.fillReport(A5_BILL_JASPER, parameters);
+      JRPdfExporter exporter = new JRPdfExporter();
 
-      File file = new File(order.getImagePath());
+      exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+      exporter.setExporterOutput(
+          new SimpleOutputStreamExporterOutput(PREVIEW_PDF));
 
-     /* if (file.exists()) {
-        document.getElementById(OrderPrintControllers.PRODUCT)
-            .attr(OrderPrintControllers.SRC, "file:///" + fileFormat(order.getImagePath()));
-      }*/
+      SimplePdfReportConfiguration reportConfig
+          = new SimplePdfReportConfiguration();
+      reportConfig.setSizePageToContent(Boolean.TRUE);
+      reportConfig.setForceLineBreakPolicy(Boolean.FALSE);
 
-      OutputStreamWriter fileOutputStream = new OutputStreamWriter(
-          new FileOutputStream(PREVIEW_HTML));
-      fileOutputStream.write(document.html());
-      fileOutputStream.close();
-      /*PdfWriter pdfWriter = new PdfWriter(outputStream);
-      ConverterProperties converterProperties = new ConverterProperties();
-      converterProperties.setBaseUri("/css");
-      PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+      SimplePdfExporterConfiguration exportConfig
+          = new SimplePdfExporterConfiguration();
+      exportConfig.setEncrypted(Boolean.TRUE);
+      exportConfig.setAllowedPermissionsHint(PdfPermissionsEnum.ALL.getName());
 
-      var docs = HtmlConverter.convertToDocument(new FileInputStream(PREVIEW_HTML), pdfDocument,
-          converterProperties);
-      docs.close();*/
-
-     /* File ox = new File("x.html");
-      */
+      exporter.setConfiguration(exportConfig);
+      exporter.setConfiguration(reportConfig);
+      exporter.exportReport();
 
       PrintService printer = printService.get();
-      printFilePDF(printer, PREVIEW_HTML);
-    } catch (IOException | PrintException e) {
+      printFilePDF(printer, PREVIEW_PDF);
+    } catch (JRException | PrintException | IOException e) {
       e.printStackTrace();
     }
   }
@@ -142,10 +134,8 @@ public class CustomPrinterService implements IPrinterService {
     asset.add(new Copies(BigInteger.ONE.intValue())); // print one copies
     asset.add(new MediaPrintableArea(0, 0, 148, 210, MediaPrintableArea.MM)); // print stapled
 
-
-
     DocPrintJob docPrintJob = printService.createPrintJob();
-    Doc doc = new SimpleDoc(in,  DocFlavor.INPUT_STREAM.AUTOSENSE, null);
+    Doc doc = new SimpleDoc(in, DocFlavor.INPUT_STREAM.AUTOSENSE, null);
 
     AtomicBoolean docsPrinted = new AtomicBoolean(Boolean.FALSE);
     docPrintJob.addPrintJobListener(new PrintJobAdapter() {

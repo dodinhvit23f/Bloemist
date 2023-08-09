@@ -17,7 +17,6 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

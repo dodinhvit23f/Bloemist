@@ -10,9 +10,22 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="mm"/>
-	<queryString>
-		<![CDATA[]]>
-	</queryString>
+	<field name="customerName" class="java.lang.String"/>
+	<field name="customerPhone" class="java.lang.String"/>
+	<field name="orderDescription" class="java.lang.String"/>
+	<field name="receiverName" class="java.lang.String"/>
+	<field name="receiverPhone" class="java.lang.String"/>
+	<field name="deliveryHour" class="java.lang.String"/>
+	<field name="deliveryDate" class="java.lang.String"/>
+	<field name="salePrice" class="java.lang.String"/>
+	<field name="deliveryFee" class="java.lang.String"/>
+	<field name="discount" class="java.lang.String"/>
+	<field name="total" class="java.lang.String"/>
+	<field name="deposit" class="java.lang.String"/>
+	<field name="remain" class="java.lang.String"/>
+	<field name="vatFee" class="java.lang.String"/>
+	<field name="staff_name" class="java.lang.String"/>
+	<field name="deliveryAddress" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -77,7 +90,7 @@
 	<pageHeader>
 		<band height="22" splitType="Stretch">
 			<staticText>
-				<reportElement x="108" y="12" width="20" height="10" uuid="29e55dce-4a51-4647-bb4a-98ba647de17a"/>
+				<reportElement x="108" y="12" width="12" height="10" uuid="29e55dce-4a51-4647-bb4a-98ba647de17a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isItalic="true"/>
 				</textElement>
@@ -91,18 +104,18 @@
 				<text><![CDATA[Ngày:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="128" y="12" width="60" height="10" uuid="4cf93c93-e2b2-4aff-ba70-0fa265c70cb9"/>
+				<reportElement x="121" y="12" width="66" height="10" uuid="4cf93c93-e2b2-4aff-ba70-0fa265c70cb9"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[..........................]]></text>
+				<text><![CDATA[$F{code}]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="212" y="12" width="60" height="10" uuid="5a759a2e-dcd5-4b87-b0ab-f55b2c8382ac"/>
+				<reportElement x="212" y="12" width="76" height="10" uuid="5a759a2e-dcd5-4b87-b0ab-f55b2c8382ac"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[..........................]]></text>
+				<text><![CDATA[$F{today}]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
@@ -141,7 +154,7 @@
 				<text><![CDATA[Thông Tin Giao Hàng]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="200" y="227" width="60" height="10" uuid="e42c40cb-6ad5-4ed8-a161-4885cc1b2447"/>
+				<reportElement x="200" y="235" width="60" height="10" uuid="e42c40cb-6ad5-4ed8-a161-4885cc1b2447"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
@@ -158,6 +171,7 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="121" y="46" width="160" height="10" uuid="72aa0b86-4193-4dd4-8fdc-397288ff6c0a"/>
@@ -170,6 +184,7 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{customerPhone}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="21" y="90" width="358" height="50" uuid="6719262f-2041-4f9e-87c3-6ea06899a84c"/>
@@ -182,6 +197,7 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{orderDescription}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="21" y="160" width="358" height="50" uuid="80d74911-2e30-4372-a0a9-de38bcba3d64"/>
@@ -194,9 +210,10 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA["Tên người nhận: "+$F{receiverName} +"\nSĐT người nhận: " + $F{receiverPhone} + "\nĐịa Chỉ: " + $F{deliveryAddress}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="87" y="227" width="102" height="10" uuid="ce4f05d2-cf89-4509-8250-49426287a657"/>
+				<reportElement x="87" y="235" width="102" height="10" uuid="ce4f05d2-cf89-4509-8250-49426287a657"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -206,9 +223,10 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryHour}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="268" y="227" width="102" height="10" uuid="eb049298-6954-42ef-8c7c-5c9a464eb94f"/>
+				<reportElement x="268" y="235" width="102" height="10" uuid="eb049298-6954-42ef-8c7c-5c9a464eb94f"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -218,17 +236,18 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="21" y="246" width="59" height="10" uuid="d02f7e96-ead3-4b79-912f-3962c4769d40"/>
+				<reportElement x="21" y="252" width="59" height="10" uuid="d02f7e96-ead3-4b79-912f-3962c4769d40"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Đơn hàng
+				<text><![CDATA[Giá Đơn hàng
 ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="87" y="246" width="102" height="10" uuid="96f965f7-33fa-4023-b2eb-d4f86239cd27"/>
+				<reportElement x="87" y="252" width="102" height="10" uuid="96f965f7-33fa-4023-b2eb-d4f86239cd27"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -238,9 +257,10 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{salePrice}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="200" y="246" width="60" height="10" uuid="2271dd47-b91d-42d2-8dc9-5d1b9ca1157b"/>
+				<reportElement x="200" y="252" width="60" height="10" uuid="2271dd47-b91d-42d2-8dc9-5d1b9ca1157b"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
@@ -248,7 +268,7 @@
 ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="268" y="246" width="102" height="10" uuid="a94e0944-9b9b-4b0c-8e2f-514ef56a3bbc"/>
+				<reportElement x="268" y="252" width="102" height="10" uuid="a94e0944-9b9b-4b0c-8e2f-514ef56a3bbc"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -258,9 +278,10 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{discount}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="21" y="266" width="59" height="10" uuid="1b381dff-1bd7-4d51-9d64-72dbc3ceeb9a"/>
+				<reportElement x="21" y="294" width="59" height="10" uuid="1b381dff-1bd7-4d51-9d64-72dbc3ceeb9a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
@@ -268,7 +289,7 @@
 ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="87" y="266" width="102" height="10" uuid="d394d7df-c4c8-4b4d-bbb3-3a44b011c4aa"/>
+				<reportElement x="87" y="294" width="102" height="10" uuid="d394d7df-c4c8-4b4d-bbb3-3a44b011c4aa"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -278,9 +299,10 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryFee}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="200" y="266" width="60" height="10" uuid="2ebf60c8-0d29-43b9-af2d-3a80c24a23a1"/>
+				<reportElement x="200" y="294" width="60" height="10" uuid="2ebf60c8-0d29-43b9-af2d-3a80c24a23a1"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
@@ -288,7 +310,7 @@
 ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="268" y="266" width="102" height="10" uuid="355fd3e1-8ac3-4121-b539-f052b39bc4fe"/>
+				<reportElement x="268" y="294" width="102" height="10" uuid="355fd3e1-8ac3-4121-b539-f052b39bc4fe"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -298,9 +320,10 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{deposit}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="21" y="286" width="59" height="10" uuid="21d4e042-732e-447d-ad6e-b09966a25780"/>
+				<reportElement x="20" y="314" width="60" height="10" uuid="21d4e042-732e-447d-ad6e-b09966a25780"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
@@ -308,7 +331,7 @@
 ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="87" y="286" width="102" height="10" uuid="0f707548-fdbd-4d1d-b924-f2839b14a09f"/>
+				<reportElement x="87" y="314" width="102" height="10" uuid="0f707548-fdbd-4d1d-b924-f2839b14a09f"/>
 				<box>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -318,6 +341,7 @@
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{remain}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="20" y="360" width="59" height="10" uuid="2a604392-bed4-465b-955c-6a91dde20f30"/>
@@ -346,14 +370,55 @@
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[......................................]]></text>
+				<text><![CDATA[$F{staff_name}]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="20" y="227" width="59" height="10" uuid="351c594c-e7de-40e8-a9a3-c177b5daa75a"/>
+				<reportElement x="20" y="235" width="59" height="10" uuid="351c594c-e7de-40e8-a9a3-c177b5daa75a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
 					<font fontName="Times" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Giờ giao]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="21" y="275" width="59" height="10" uuid="aabd5a19-821f-40c9-a0b7-e08d0b50c551"/>
+				<textElement textAlignment="Left" verticalAlignment="Justified">
+					<font fontName="Times" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tổng Cộng]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="88" y="275" width="102" height="10" uuid="c8ac09b9-4b79-4c8c-9c97-2247576e0a65"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font fontName="Times" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="268" y="275" width="102" height="10" uuid="3c31b170-074b-4813-9f8a-fe5abcc072bd"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font fontName="Times" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{vatFee}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="200" y="275" width="60" height="10" uuid="f2596a45-cf2e-41bf-b1b7-cda122184aa7"/>
+				<textElement textAlignment="Left" verticalAlignment="Justified">
+					<font fontName="Times" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VAT:
+]]></text>
 			</staticText>
 		</band>
 	</detail>
