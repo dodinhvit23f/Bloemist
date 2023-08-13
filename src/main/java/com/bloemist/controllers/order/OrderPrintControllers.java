@@ -27,26 +27,7 @@ import org.springframework.util.ObjectUtils;
 
 @Component
 public class OrderPrintControllers extends OrderController {
-
-  public static final String LOGO = "logo";
-  public static final String CUSTOMER_NAME = "customer_name";
-  public static final String CUSTOMER_PHONE = "customer_phone";
-  public static final String ORDER_DESCRIPTION = "order_description";
-  public static final String BANNER_DESCRIPTION = "banner_description";
-  public static final String RECEIVE_NAME = "receive_name";
-  public static final String RECEIVE_PHONE = "receive_phone";
-  public static final String RECEIVE_TIME = "receive_time";
-  public static final String RECEIVE_DATE = "receive_date";
-  public static final String SALE_PRICE = "sale_price";
-  public static final String DELIVERY_FEE = "delivery_fee";
-  public static final String SALE_OFF = "sale_off";
-  public static final String TOTAL_PRICE = "total_price";
-  public static final String DEPOSIT_AMOUNT = "deposit_amount";
-  public static final String REMAIN_AMOUNT = "remain_amount";
   public static final String STAFF_NAME = "staff_name";
-  public static final String SRC = "src";
-  public static final String VAT_FEE = "vat_fee";
-  public static final String PRODUCT = "product";
   IOrderService orderService;
   Order order;
   @FXML

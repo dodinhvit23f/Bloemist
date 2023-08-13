@@ -35,6 +35,7 @@ import javax.print.event.PrintJobAdapter;
 import javax.print.event.PrintJobEvent;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -52,14 +53,12 @@ import org.springframework.util.ResourceUtils;
 public class CustomPrinterService implements IPrinterService {
 
   private static final String A5_BILL = "classpath:bill/a5_bill.jrxml";
-  private static final String CSS_A5_BILL = "classpath:css/index.css";
   private static final String BLOEMIST_LOGO = "classpath:Img/logo.png";
   private static final String PDF_FONT = "classpath:fonts/pdf.ttf";
   public static final String FILE = "file:///";
   public static final String CSS_LINK = "css-link";
   public static final String HREF = "href";
   public static final String PREVIEW_PDF = "preview.pdf";
-  public static final String A5_BILL_JASPER = "a5_bill.jasper";
   public static final String REPORT_LOCALE = "REPORT_LOCALE";
   public static final String TODAY = "today";
 
@@ -96,31 +95,30 @@ public class CustomPrinterService implements IPrinterService {
               : ApplicationVariable.getUser().getFullName());
       parameters.put(REPORT_LOCALE, new Locale("vi-VN"));
 
-      InputStream a5Stream
-          = new FileInputStream(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
-      JasperReport jasperReport
-          = JasperCompileManager.compileReport(a5Stream);
+      JasperReport jasperReport = JasperCompileManager.compileReport(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
 
       JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
-      JRPdfExporter exporter = new JRPdfExporter();
 
-      exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-      exporter.setExporterOutput(
-          new SimpleOutputStreamExporterOutput(PREVIEW_PDF));
-
-      SimplePdfReportConfiguration reportConfig
-          = new SimplePdfReportConfiguration();
-      reportConfig.setSizePageToContent(Boolean.TRUE);
-      reportConfig.setForceLineBreakPolicy(Boolean.FALSE);
-
-      SimplePdfExporterConfiguration exportConfig
-          = new SimplePdfExporterConfiguration();
-      exportConfig.setEncrypted(Boolean.TRUE);
-      exportConfig.setAllowedPermissionsHint(PdfPermissionsEnum.ALL.getName());
-
-      exporter.setConfiguration(exportConfig);
-      exporter.setConfiguration(reportConfig);
-      exporter.exportReport();
+      JasperExportManager.exportReportToPdfFile(jasperPrint, PREVIEW_PDF);
+//      exporter = new JRPdfExporter();
+//
+//      exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+//      exporter.setExporterOutput(
+//          new SimpleOutputStreamExporterOutput(PREVIEW_PDF));
+//
+//      SimplePdfReportConfiguration reportConfig
+//          = new SimplePdfReportConfiguration();
+//      reportConfig.setSizePageToContent(Boolean.TRUE);
+//      reportConfig.setForceLineBreakPolicy(Boolean.FALSE);
+//
+//      SimplePdfExporterConfiguration exportConfig
+//          = new SimplePdfExporterConfiguration();
+//      exportConfig.setEncrypted(Boolean.TRUE);
+//      exportConfig.setAllowedPermissionsHint(PdfPermissionsEnum.ALL.getName());
+//
+//      exporter.setConfiguration(exportConfig);
+//      exporter.setConfiguration(reportConfig);
+//      exporter.exportReport();
 
       PrintService printer = printService.get();
       printFilePDF(printer, PREVIEW_PDF);
