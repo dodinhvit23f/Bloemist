@@ -28,6 +28,9 @@
 	<parameter name="deliveryAddress" class="java.lang.String"/>
 	<parameter name="code" class="java.lang.String"/>
 	<parameter name="today" class="java.lang.String"/>
+	<parameter name="logo_url" class="java.lang.String"/>
+	<parameter name="fb_url" class="java.lang.String"/>
+	<parameter name="telephone_url" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -47,7 +50,7 @@
 					<property name="net.sf.jasperreports.export.accessibility.tag" value="h1"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Times" size="16" isBold="true"/>
+					<font fontName="Times New Roman" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[HÓA ĐƠN BÁN HÀNG]]></text>
 			</staticText>
@@ -62,7 +65,7 @@
 			</staticText>
 			<image>
 				<reportElement x="0" y="0" width="160" height="60" uuid="8a94d6f9-2ffb-4168-94f3-c70e010d6f2b"/>
-				<imageExpression><![CDATA["/src/main/resources/Img/logo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{logo_url}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="239" y="47" width="140" height="18" uuid="27a5aa36-fcb4-4ec2-b856-9afb5526a8e1"/>
@@ -81,11 +84,11 @@
 			</staticText>
 			<image>
 				<reportElement x="229" y="51" width="10" height="9" uuid="a4d29499-08af-4f68-a582-dd224dca7c02"/>
-				<imageExpression><![CDATA["/src/main/resources/Img/facebook.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{fb_url}]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="320" y="71" width="10" height="9" uuid="e08ce38e-08ef-44e2-af88-80634e6999c3"/>
-				<imageExpression><![CDATA["/src/main/resources/Img/telephone.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{telephone_url}]]></imageExpression>
 			</image>
 		</band>
 	</title>
@@ -116,6 +119,9 @@
 			</textField>
 			<textField>
 				<reportElement x="208" y="12" width="59" height="10" uuid="7a67a6fa-ba3e-490f-bef4-afce72b7aee9"/>
+				<box>
+					<pen lineColor="#FFFFFF"/>
+				</box>
 				<textElement>
 					<font fontName="Times" size="7"/>
 				</textElement>
@@ -410,6 +416,7 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="250" y="380" width="129" height="10" uuid="64b89d5c-5e26-4d68-8942-a1de7f307f82"/>
 				<box>
+					<pen lineWidth="0.0" lineColor="#FFFFFF"/>
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
 					<bottomPen lineWidth="0.25"/>

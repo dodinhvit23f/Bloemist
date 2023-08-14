@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -39,6 +40,8 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -54,13 +57,14 @@ public class CustomPrinterService implements IPrinterService {
 
   private static final String A5_BILL = "classpath:bill/a5_bill.jrxml";
   private static final String BLOEMIST_LOGO = "classpath:Img/logo.png";
-  private static final String PDF_FONT = "classpath:fonts/pdf.ttf";
-  public static final String FILE = "file:///";
-  public static final String CSS_LINK = "css-link";
-  public static final String HREF = "href";
+  private static final String FB_ICON = "classpath:Img/facebook.png";
+  private static final String PHONE_ICON = "classpath:Img/telephone.png";
   public static final String PREVIEW_PDF = "preview.pdf";
   public static final String REPORT_LOCALE = "REPORT_LOCALE";
   public static final String TODAY = "today";
+  public static final String LOGO_URL = "logo_url";
+  public static final String FB_URL = "fb_url";
+  public static final String TELEPHONE_URL = "telephone_url";
 
   @Override
   public void printA5Order(String printerName, Order order) {
@@ -94,31 +98,17 @@ public class CustomPrinterService implements IPrinterService {
           Objects.isNull(ApplicationVariable.getUser()) ? ""
               : ApplicationVariable.getUser().getFullName());
       parameters.put(REPORT_LOCALE, new Locale("vi-VN"));
+      parameters.put(LOGO_URL, ResourceUtils.getFile(BLOEMIST_LOGO).getAbsolutePath());
+      parameters.put(FB_URL, ResourceUtils.getFile(FB_ICON).getAbsolutePath());
+      parameters.put(TELEPHONE_URL, ResourceUtils.getFile(PHONE_ICON).getAbsolutePath());
 
       JasperReport jasperReport = JasperCompileManager.compileReport(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
 
-      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
+      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,
+          parameters,
+          new JRMapArrayDataSource(new Object[]{new HashMap<String, Object>()}));
 
       JasperExportManager.exportReportToPdfFile(jasperPrint, PREVIEW_PDF);
-//      exporter = new JRPdfExporter();
-//
-//      exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//      exporter.setExporterOutput(
-//          new SimpleOutputStreamExporterOutput(PREVIEW_PDF));
-//
-//      SimplePdfReportConfiguration reportConfig
-//          = new SimplePdfReportConfiguration();
-//      reportConfig.setSizePageToContent(Boolean.TRUE);
-//      reportConfig.setForceLineBreakPolicy(Boolean.FALSE);
-//
-//      SimplePdfExporterConfiguration exportConfig
-//          = new SimplePdfExporterConfiguration();
-//      exportConfig.setEncrypted(Boolean.TRUE);
-//      exportConfig.setAllowedPermissionsHint(PdfPermissionsEnum.ALL.getName());
-//
-//      exporter.setConfiguration(exportConfig);
-//      exporter.setConfiguration(reportConfig);
-//      exporter.exportReport();
 
       PrintService printer = printService.get();
       printFilePDF(printer, PREVIEW_PDF);
