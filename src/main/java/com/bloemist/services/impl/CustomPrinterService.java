@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.print.Doc;
 import javax.print.DocFlavor;
+import javax.print.DocFlavor.INPUT_STREAM;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
@@ -71,10 +72,8 @@ public class CustomPrinterService implements IPrinterService {
   public void printA5Order(String printerName, Order order) {
     Optional<PrintService> printService = Arrays.stream(
             PrintServiceLookup.lookupPrintServices(null, null))
-        .filter(p -> p.getName().equals(printerName))
-        .findFirst();
+        .filter(p -> p.getName().equals(printerName)).findFirst();
 
-    String filename = PREVIEW_PDF;
     Map<String, Object> parameters = new HashMap<>();
     try {
 
@@ -103,10 +102,10 @@ public class CustomPrinterService implements IPrinterService {
       parameters.put(FB_URL, ResourceUtils.getFile(FB_ICON).getAbsolutePath());
       parameters.put(TELEPHONE_URL, ResourceUtils.getFile(PHONE_ICON).getAbsolutePath());
 
-      JasperReport jasperReport = JasperCompileManager.compileReport(ResourceUtils.getFile(A5_BILL).getAbsolutePath());
+      JasperReport jasperReport = JasperCompileManager.compileReport(
+          ResourceUtils.getFile(A5_BILL).getAbsolutePath());
 
-      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,
-          parameters,
+      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,
           new JRMapArrayDataSource(new Object[]{new HashMap<String, Object>()}));
 
       JasperExportManager.exportReportToPdfFile(jasperPrint, PREVIEW_PDF);
@@ -129,34 +128,23 @@ public class CustomPrinterService implements IPrinterService {
 //      exporter.setConfiguration(exportConfig);
 //      exporter.setConfiguration(reportConfig);
 //      exporter.exportReport();
+      if (printService.isPresent()) {
+        PrintService printer = printService.get();
+        printFilePDF(printer, PREVIEW_PDF);
+      }
 
-    /*  PrintService printer = printService.get();
-      printFilePDF(printer, PREVIEW_PDF);*/
-    } catch (JRException | IOException e) {
+    } catch (JRException | PrintException | IOException e) {
       e.printStackTrace();
     }
   }
 
   private void printFilePDF(PrintService printService, String filePath)
       throws PrintException, IOException {
-    FileInputStream in = new FileInputStream(filePath);
-
-    PrintRequestAttributeSet asset = new HashPrintRequestAttributeSet();
-    asset.add(new Copies(BigInteger.ONE.intValue())); // print one copies
-    asset.add(new MediaPrintableArea(0, 0, 148, 210, MediaPrintableArea.MM)); // print stapled
-
-    DocPrintJob docPrintJob = printService.createPrintJob();
-    Doc doc = new SimpleDoc(in, DocFlavor.INPUT_STREAM.AUTOSENSE, null);
-
-    AtomicBoolean docsPrinted = new AtomicBoolean(Boolean.FALSE);
-    docPrintJob.addPrintJobListener(new PrintJobAdapter() {
-      @Override
-      public void printJobCompleted(PrintJobEvent pje) {
-        super.printJobCompleted(pje);
-        docsPrinted.set(Boolean.TRUE);
-      }
-    });
-    docPrintJob.print(doc, asset);
+    FileInputStream fis = new FileInputStream(filePath);
+    Doc pdfDoc = new SimpleDoc(fis, INPUT_STREAM.AUTOSENSE, null);
+    DocPrintJob printJob = printService.createPrintJob();
+    printJob.print(pdfDoc, new HashPrintRequestAttributeSet());
+    fis.close();
   }
 
 }

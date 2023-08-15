@@ -68,7 +68,7 @@
 				<imageExpression><![CDATA[$P{logo_url}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="239" y="47" width="140" height="18" uuid="27a5aa36-fcb4-4ec2-b856-9afb5526a8e1"/>
+				<reportElement x="210" y="47" width="169" height="18" uuid="27a5aa36-fcb4-4ec2-b856-9afb5526a8e1"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" markup="none">
 					<font fontName="DejaVu Sans" size="7"/>
 					<paragraph lineSpacingSize="0.0"/>
@@ -83,11 +83,11 @@
 				<text><![CDATA[0868 642 828]]></text>
 			</staticText>
 			<image>
-				<reportElement x="229" y="51" width="10" height="9" uuid="a4d29499-08af-4f68-a582-dd224dca7c02"/>
+				<reportElement x="200" y="51" width="10" height="9" uuid="a4d29499-08af-4f68-a582-dd224dca7c02"/>
 				<imageExpression><![CDATA[$P{fb_url}]]></imageExpression>
 			</image>
 			<image>
-				<reportElement x="320" y="71" width="10" height="9" uuid="e08ce38e-08ef-44e2-af88-80634e6999c3"/>
+				<reportElement x="309" y="70" width="10" height="9" uuid="e08ce38e-08ef-44e2-af88-80634e6999c3"/>
 				<imageExpression><![CDATA[$P{telephone_url}]]></imageExpression>
 			</image>
 		</band>
