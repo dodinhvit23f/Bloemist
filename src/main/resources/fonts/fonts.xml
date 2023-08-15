@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+	<fontFamily name="Times">
+		<normal>
+			<ttf><![CDATA[fonts/Times/TIMES.ttf]]></ttf>
+			<pdf><![CDATA[Times]]></pdf>
+		</normal>
+		<bold>
+			<ttf><![CDATA[fonts/Times/TIMESBD.ttf]]></ttf>
+			<pdf><![CDATA[Times-Bold]]></pdf>
+		</bold>
+		<italic>
+			<ttf><![CDATA[fonts/Times/TIMESI.ttf]]></ttf>
+			<pdf><![CDATA[Times-Italic]]></pdf>
+		</italic>
+		<boldItalic>
+			<ttf><![CDATA[fonts/Times/TIMESBI.ttf]]></ttf>
+			<pdf><![CDATA[Times-BoldItalic]]></pdf>
+		</boldItalic>
+		<pdfEncoding><![CDATA[Cp1258]]></pdfEncoding>
+		<pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+		<exportFonts/>
+	</fontFamily>
+</fontFamilies>

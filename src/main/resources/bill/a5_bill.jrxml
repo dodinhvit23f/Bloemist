@@ -50,7 +50,7 @@
 					<property name="net.sf.jasperreports.export.accessibility.tag" value="h1"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Times New Roman" size="16" isBold="true"/>
+					<font fontName="Times" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[HÓA ĐƠN BÁN HÀNG]]></text>
 			</staticText>
