@@ -41,7 +41,7 @@
 					<property name="net.sf.jasperreports.export.accessibility.tag" value="h1"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Times" size="16" isBold="true"/>
+					<font fontName="DejaVu Sans" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TIỆM HOA BLOEMIST]]></text>
 			</staticText>
@@ -50,7 +50,7 @@
 					<property name="net.sf.jasperreports.export.accessibility.tag" value="h1"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Times" size="16" isBold="true"/>
+					<font fontName="DejaVu Sans" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[HÓA ĐƠN BÁN HÀNG]]></text>
 			</staticText>
@@ -59,7 +59,7 @@
 					<property name="net.sf.jasperreports.export.accessibility.tag" value="h1"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Times" size="13" isBold="true"/>
+					<font fontName="DejaVu Sans" size="13" isBold="true"/>
 				</textElement>
 				<text><![CDATA[FLOWER JUST FOR YOU]]></text>
 			</staticText>
@@ -70,7 +70,7 @@
 			<staticText>
 				<reportElement x="239" y="47" width="140" height="18" uuid="27a5aa36-fcb4-4ec2-b856-9afb5526a8e1"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" markup="none">
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 					<paragraph lineSpacingSize="0.0"/>
 				</textElement>
 				<text><![CDATA[https://www.facebook.com/hoatuoibloemist]]></text>
@@ -78,7 +78,7 @@
 			<staticText>
 				<reportElement x="320" y="68" width="60" height="18" uuid="b3c96fcd-df65-4d98-a82c-52e97bdab4cf"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<text><![CDATA[0868 642 828]]></text>
 			</staticText>
@@ -97,14 +97,14 @@
 			<staticText>
 				<reportElement x="108" y="12" width="12" height="10" uuid="29e55dce-4a51-4647-bb4a-98ba647de17a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isItalic="true"/>
+					<font fontName="DejaVu Sans" size="7" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Số:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="189" y="12" width="19" height="10" uuid="54b43814-68dc-4c89-bbeb-f81e8250fd68"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isItalic="true"/>
+					<font fontName="DejaVu Sans" size="7" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Ngày:]]></text>
 			</staticText>
@@ -113,7 +113,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{code}]]></textFieldExpression>
 			</textField>
@@ -123,7 +123,7 @@
 					<pen lineColor="#FFFFFF"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{today}]]></textFieldExpression>
 			</textField>
@@ -135,35 +135,35 @@
 			<staticText>
 				<reportElement x="19" y="17" width="91" height="10" uuid="ae0b210a-d533-4f23-bfe1-50aee63b1cd1"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TÊN KHÁCH HÀNG]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="46" width="90" height="10" uuid="a8a11f43-9f59-4f44-ab94-9299a9657d3a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SỐ ĐIỆN THOẠI]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="77" width="90" height="10" uuid="6f934634-2ead-461f-9a21-5c676bfec7c4"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Nội Dung Đơn Hàng]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="147" width="90" height="10" uuid="edd4f2a5-a472-48e3-8c11-648076ec2e3a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Thông Tin Giao Hàng]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="200" y="235" width="60" height="10" uuid="e42c40cb-6ad5-4ed8-a161-4885cc1b2447"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Ngày giao]]></text>
 			</staticText>
@@ -176,7 +176,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{customerName}]]></textFieldExpression>
 			</textField>
@@ -189,7 +189,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{customerPhone}]]></textFieldExpression>
 			</textField>
@@ -202,7 +202,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{orderDescription}]]></textFieldExpression>
 			</textField>
@@ -215,7 +215,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Tên người nhận: "+$P{receiverName} +"\nSĐT người nhận: " + $P{receiverPhone} + "\nĐịa Chỉ: " + $P{deliveryAddress}]]></textFieldExpression>
 			</textField>
@@ -228,7 +228,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{deliveryHour}]]></textFieldExpression>
 			</textField>
@@ -241,14 +241,14 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{deliveryDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="21" y="252" width="59" height="10" uuid="d02f7e96-ead3-4b79-912f-3962c4769d40"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Giá Đơn hàng]]></text>
 			</staticText>
@@ -261,14 +261,14 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{salePrice}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="200" y="252" width="60" height="10" uuid="2271dd47-b91d-42d2-8dc9-5d1b9ca1157b"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Giảm giá:]]></text>
 			</staticText>
@@ -281,14 +281,14 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{discount}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="21" y="294" width="59" height="10" uuid="1b381dff-1bd7-4d51-9d64-72dbc3ceeb9a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Phí Ship]]></text>
 			</staticText>
@@ -301,14 +301,14 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{deliveryFee}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="200" y="294" width="60" height="10" uuid="2ebf60c8-0d29-43b9-af2d-3a80c24a23a1"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Đặt cọc:]]></text>
 			</staticText>
@@ -321,14 +321,14 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{deposit}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="20" y="314" width="60" height="10" uuid="21d4e042-732e-447d-ad6e-b09966a25780"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Còn lại]]></text>
 			</staticText>
@@ -341,42 +341,42 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{remain}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="20" y="360" width="59" height="10" uuid="2a604392-bed4-465b-955c-6a91dde20f30"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Khách hàng]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="162" y="360" width="72" height="10" uuid="1f1183e3-5cc8-4e0a-98d8-074e84cea07f"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Nhân viên giao hàng]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="280" y="360" width="70" height="10" uuid="6f07f31e-dddd-4fcf-8a44-428214947502"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Nhân viên thu ngân]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="235" width="59" height="10" uuid="351c594c-e7de-40e8-a9a3-c177b5daa75a"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Giờ giao]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="21" y="275" width="59" height="10" uuid="aabd5a19-821f-40c9-a0b7-e08d0b50c551"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tổng Cộng]]></text>
 			</staticText>
@@ -389,7 +389,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
 			</textField>
@@ -402,14 +402,14 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement>
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{vatFee}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="200" y="275" width="60" height="10" uuid="f2596a45-cf2e-41bf-b1b7-cda122184aa7"/>
 				<textElement textAlignment="Left" verticalAlignment="Justified">
-					<font fontName="Times" size="7" isBold="true"/>
+					<font fontName="DejaVu Sans" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[VAT:]]></text>
 			</staticText>
@@ -423,7 +423,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Times" size="7"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{staff_name}]]></textFieldExpression>
 			</textField>
