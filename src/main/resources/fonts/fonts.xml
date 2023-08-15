@@ -2,22 +2,22 @@
 <fontFamilies>
 	<fontFamily name="Times">
 		<normal>
-			<ttf><![CDATA[fonts/Times/TIMES.ttf]]></ttf>
+			<ttf><![CDATA[fonts/Times/times.ttf]]></ttf>
 			<pdf><![CDATA[Times]]></pdf>
 		</normal>
 		<bold>
-			<ttf><![CDATA[fonts/Times/TIMESBD.ttf]]></ttf>
+			<ttf><![CDATA[fonts/Times/timesbd.ttf]]></ttf>
 			<pdf><![CDATA[Times-Bold]]></pdf>
 		</bold>
 		<italic>
-			<ttf><![CDATA[fonts/Times/TIMESI.ttf]]></ttf>
+			<ttf><![CDATA[fonts/Times/timesi.ttf]]></ttf>
 			<pdf><![CDATA[Times-Italic]]></pdf>
 		</italic>
 		<boldItalic>
-			<ttf><![CDATA[fonts/Times/TIMESBI.ttf]]></ttf>
+			<ttf><![CDATA[fonts/Times/timesbi.ttf]]></ttf>
 			<pdf><![CDATA[Times-BoldItalic]]></pdf>
 		</boldItalic>
-		<pdfEncoding><![CDATA[UTF-8]]></pdfEncoding>
+		<pdfEncoding><![CDATA[utf-8]]></pdfEncoding>
 		<pdfEmbedded><![CDATA[true]]></pdfEmbedded>
 		<exportFonts/>
 	</fontFamily>
