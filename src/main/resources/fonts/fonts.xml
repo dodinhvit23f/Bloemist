@@ -17,7 +17,7 @@
 			<ttf><![CDATA[fonts/Times/TIMESBI.ttf]]></ttf>
 			<pdf><![CDATA[Times-BoldItalic]]></pdf>
 		</boldItalic>
-		<pdfEncoding><![CDATA[Cp1258]]></pdfEncoding>
+		<pdfEncoding><![CDATA[UTF-8]]></pdfEncoding>
 		<pdfEmbedded><![CDATA[true]]></pdfEmbedded>
 		<exportFonts/>
 	</fontFamily>

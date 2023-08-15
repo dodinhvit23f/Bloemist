@@ -42,6 +42,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
+import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -109,10 +110,29 @@ public class CustomPrinterService implements IPrinterService {
           new JRMapArrayDataSource(new Object[]{new HashMap<String, Object>()}));
 
       JasperExportManager.exportReportToPdfFile(jasperPrint, PREVIEW_PDF);
+//      exporter = new JRPdfExporter();
+//
+//      exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+//      exporter.setExporterOutput(
+//          new SimpleOutputStreamExporterOutput(PREVIEW_PDF));
+//
+//      SimplePdfReportConfiguration reportConfig
+//          = new SimplePdfReportConfiguration();
+//      reportConfig.setSizePageToContent(Boolean.TRUE);
+//      reportConfig.setForceLineBreakPolicy(Boolean.FALSE);
+//
+//      SimplePdfExporterConfiguration exportConfig
+//          = new SimplePdfExporterConfiguration();
+//      exportConfig.setEncrypted(Boolean.TRUE);
+//      exportConfig.setAllowedPermissionsHint(PdfPermissionsEnum.ALL.getName());
+//
+//      exporter.setConfiguration(exportConfig);
+//      exporter.setConfiguration(reportConfig);
+//      exporter.exportReport();
 
-      PrintService printer = printService.get();
-      printFilePDF(printer, PREVIEW_PDF);
-    } catch (JRException | PrintException | IOException e) {
+    /*  PrintService printer = printService.get();
+      printFilePDF(printer, PREVIEW_PDF);*/
+    } catch (JRException | IOException e) {
       e.printStackTrace();
     }
   }

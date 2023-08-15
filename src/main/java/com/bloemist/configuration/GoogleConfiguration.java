@@ -35,7 +35,7 @@ public class GoogleConfiguration {
   @Value("${google.credential.path}")
   private String clientSecret;
 
-  @Bean
+ /* @Bean
   public NetHttpTransport getHttpTransport() throws GeneralSecurityException, IOException {
     return GoogleNetHttpTransport.newTrustedTransport();
   }
@@ -72,5 +72,5 @@ public class GoogleConfiguration {
     return new Drive.Builder(httpTransport, GsonFactory.getDefaultInstance(), credential)
         .setApplicationName(BLOEMIST)
         .build();
-  }
+  }*/
 }
