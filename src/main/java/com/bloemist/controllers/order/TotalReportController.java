@@ -2,16 +2,19 @@ package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
 import com.constant.ApplicationVariable;
+import com.constant.ApplicationView;
 import com.constant.OrderState;
 import com.utils.Utils;
+
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -26,13 +29,17 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+
+import static com.utils.Utils.openDialogChoiceImage;
 
 @Component
 public class TotalReportController extends OrderController {
@@ -135,9 +142,10 @@ public class TotalReportController extends OrderController {
         .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
         .stream()
         .map(order -> {
-          order.setTotal(getTotalPrice(Double.valueOf(Utils.currencyToStringNumber(order.getSalePrice())),
-              Double.valueOf(Utils.currencyToStringNumber(order.getDeliveryFee())),
-              Double.valueOf(Utils.currencyToStringNumber(order.getVatFee()))).toString());
+          order.setTotal(
+              getTotalPrice(Double.valueOf(Utils.currencyToStringNumber(order.getSalePrice())),
+                  Double.valueOf(Utils.currencyToStringNumber(order.getDeliveryFee())),
+                  Double.valueOf(Utils.currencyToStringNumber(order.getVatFee()))).toString());
           order.setRemain(String.valueOf(Double.parseDouble(order.getTotal()) - Double.parseDouble(
               Utils.currencyToStringNumber(order.getDeposit()))));
 
@@ -150,7 +158,6 @@ public class TotalReportController extends OrderController {
           order.setDiscount(Utils.currencyToStringNumber(order.getDiscount()));
           order.setVatFee(Utils.currencyToStringNumber(order.getVatFee()));
           order.setMaterialsFee(Utils.currencyToStringNumber(order.getMaterialsFee()));
-          //order.setCustomerSource(y);
 
           return order;
         }).toList();
@@ -210,12 +217,77 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void printSelectedOrders() {
+    if (isCurrentOrderEmpty()) {
+      return;
+    }
+    switchScene(ApplicationView.PRINT_ORDER, ApplicationView.MASTER_ORDER);
+  }
 
+  @FXML
+  public void refresh() {
+    this.orderTable.setItems(FXCollections.observableArrayList());
+    loadPageAsync(null, this.orderTable);
+  }
+
+  @FXML
+  public void pickImage() {
+    if (Objects.nonNull(currentOrder)) {
+      File chooseFile = openDialogChoiceImage(
+          (Stage) stageManager.getStage().getScene().getWindow());
+
+      if (Objects.nonNull(chooseFile)) {
+        currentOrder.setImagePath(chooseFile.getAbsolutePath());
+        orderTable.refresh();
+      }
+    }
+  }
+
+  @FXML
+  public void seeImage() {
+    try {
+      viewImage(currentOrder);
+    } catch (Exception e) {
+
+    }
+  }
+
+  @FXML
+  public void deleteSelectedRow() {
+    ApplicationVariable.getOrders().removeAll(ApplicationVariable.getOrders()
+        .stream()
+        .filter(Order::getIsSelected)
+        .toList());
+
+    updateOrderTable();
+  }
+
+  @FXML
+  public void addNewRow() {
+    ApplicationVariable.addFirst(Order.builder()
+        .orderDate(Utils.formatDate(new Date()))
+        .status(OrderState.PENDING_TEXT)
+        .isSelected(Boolean.TRUE)
+        .actualVatFee(ZERO)
+        .actualPrice(ZERO)
+        .actualDeliveryFee(ZERO)
+        .materialsFee(ZERO)
+        .deliveryDate(Utils.formatDate(new Date()))
+        .deliveryHour("00:00 - 00:00")
+        .priority(BigInteger.ZERO.intValue())
+        .build());
+
+    updateOrderTable();
+  }
+
+  @FXML
+  public void clearScreen() {
+    this.orderTable.setItems(FXCollections.observableArrayList(Collections.emptyList()));
+    ApplicationVariable.getOrders().clear();
   }
 
   @FXML
   @Override
-  public void extractData() throws IOException {
+  public void extractData() {
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
       File csvFile = new File(String.join(".",
@@ -321,22 +393,6 @@ public class TotalReportController extends OrderController {
     }
   }
 
-  @FXML
-  public void addOrder() {
-    ApplicationVariable.addFirst(Order.builder()
-        .orderDate(Utils.formatDate(new Date()))
-        .status(OrderState.PENDING_TEXT)
-        .isSelected(Boolean.TRUE)
-        .actualVatFee(ZERO)
-        .actualPrice(ZERO)
-        .actualDeliveryFee(ZERO)
-        .materialsFee(ZERO)
-        .build());
-
-    setDataOrderTable(orderTable);
-    ApplicationVariable.setTableSequence();
-  }
-
   private void setColumnsValues() {
     statusCol.setCellValueFactory(new PropertyValueFactory<>(Order.STATUS));
     customerName.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NAME));
@@ -417,6 +473,7 @@ public class TotalReportController extends OrderController {
               OrderState.IN_DELIVERY.getStateText(),
               OrderState.IN_DEBIT.getStateText(),
               OrderState.IN_PROCESS.getStateText()));
+
           combo.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 
           });
@@ -428,7 +485,6 @@ public class TotalReportController extends OrderController {
                 setGraphic(null);
               } else {
                 combo.setValue(reason);
-                System.out.println(reason);
                 setGraphic(combo);
               }
             }
@@ -583,6 +639,21 @@ public class TotalReportController extends OrderController {
     }
   }
 
+  private void addTableViewListener() {
+    orderTable.getSelectionModel().selectedItemProperty()
+        .addListener((obs, oldSelection, newSelection) -> {
+          if (Objects.nonNull(newSelection)) {
+            currentOrder = newSelection;
+            ApplicationVariable.currentOrder = currentOrder;
+          }
+        });
+  }
+
+  private void updateOrderTable() {
+    setDataOrderTable(orderTable);
+    ApplicationVariable.setTableSequence();
+  }
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initEvent();
@@ -596,15 +667,5 @@ public class TotalReportController extends OrderController {
     setDataOrderTable(this.orderTable);
 
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
-  }
-
-  private void addTableViewListener() {
-    orderTable.getSelectionModel().selectedItemProperty()
-        .addListener((obs, oldSelection, newSelection) -> {
-          if (Objects.nonNull(newSelection)) {
-            currentOrder = newSelection;
-            ApplicationVariable.currentOrder = currentOrder;
-          }
-        });
   }
 }

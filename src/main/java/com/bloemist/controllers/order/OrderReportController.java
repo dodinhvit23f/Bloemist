@@ -6,17 +6,17 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.utils.Utils;
-import java.awt.Desktop;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URI;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -31,11 +31,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -225,13 +228,11 @@ public class OrderReportController extends OrderController {
   }
 
   @FXML
-  public void seeImage() throws IOException {
-    if (isCurrentOrderEmpty()) {
-      return;
-    }
-    var imagePath = currentOrder.getImagePath();
-    if (Objects.nonNull(imagePath)) {
-      Desktop.getDesktop().browse(URI.create(imagePath));
+  public void seeImage() {
+    try {
+      viewImage(currentOrder);
+    } catch (Exception e){
+
     }
   }
 
@@ -325,14 +326,6 @@ public class OrderReportController extends OrderController {
 
   }
 
-  private boolean isCurrentOrderEmpty() {
-    if (ApplicationVariable.getOrders().stream().filter(Order::getIsSelected).findAny().isEmpty()) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_STATUS));
-      return Boolean.TRUE;
-    }
-    return Boolean.FALSE;
-  }
-
   @Override
   public void initEvent() {
     setCellValueFactory();
@@ -357,7 +350,7 @@ public class OrderReportController extends OrderController {
 
     setDataOrderTable(this.orderTable);
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
-        "" : ApplicationVariable.getUser().getFullName());
+                    "" : ApplicationVariable.getUser().getFullName());
   }
 
   @Override

@@ -2,6 +2,10 @@ package com.utils;
 
 import com.constant.Constants;
 import com.google.common.hash.Hashing;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -69,19 +73,14 @@ public final class Utils {
     }
   }
 
-  public static String formatTime(Date date) {
-    SimpleDateFormat dt = new SimpleDateFormat("hh:mm");
-    return dt.format(date);
-  }
+  public static File openDialogChoiceImage(Stage stage ) {
+    FileChooser fc = new FileChooser();
+    fc.setTitle("Choose a image");
+    FileChooser.ExtensionFilter imageFilter =
+        new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png");
+    fc.getExtensionFilters().add(imageFilter);
 
-  public static String fileFormat(String path)
-      throws FileNotFoundException, UnsupportedEncodingException {
-    if (ObjectUtils.isEmpty(path)) {
-      return "";
-    }
-
-    return URLDecoder.decode(ResourceUtils.getFile(path).getAbsolutePath(),
-            StandardCharsets.UTF_8.name())
-        .replace("\\", "/").replace(" ", "%20");
+    File chooseFile = fc.showOpenDialog(stage);
+    return chooseFile;
   }
 }

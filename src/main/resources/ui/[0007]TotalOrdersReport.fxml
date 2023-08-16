@@ -17,49 +17,49 @@
                <TableColumn fx:id="pictureLink" prefWidth="75.0" text="Hình ảnh" />
         </columns>
       </TableColumn>
-      <TableColumn prefWidth="387.0" text="Thông tin nhận hoa">
+      <TableColumn prefWidth="661.0" text="Thông tin nhận hoa">
         <columns>
-          <TableColumn fx:id="receiver" prefWidth="75.0" text="Người nhận" />
-          <TableColumn fx:id="receiverPhone" prefWidth="75.0" text="SĐT nhận" />
-          <TableColumn fx:id="deliveryAddress" prefWidth="75.0" text="Địa chỉ giao" />
-          <TableColumn fx:id="deliveryHourCol" prefWidth="75.0" text="Giờ nhận" />
-          <TableColumn fx:id="deliveryDateCol" prefWidth="75.0" text="Ngày nhận" />
-          <TableColumn fx:id="orderRemarkCol" prefWidth="75.0" text="Ghi chú" />
+          <TableColumn fx:id="receiver" prefWidth="121.0" text="Người nhận" />
+          <TableColumn fx:id="receiverPhone" minWidth="104.0" text="SĐT nhận" />
+          <TableColumn fx:id="deliveryAddress" minWidth="109.0" prefWidth="0.0" text="Địa chỉ giao" />
+          <TableColumn fx:id="deliveryHourCol" minWidth="109.0" text="Giờ nhận" />
+          <TableColumn fx:id="deliveryDateCol" minWidth="109.0" text="Ngày nhận" />
+          <TableColumn fx:id="orderRemarkCol" minWidth="109.0" text="Ghi chú" />
         </columns>
       </TableColumn>
-      <TableColumn prefWidth="75.0" text="Thông tin người đặt">
+      <TableColumn prefWidth="520.0" text="Thông tin người đặt">
         <columns>
-          <TableColumn fx:id="customerName" prefWidth="75.0" text="Người đặt" />
-          <TableColumn fx:id="customerPhone" prefWidth="75.0" text="SĐT đặt" />
-          <TableColumn fx:id="customerSocialLink" prefWidth="75.0" text="Mạng XH" />
-          <TableColumn fx:id="customerSource" prefWidth="75.0" text="Nguồn KH" />
-          <TableColumn fx:id="orderDate" prefWidth="75.0" text="Ngày đặt" />
+          <TableColumn fx:id="customerName" prefWidth="104.0" text="Người đặt" />
+          <TableColumn fx:id="customerPhone" prefWidth="104.0" text="SĐT đặt" />
+          <TableColumn fx:id="customerSocialLink" prefWidth="104.0" text="Mạng XH" />
+          <TableColumn fx:id="customerSource" prefWidth="104.0" text="Nguồn KH" />
+          <TableColumn fx:id="orderDate" prefWidth="104.0" text="Ngày đặt" />
         </columns>
       </TableColumn>
-      <TableColumn prefWidth="75.0" text="Thông tin thanh toán (khách)">
+      <TableColumn prefWidth="840.0" text="Thông tin thanh toán (khách)">
         <columns>
-          <TableColumn fx:id="truePrice" prefWidth="75.0" text="Giá niêm yết" />
-          <TableColumn fx:id="discount" prefWidth="75.0" text="Chiết khấu" />
-          <TableColumn fx:id="salePrice" prefWidth="75.0" text="Giá bán ra" />
-          <TableColumn fx:id="deliveryFee" prefWidth="75.0" text="Phí Ship" />
-          <TableColumn fx:id="vatFee" prefWidth="75.0" text="Phí VAT" />
-          <TableColumn fx:id="deposit" prefWidth="75.0" text="Đặt cọc" />
-          <TableColumn fx:id="remainAmount" prefWidth="75.0" text="Còn phải trả" />
+          <TableColumn fx:id="truePrice" prefWidth="120.0" text="Giá niêm yết" />
+          <TableColumn fx:id="discount" prefWidth="120.0" text="Chiết khấu" />
+          <TableColumn fx:id="salePrice" prefWidth="120.0" text="Giá bán ra" />
+          <TableColumn fx:id="deliveryFee" prefWidth="120.0" text="Phí Ship" />
+          <TableColumn fx:id="vatFee" prefWidth="120.0" text="Phí VAT" />
+          <TableColumn fx:id="deposit" prefWidth="120.0" text="Đặt cọc" />
+          <TableColumn fx:id="remainAmount" prefWidth="120.0" text="Còn phải trả" />
         </columns>
       </TableColumn>
-      <TableColumn prefWidth="75.0" text="Thông tin chi phí (cửa hàng)">
+      <TableColumn prefWidth="360.0" text="Thông tin chi phí (cửa hàng)">
         <columns>
-          <TableColumn fx:id="categoryFee" prefWidth="75.0" text="Cost" />
-          <TableColumn fx:id="actualDeliveryFee" prefWidth="75.0" text="Phí Ship" />
-          <TableColumn fx:id="actualVatFee" prefWidth="75.0" text="Phí VAT" />
+          <TableColumn fx:id="categoryFee" prefWidth="120.0" text="Cost" />
+          <TableColumn fx:id="actualDeliveryFee" prefWidth="120.0" text="Phí Ship" />
+          <TableColumn fx:id="actualVatFee" prefWidth="120.0" text="Phí VAT" />
         </columns>
       </TableColumn>
-      <TableColumn fx:id="orderCodeCol" prefWidth="68.0" text="Code" />
-      <TableColumn fx:id="checkAll" prefWidth="39.0" text="Chọn" />
+      <TableColumn fx:id="orderCodeCol" prefWidth="120.0" text="Code" />
+      <TableColumn fx:id="checkAll" prefWidth="68.0" text="Chọn" />
     </columns>
   </TableView>
   <TextArea fx:id="textArea" layoutX="525.0" layoutY="14.0" prefHeight="69.0" prefWidth="1380.0" promptText="On click hiển thị text ở đây" />
-  <Button layoutX="278.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Hình ảnh mẫu" textAlignment="CENTER" wrapText="true">
+  <Button layoutX="278.0" layoutY="14.0" mnemonicParsing="false" onAction="#seeImage" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Hình ảnh mẫu" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
@@ -84,12 +84,12 @@
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button fx:id="rowAdd" layoutX="417.0" layoutY="966.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: CORNSILK;" text="Thêm dòng">
+  <Button fx:id="rowAdd" layoutX="417.0" layoutY="966.0" mnemonicParsing="false" onAction="#addNewRow" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: CORNSILK;" text="Thêm dòng">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="217.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: LINEN;" text="Tải lại màn hình" textAlignment="CENTER" wrapText="true">
+  <Button layoutX="217.0" layoutY="14.0" mnemonicParsing="false" onAction="#refresh" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: LINEN;" text="Tải lại màn hình" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
@@ -103,17 +103,17 @@
          <Font name="System Bold" size="12.0" />
       </font>
    </Button>
-   <Button fx:id="rowCancel" layoutX="548.0" layoutY="966.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: FLORALWHITE;" text="Xóa dòng">
+   <Button fx:id="rowCancel" layoutX="548.0" layoutY="966.0" mnemonicParsing="false" onAction="#deleteSelectedRow" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: FLORALWHITE;" text="Xóa dòng">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
    </Button>
-   <Button fx:id="rowCancel1" layoutX="679.0" layoutY="966.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: FLORALWHITE;" text="Chọn ảnh">
+   <Button fx:id="rowCancel1" layoutX="679.0" layoutY="966.0" mnemonicParsing="false" onAction="#pickImage" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: FLORALWHITE;" text="Chọn ảnh">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
    </Button>
-   <Button fx:id="rowAdd1" layoutX="286.0" layoutY="966.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: MISTYROSE;" text="Xóa màn hình">
+   <Button fx:id="rowAdd1" layoutX="286.0" layoutY="966.0" mnemonicParsing="false" onAction="#clearScreen" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: MISTYROSE;" text="Xóa màn hình">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>

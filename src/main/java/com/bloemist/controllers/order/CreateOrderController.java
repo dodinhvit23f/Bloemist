@@ -37,6 +37,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 
+import static com.utils.Utils.openDialogChoiceImage;
+
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateOrderController extends OrderController {
@@ -88,21 +90,17 @@ public class CreateOrderController extends OrderController {
 
   File imageFile;
 
+  @FXML
   public void openImage() throws IOException {
     if (Objects.nonNull(imageFile)) {
       Desktop.getDesktop().open(new File(imageFile.getAbsolutePath()));
     }
   }
 
+  @FXML
   public void chooseImage() {
-    Stage stage = (Stage) stageManager.getStage().getScene().getWindow();
-    FileChooser fc = new FileChooser();
-    fc.setTitle("Choose a image");
-    FileChooser.ExtensionFilter imageFilter =
-        new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png");
-    fc.getExtensionFilters().add(imageFilter);
+    File chooseFile = openDialogChoiceImage((Stage) stageManager.getStage().getScene().getWindow());
 
-    File chooseFile = fc.showOpenDialog(stage);
     if (Objects.nonNull(chooseFile)) {
       imageFile = chooseFile;
     }

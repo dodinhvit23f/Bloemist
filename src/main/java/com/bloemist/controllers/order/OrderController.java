@@ -2,13 +2,19 @@ package com.bloemist.controllers.order;
 
 import com.bloemist.controllers.BaseController;
 import com.bloemist.dto.Order;
+import com.bloemist.events.MessageWarning;
 import com.bloemist.funcation.MethodParameter;
 import com.bloemist.services.IOrderService;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
+import com.constant.Constants;
 import com.utils.Utils;
+
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -220,6 +226,29 @@ public abstract class OrderController extends BaseController {
 
   @FXML
   public abstract void extractData() throws IOException;
+
+  protected boolean isCurrentOrderEmpty() {
+    if (ApplicationVariable.getOrders().stream().filter(Order::getIsSelected).findAny().isEmpty()) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_STATUS));
+      return Boolean.TRUE;
+    }
+    return Boolean.FALSE;
+  }
+
+  public void viewImage(Order currentOrder) throws IOException {
+    if (Objects.isNull(currentOrder)) {
+      return;
+    }
+
+    var imagePath = currentOrder.getImagePath();
+    if (Objects.nonNull(imagePath)) {
+      if (imagePath.contains("http")) {
+        Desktop.getDesktop().browse(URI.create(imagePath));
+        return;
+      }
+      Desktop.getDesktop().open(new File(imagePath));
+    }
+  }
 
   public abstract void initEvent();
 }
