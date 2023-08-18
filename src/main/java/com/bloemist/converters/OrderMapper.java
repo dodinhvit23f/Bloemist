@@ -9,12 +9,15 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Objects;
 
+import javafx.beans.property.SimpleStringProperty;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import org.springframework.util.ObjectUtils;
+
+import static com.bloemist.dto.Order.STATUS_PROPERTY;
 
 
 @Mapper(componentModel = "spring", imports = {ObjectUtils.class, Utils.class, OrderMapper.class})
@@ -55,6 +58,9 @@ public interface OrderMapper {
   }
 
   default Order orderReportToOrder(OrderReport orderReport) {
+    final String status = Arrays.stream(OrderState.values())
+        .filter(orderState -> orderReport.getOrderStatus() == orderState.getState())
+        .findFirst().orElseThrow().getStateText();
     return Order.builder()
         .customerName(orderReport.getClientName())
         .customerPhone(orderReport.getClientPhone())
@@ -77,14 +83,14 @@ public interface OrderMapper {
         .remain(Utils.currencyFormat(orderReport.getRemainingAmount().doubleValue()))
         .deposit(Utils.currencyFormat(orderReport.getDepositAmount().doubleValue()))
         .total(Utils.currencyFormat(orderReport.getTotalAmount().doubleValue()))
-        .status(Arrays.stream(OrderState.values())
-            .filter(orderState -> orderReport.getOrderStatus() == orderState.getState())
-            .findFirst().orElseThrow().getStateText())
+        .status(status)
         .code(orderReport.getOrderCode())
         .customerSource(orderReport.getClientSource())
         .actualDeliveryFee(Utils.currencyFormat(orderReport.getActualDeliveryFee().doubleValue()))
         .actualVatFee(Utils.currencyFormat(orderReport.getActualVatFee().doubleValue()))
         .priority(orderReport.getOrderStatus())
+        .statusProperty(new SimpleStringProperty(status))
+        .customerSourceProperty(new SimpleStringProperty(orderReport.getClientSource()))
         .isSelected(Boolean.FALSE)
         .build();
   }

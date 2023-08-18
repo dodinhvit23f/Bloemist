@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import javafx.beans.property.StringProperty;
+
 @Getter
 @Setter
 @Builder
@@ -46,7 +48,7 @@ public class Order {
   public static final String ACTUAL_DELIVERY_FEE = "actualDeliveryFee";
   public static final String ACTUAL_VAT_FEE = "actualVatFee";
   public static final String MATERIALS_FEE = "materialsFee";
-
+  public static final String STATUS_PROPERTY = "statusProperty";
 
   String stt;
   String status;
@@ -78,4 +80,6 @@ public class Order {
   String materialsFee;
   Boolean isSelected;
   Integer priority;
+  StringProperty statusProperty;
+  StringProperty customerSourceProperty;
 }

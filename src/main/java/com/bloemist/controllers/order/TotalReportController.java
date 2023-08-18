@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -27,24 +28,34 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.aspectj.weaver.ast.Or;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import static com.constant.Constants.CUSTOMER;
+import static com.constant.Constants.FACEBOOK;
+import static com.constant.Constants.HOTLINE;
+import static com.constant.Constants.INSTAGRAM;
+import static com.constant.Constants.REGULAR_CUSTOMER;
+import static com.constant.Constants.TIKTOK;
+import static com.constant.Constants.ZALO;
 import static com.utils.Utils.openDialogChoiceImage;
 
 @Component
 public class TotalReportController extends OrderController {
 
   public static final String ZERO = "0";
+
 
   TotalReportController(ApplicationEventPublisher publisher) {
     super(publisher);
@@ -274,6 +285,8 @@ public class TotalReportController extends OrderController {
         .deliveryDate(Utils.formatDate(new Date()))
         .deliveryHour("00:00 - 00:00")
         .priority(BigInteger.ZERO.intValue())
+        .statusProperty(new SimpleStringProperty(OrderState.IN_PROCESS.getStateText()))
+        .customerSourceProperty(new SimpleStringProperty(FACEBOOK))
         .build());
 
     updateOrderTable();
@@ -394,7 +407,6 @@ public class TotalReportController extends OrderController {
   }
 
   private void setColumnsValues() {
-    statusCol.setCellValueFactory(new PropertyValueFactory<>(Order.STATUS));
     customerName.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NAME));
     deliveryDateCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_DATE));
     orderDescriptionCol.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DESCRIPTION));
@@ -416,7 +428,7 @@ public class TotalReportController extends OrderController {
     vatFee.setCellValueFactory(new PropertyValueFactory<>(Order.VAT_FEE));
     receiverPhone.setCellValueFactory(new PropertyValueFactory<>(Order.RECEIVER_PHONE));
     deposit.setCellValueFactory(new PropertyValueFactory<>(Order.DEPOSIT));
-    customerSource.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_SOURCE));
+
     orderDate.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DATE));
     categoryFee.setCellValueFactory(new PropertyValueFactory<>(Order.MATERIALS_FEE));
     actualDeliveryFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_VAT_FEE));
@@ -432,6 +444,8 @@ public class TotalReportController extends OrderController {
 
   private void setColumnsFactory() {
     setStatusColumn();
+    setCustomerSourceColumn();
+
     deliveryHourCol.setCellFactory(TextFieldTableCell.forTableColumn());
     deliveryDateCol.setCellFactory(TextFieldTableCell.forTableColumn());
     orderRemarkCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -452,7 +466,7 @@ public class TotalReportController extends OrderController {
     vatFee.setCellFactory(TextFieldTableCell.forTableColumn());
     receiverPhone.setCellFactory(TextFieldTableCell.forTableColumn());
     deposit.setCellFactory(TextFieldTableCell.forTableColumn());
-    customerSource.setCellFactory(TextFieldTableCell.forTableColumn());
+
     orderDate.setCellFactory(TextFieldTableCell.forTableColumn());
     bannerContent.setCellFactory(TextFieldTableCell.forTableColumn());
     orderCodeCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -463,34 +477,37 @@ public class TotalReportController extends OrderController {
   }
 
   private void setStatusColumn() {
-    statusCol.setCellFactory(tc -> {
-          ComboBox<String> combo = new ComboBox<>();
-          combo.getItems().addAll(FXCollections.observableArrayList(
-              OrderState.DONE.getStateText(),
-              OrderState.DONE_DELIVERY.getStateText(),
-              OrderState.DONE_PROCESS.getStateText(),
-              OrderState.CANCEL.getStateText(),
-              OrderState.IN_DELIVERY.getStateText(),
-              OrderState.IN_DEBIT.getStateText(),
-              OrderState.IN_PROCESS.getStateText()));
+    statusCol.setCellFactory(ComboBoxTableCell.forTableColumn(
+        OrderState.DONE.getStateText(),
+        OrderState.DONE_DELIVERY.getStateText(),
+        OrderState.DONE_PROCESS.getStateText(),
+        OrderState.CANCEL.getStateText(),
+        OrderState.IN_DELIVERY.getStateText(),
+        OrderState.IN_DEBIT.getStateText(),
+        OrderState.IN_PROCESS.getStateText()));
 
-          combo.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+    statusCol.setCellValueFactory(orderStringCellDataFeatures -> {
+      Order value = orderStringCellDataFeatures.getValue();
+      value.setStatus(value.getStatusProperty().getValue());
+      return value.getStatusProperty();
+    });
+  }
 
-          });
-          return new TableCell<>() {
-            @Override
-            protected void updateItem(String reason, boolean empty) {
-              super.updateItem(reason, empty);
-              if (empty) {
-                setGraphic(null);
-              } else {
-                combo.setValue(reason);
-                setGraphic(combo);
-              }
-            }
-          };
-        }
-    );
+  private void setCustomerSourceColumn() {
+    customerSource.setCellFactory(ComboBoxTableCell.forTableColumn(
+        FACEBOOK,
+        INSTAGRAM,
+        ZALO,
+        CUSTOMER,
+        REGULAR_CUSTOMER,
+        TIKTOK,
+        HOTLINE));
+
+    customerSource.setCellValueFactory(orderStringCellDataFeatures -> {
+      Order value = orderStringCellDataFeatures.getValue();
+      value.setCustomerSource(value.getCustomerSourceProperty().getValue());
+      return value.getCustomerSourceProperty();
+    });
   }
 
   private void setColumnsEditStart() {
@@ -512,7 +529,7 @@ public class TotalReportController extends OrderController {
     setEditEventTableCell(vatFee);
     setEditEventTableCell(receiverPhone);
     setEditEventTableCell(deposit);
-    setEditEventTableCell(customerSource);
+
     setEditEventTableCell(orderDate);
     setEditEventTableCell(customerName);
     setEditEventTableCell(actualDeliveryFee);
@@ -630,10 +647,7 @@ public class TotalReportController extends OrderController {
       order.setDeposit(value);
       return;
     }
-    if (customerSource.equals(tableColumn)) {
-      order.setCustomerSource(value);
-      return;
-    }
+
     if (orderDate.equals(tableColumn)) {
       order.setOrderDate(value);
     }
