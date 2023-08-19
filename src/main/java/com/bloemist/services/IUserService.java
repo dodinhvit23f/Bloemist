@@ -21,12 +21,12 @@ public interface IUserService {
 
   /**
    * Create user account
-   * 
+   *
    * @param account detail account
    * @return MessageCode in {@link Constants}
    */
   @Transactional
-  void createAccount(AccountDetail account);
+  boolean createAccount(AccountDetail account);
 
   /**
    * @param account

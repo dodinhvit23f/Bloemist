@@ -2,22 +2,17 @@ package com.utils;
 
 import com.constant.Constants;
 import com.google.common.hash.Hashing;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ResourceUtils;
 
 public final class Utils {
 
@@ -36,9 +31,9 @@ public final class Utils {
         .toString();
   }
 
-  public static String hashPassword(String password) {
+  public static String hashPassword(String password, String salt) {
     return Hashing.sha256()
-        .hashString(String.join("", password, Constants.SALT), StandardCharsets.UTF_8)
+        .hashString(String.join("", password, salt), StandardCharsets.UTF_8)
         .toString();
   }
 

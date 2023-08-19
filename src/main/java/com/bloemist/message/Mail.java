@@ -11,5 +11,5 @@ import org.springframework.mail.SimpleMailMessage;
 @AllArgsConstructor
 public class Mail implements Serializable {
   SimpleMailMessage mailMessage;
-  String content;
+  String[] content;
 }

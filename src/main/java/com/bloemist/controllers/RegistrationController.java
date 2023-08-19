@@ -3,6 +3,8 @@ package com.bloemist.controllers;
 import com.bloemist.dto.AccountDetail;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.services.IUserService;
+import com.bloemist.services.MailServiceI;
+import com.constant.ApplicationView;
 import com.constant.Constants;
 import java.math.BigInteger;
 import java.net.URL;
@@ -30,8 +32,9 @@ public final class RegistrationController extends BaseController {
   @Autowired
   IUserService userService;
 
-  RegistrationController(ApplicationEventPublisher publisher) {
-    super(publisher);
+  RegistrationController(ApplicationEventPublisher publisher,
+      MailServiceI mailService) {
+    super(publisher, mailService);
   }
 
   @FXML
@@ -81,7 +84,8 @@ public final class RegistrationController extends BaseController {
     }
 
     if (secondPassword.contentEquals(password)) {
-      userService
+
+      if(userService
           .createAccount(AccountDetail.builder()
               .username(userName)
               .phoneNumber(phoneNumber)
@@ -91,7 +95,13 @@ public final class RegistrationController extends BaseController {
               .address(address)
               .dob(dob)
               .fullName(fullName)
-              .build());
+              .build())){
+        mailService.sendMail(Constants.SUSS_MAIL_REGISTRATION_SUBJECT,
+            email,
+            Constants.SUSS_MAIL_REGISTRATION_MESSAGE, userName, password);
+        switchScene(ApplicationView.LOGIN);
+      }
+
       return;
     }
 
@@ -103,4 +113,8 @@ public final class RegistrationController extends BaseController {
     userGender.setItems(FXCollections.observableArrayList(Constants.MALE, Constants.FEMALE));
   }
 
+  @Override
+  public void cancel() {
+    switchScene(ApplicationView.LOGIN);
+  }
 }

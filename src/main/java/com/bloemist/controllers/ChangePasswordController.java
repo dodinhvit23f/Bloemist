@@ -9,6 +9,7 @@ import com.constant.Constants;
 import com.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -24,10 +25,12 @@ public final class ChangePasswordController extends BaseController {
   PasswordField newPassword;
   IUserService userService;
 
+  String secret;
   ChangePasswordController(ApplicationEventPublisher publisher,
-      IUserService userService) {
+      IUserService userService, @Value("${application.slat}") String secret) {
     super(publisher);
     this.userService = userService;
+    this.secret = secret;
   }
 
   public void confirm() {
@@ -57,7 +60,7 @@ public final class ChangePasswordController extends BaseController {
 
     Account accountLogin = ApplicationVariable.getUser();
 
-    if (!Utils.hashPassword(oldPassword).equals(accountLogin.getPassword())) {
+    if (!Utils.hashPassword(oldPassword, secret).equals(accountLogin.getPassword())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_CHANGE_PASSWORD_003));
       return;
     }

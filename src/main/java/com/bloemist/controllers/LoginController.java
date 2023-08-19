@@ -52,8 +52,14 @@ public final class LoginController extends BaseController {
 
     ApplicationVariable.setUser(account);
 
-    if (ObjectUtils.isEmpty(account.getRole())) {
+    if (ObjectUtils.isEmpty(account.getUsername())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_LOGIN_001));
+      userPassword.setText("");
+      return;
+    }
+
+    if (ObjectUtils.isEmpty(account.getRole())) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_LOGIN_003));
       userPassword.setText("");
       return;
     }

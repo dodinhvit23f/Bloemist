@@ -10,9 +10,9 @@ import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.JobGradeRepository;
 import com.bloemist.repositories.UserRepository;
 import com.bloemist.services.IUserService;
+import com.bloemist.services.MailServiceI;
 import com.constant.Constants;
 import com.utils.Utils;
-
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Collections;
@@ -23,10 +23,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -34,13 +34,15 @@ import org.springframework.util.ObjectUtils;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements IUserService {
 
   private static final String EMPTY = "";
-  UserRepository userRepository;
-  JobGradeRepository jobGradeRepository;
-  ApplicationEventPublisher publisher;
+  final UserRepository userRepository;
+  final JobGradeRepository jobGradeRepository;
+  final ApplicationEventPublisher publisher;
+  @Value("${application.slat}") String secret;
+  final MailServiceI mailService;
 
   @Override
   public AccountDetail login(String username, String password) {
@@ -57,10 +59,10 @@ public class UserService implements IUserService {
 
     User user = searchedUser.get();
 
-    String hashPassword = Utils.hashPassword(password);
+    String hashPassword = Utils.hashPassword(password, secret);
 
     if (!user.getUserName().equals(username) || !user.getPassword().equals(hashPassword)) {
-      return AccountDetail.builder().role(EMPTY).username(username).build();
+      return AccountDetail.builder().role(EMPTY).username(EMPTY).build();
     }
 
     if (CollectionUtils.isEmpty(user.getRoles())) {
@@ -77,7 +79,7 @@ public class UserService implements IUserService {
 
   @Override
   public Account changeUserPassword(Account account, String newPassword) {
-    String hashPassword = Utils.hashPassword(newPassword);
+    String hashPassword = Utils.hashPassword(newPassword, secret);
     account.setPassword(hashPassword);
 
     Optional<User> userOptional = userRepository.findByUserName(account.getUsername());
@@ -105,7 +107,7 @@ public class UserService implements IUserService {
   }
 
   @Override
-  public void createAccount(AccountDetail account) {
+  public boolean createAccount(AccountDetail account) {
 
     Set<User> users =
         userRepository.findByUserNameOrEmail(account.getUsername(), account.getEmail());
@@ -124,9 +126,11 @@ public class UserService implements IUserService {
       }
 
       publisher.publishEvent(new MessageWarning(errors.get(BigInteger.ZERO.intValue())));
+
+      return Boolean.FALSE;
     }
 
-    String hashPassword = Utils.hashPassword(account.getPassword());
+    String hashPassword = Utils.hashPassword(account.getPassword(), secret);
 
     var user = User.builder()
         .userName(account.getUsername())
@@ -141,7 +145,10 @@ public class UserService implements IUserService {
         .build();
 
     userRepository.save(user);
+
     publisher.publishEvent(new MessageSuccess(Constants.SUSS_SUBSCRIBER_001));
+
+    return Boolean.TRUE;
   }
 
   @Override
@@ -168,7 +175,7 @@ public class UserService implements IUserService {
     Optional<User> userOptional = userRepository.findByUserName(account.getUsername());
 
     userOptional.ifPresent(user -> {
-      user.setPassword(Utils.hashPassword(newPassword));
+      user.setPassword(Utils.hashPassword(newPassword, secret));
       user.setUpdateDate(Date.from(Instant.now()));
       userRepository.save(user);
     });

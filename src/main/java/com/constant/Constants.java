@@ -9,6 +9,7 @@ public final class Constants {
   // LOGIN
   public static final String ERR_LOGIN_001 = "ERR_LOGIN_001";
   public static final String ERR_LOGIN_002 = "ERR_LOGIN_002";
+  public static final String ERR_LOGIN_003 = "ERR_LOGIN_003";
   public static final String SUSS_LOGIN_001 = "SUSS_LOGIN_001";
   // REGISRATOR
 
@@ -66,6 +67,9 @@ public final class Constants {
   public static final String ERR_MESSAGE_BATCH_INSERT = "ERR_MESSAGE_BATCH_INSERT";
   // PRINT ORDER
   public static final String ERR_MESSAGE_ORDER = "ERR_MESSAGE_ORDER";
+  // Registration
+  public static final String SUSS_MAIL_REGISTRATION_MESSAGE = "SUSS_MAIL_REGISTRATION_MESSAGE";
+  public static final String SUSS_MAIL_REGISTRATION_SUBJECT = "SUSS_MAIL_REGISTRATION_SUBJECT";
 
 
   public static final String CONNECTION_FAIL = "CONNECTION_FAIL";
@@ -73,7 +77,6 @@ public final class Constants {
   public static final int OTP_LENGTH = 8;
   public static final String FEMALE = "Nữ";
   public static final String MALE = "Nam";
-  public static final String SALT = "BLOEMIST";
 
   public static final String FACEBOOK = "Facebook";
   public static final String INSTAGRAM = "Instagram";

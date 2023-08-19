@@ -29,3 +29,4 @@ google:
 
 application:
   image-url: Img/icon.ico
+  slat: ${SECRET}

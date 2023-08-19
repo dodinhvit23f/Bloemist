@@ -1,5 +1,6 @@
 package com.bloemist.controllers;
 
+import com.bloemist.services.MailServiceI;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -27,15 +28,17 @@ public final class ForgotPasswordController extends BaseController {
   private String otpConfirm;
   final IUserService userService;
 
-  ForgotPasswordController(ApplicationEventPublisher publisher, IUserService userService) {
-    super(publisher);
+  ForgotPasswordController(ApplicationEventPublisher publisher, IUserService userService, MailServiceI mailService) {
+    super(publisher, mailService);
     this.userService = userService;
   }
 
+  @Override
   public void cancel() {
     switchScene(ApplicationView.LOGIN);
   }
 
+  @FXML
   public void verifyOTP() {
     if (otp.getText().length() == Constants.OTP_LENGTH) {
       if (otpConfirm.equals(otp.getText())) {

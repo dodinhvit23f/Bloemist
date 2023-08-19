@@ -21,6 +21,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -49,10 +50,14 @@ public final class ChangeUserInformationController extends BaseController {
   @FXML
   DatePicker newUserDob;
 
-   ChangeUserInformationController(ApplicationEventPublisher publisher,
-      IUserService userService) {
+  String secret;
+
+  ChangeUserInformationController(ApplicationEventPublisher publisher,
+      IUserService userService, @Value("${application.slat}") String secret) {
     super(publisher);
     this.userService = userService;
+    this.secret = secret;
+
   }
 
   public void changeInformation() {
@@ -65,7 +70,7 @@ public final class ChangeUserInformationController extends BaseController {
       return;
     }
     var password = userPassword.getText();
-    if (!Utils.hashPassword(password).equals(ApplicationVariable.getUser().getPassword())) {
+    if (!Utils.hashPassword(password, secret).equals(ApplicationVariable.getUser().getPassword())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_USER_INFO_003));
       return;
     }
@@ -96,7 +101,7 @@ public final class ChangeUserInformationController extends BaseController {
     userDetail.setGender(gender);
     userDetail.setPhoneNumber(phoneNumber);
 
-   userService.updateUserInformation(userDetail);
+    userService.updateUserInformation(userDetail);
   }
 
 
