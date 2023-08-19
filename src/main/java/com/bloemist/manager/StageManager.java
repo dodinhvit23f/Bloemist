@@ -1,6 +1,7 @@
 package com.bloemist.manager;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.util.ResourceUtils;
 
 @Getter
 @Builder
@@ -26,16 +28,14 @@ public class StageManager implements Serializable {
   Message message;
   Stage stage;
   ApplicationView view;
-  String path;
   ApplicationView previousView;
 
-  public StageManager(Message message, Stage stage, ApplicationView view, String path,
+  public StageManager(Message message, Stage stage, ApplicationView view,
                       ApplicationView previousView) {
     super();
     this.message = message;
     this.stage = stage;
     this.view = view;
-    this.path = path;
     this.previousView = previousView;
   }
 
@@ -49,19 +49,15 @@ public class StageManager implements Serializable {
 
   public URL getUrlFxmlFile() {
     try {
-      return new File(getPath()).toURI().toURL();
-    } catch (MalformedURLException e) {
+      return ResourceUtils.getURL(view.getUrl());
+    } catch (FileNotFoundException e) {
       System.exit(0);
     }
     return null;
   }
 
-  public String getPath() {
-    return String.join(PATH_DIRECTION, path, view.getUrl());
-  }
-
   public String getPath(String url) {
-    return String.join(PATH_DIRECTION, path, url);
+    return String.join(PATH_DIRECTION, url);
   }
 
   public String getStageTitle() {

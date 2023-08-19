@@ -15,7 +15,6 @@
 	<version>0.0.1</version>
 	<name>BloemistSpring</name>
 	<description>Bloemist</description>
-	<packaging>jar</packaging>
 
 	<properties>
 		<java.version>17</java.version>

@@ -8,7 +8,7 @@ public enum ApplicationView {
   PRINT_ORDER {
     @Override
     public String getUrl() {
-      return "ui/[0014]SubScreen-PrintVoucher.fxml";
+      return "classpath:ui/0014-SubScreen-PrintVoucher.fxml";
     }
 
     @Override
@@ -24,7 +24,7 @@ public enum ApplicationView {
   SUB_ORDER_SCREEN {
     @Override
     public String getUrl() {
-      return "ui/[0010]SubScreen-OrderStatus.fxml";
+      return "classpath:ui/0010-SubScreen-OrderStatus.fxml";
     }
 
     @Override
@@ -45,7 +45,7 @@ public enum ApplicationView {
 
     @Override
     public String getUrl() {
-      return "ui/[0001]Login.fxml";
+      return "classpath:ui/0001-Login.fxml";
     }
 
     @Override
@@ -61,7 +61,7 @@ public enum ApplicationView {
 
     @Override
     public String getUrl() {
-      return "ui/[0002]IDRegistration.fxml";
+      return "classpath:ui/0002-IDRegistration.fxml";
     }
 
     @Override
@@ -73,7 +73,7 @@ public enum ApplicationView {
 
     @Override
     public String getUrl() {
-      return "ui/[0003]NewOrder.fxml";
+      return "classpath:ui/0003-NewOrder.fxml";
     }
 
     @Override
@@ -90,7 +90,7 @@ public enum ApplicationView {
 
     @Override
     public String getUrl() {
-      return "ui/[0004]UserAppointment.fxml";
+      return "classpath:ui/0004-UserAppointment.fxml";
     }
 
     @Override
@@ -106,7 +106,7 @@ public enum ApplicationView {
   CHANGE_PASSWORD {
     @Override
     public String getUrl() {
-      return "ui/[0005]ChangePassword.fxml";
+      return "classpath:ui/0005-ChangePassword.fxml";
     }
 
     @Override
@@ -122,7 +122,7 @@ public enum ApplicationView {
   RECOVER_PASSWORD {
     @Override
     public String getUrl() {
-      return "ui/[0006]RecoverPassword.fxml";
+      return "classpath:ui/0006-RecoverPassword.fxml";
     }
 
     @Override
@@ -138,7 +138,7 @@ public enum ApplicationView {
   MASTER_ORDER {
     @Override
     public String getUrl() {
-      return "ui/[0007]TotalOrdersReport.fxml";
+      return "classpath:ui/0007-TotalOrdersReport.fxml";
     }
 
     @Override
@@ -154,7 +154,7 @@ public enum ApplicationView {
   INQUIRY_ORDER {
     @Override
     public String getUrl() {
-      return "ui/[0008]OrdersReport.fxml";
+      return "classpath:ui/0008-OrdersReport.fxml";
     }
 
     @Override
@@ -170,7 +170,7 @@ public enum ApplicationView {
   EMPLOYEES_MANAGEMENT {
     @Override
     public String getUrl() {
-      return "ui/[0009]EmployeesManagement.fxml";
+      return "classpath:ui/0009-EmployeesManagement.fxml";
     }
 
     @Override
@@ -186,7 +186,7 @@ public enum ApplicationView {
   HOME {
     @Override
     public String getUrl() {
-      return "ui/Home.fxml";
+      return "classpath:ui/Home.fxml";
     }
 
     @Override
@@ -202,7 +202,7 @@ public enum ApplicationView {
   CHANGE_USER_INFO {
     @Override
     public String getUrl() {
-      return "ui/[0013]ChangEmpInfo.fxml";
+      return "classpath:ui/0013-ChangEmpInfo.fxml";
     }
 
     @Override

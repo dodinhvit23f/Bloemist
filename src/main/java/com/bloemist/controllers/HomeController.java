@@ -25,7 +25,7 @@ public final class HomeController extends BaseController {
     switchScene(ApplicationView.CHANGE_USER_INFO);
   }
   
-  public void manageOrder() {
+  public void staffOrder() {
     switchScene(ApplicationView.INQUIRY_ORDER);
   }
   
@@ -33,4 +33,7 @@ public final class HomeController extends BaseController {
     switchScene(ApplicationView.CREATE_ORDER);
   }
 
+  public void manageOrder() {
+    switchScene(ApplicationView.MASTER_ORDER);
+  }
 }

@@ -4,6 +4,7 @@ import com.bloemist.events.StageEvent;
 import com.bloemist.manager.StageManager;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 /**
  * @author Do Dinh Tien
@@ -27,7 +29,7 @@ public class StageListener implements ApplicationListener<StageEvent> {
   final ApplicationContext context;
   
   @Value("${application.image-url}")
-  Resource iconResource;
+  String iconResource;
   
   public StageListener( ApplicationContext context) {
     this.context = context;
@@ -40,15 +42,16 @@ public class StageListener implements ApplicationListener<StageEvent> {
       var manager = (StageManager) event.getSource();
       var stage = manager.getStage();
 
-      FXMLLoader fxmlLoader = new FXMLLoader(manager.getUrlFxmlFile());
+      FXMLLoader fxmlLoader =  new FXMLLoader(manager.getUrlFxmlFile());
       fxmlLoader.setControllerFactory(context::getBean);
+      fxmlLoader.setCharset(StandardCharsets.UTF_8);
 
       var panel = (Pane) fxmlLoader.load();
 
       Scene scene = new Scene(panel);
       stage.setScene(scene);
       stage.setTitle(manager.getStageTitle());
-      stage.getIcons().add(new Image(new FileInputStream(iconResource.getFile())));
+      stage.getIcons().add(new Image((getClass().getClassLoader().getResourceAsStream(iconResource))));
       stage.setMinWidth(panel.getPrefWidth());
       stage.setMinHeight(panel.getPrefHeight());
       //stage.setMaximized(true);

@@ -74,7 +74,6 @@ public class AppConfiguration {
 
     return StageManager.builder().stage(stage).view(ApplicationView.LOGIN)
         .message(getMessage())
-        .path(classpathEntries[0])
         .build();
   }
 }
