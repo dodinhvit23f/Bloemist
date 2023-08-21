@@ -20,7 +20,7 @@ import org.springframework.util.ObjectUtils;
 import static com.bloemist.dto.Order.STATUS_PROPERTY;
 
 
-@Mapper(componentModel = "spring", imports = {ObjectUtils.class, Utils.class, OrderMapper.class})
+@Mapper(componentModel = "spring", imports = {ObjectUtils.class, Utils.class, OrderMapper.class, OrderState.class})
 public interface OrderMapper {
 
   OrderMapper MAPPER = Mappers.getMapper(OrderMapper.class);
@@ -50,7 +50,7 @@ public interface OrderMapper {
   @Mapping(target = "actualDeliveryFee", expression = "java(OrderMapper.convertBigDecimal(order.getActualDeliveryFee()))")
   @Mapping(target = "actualVatFee", expression = "java(OrderMapper.convertBigDecimal(order.getActualVatFee()))")
   @Mapping(target = "materialsFee", expression = "java(OrderMapper.convertBigDecimal(order.getMaterialsFee()))")
-  @Mapping(target = "orderStatus", ignore = true)
+  @Mapping(target = "orderStatus", expression = "java(OrderState.getState(order.getStatus()))")
   void mapOrderToOrderReport(@MappingTarget OrderReport orderReport, Order order);
 
   static BigDecimal convertBigDecimal(String s) {

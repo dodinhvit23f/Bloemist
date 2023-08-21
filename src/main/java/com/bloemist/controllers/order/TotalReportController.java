@@ -126,6 +126,8 @@ public class TotalReportController extends OrderController {
   private TableColumn<Order, String> actualVatFee;
   @FXML
   private TableColumn<Order, Boolean> checkAll;
+  @FXML
+  private TableColumn<Order, String> pictureLink;
 
   private TableColumn<Order, String> editableColumn;
   private Order currentOrder;
@@ -285,7 +287,7 @@ public class TotalReportController extends OrderController {
         .deliveryDate(Utils.formatDate(new Date()))
         .deliveryHour("00:00 - 00:00")
         .priority(BigInteger.ZERO.intValue())
-        .statusProperty(new SimpleStringProperty(OrderState.IN_PROCESS.getStateText()))
+        .statusProperty(new SimpleStringProperty(OrderState.PENDING.getStateText()))
         .customerSourceProperty(new SimpleStringProperty(FACEBOOK))
         .build());
 
@@ -440,6 +442,8 @@ public class TotalReportController extends OrderController {
       booleanProp.addListener((observable, oldValue, newValue) -> order.setIsSelected(newValue));
       return booleanProp;
     });
+
+    pictureLink.setCellValueFactory(new PropertyValueFactory<>(Order.IMAGE_PATH));
   }
 
   private void setColumnsFactory() {
@@ -484,7 +488,8 @@ public class TotalReportController extends OrderController {
         OrderState.CANCEL.getStateText(),
         OrderState.IN_DELIVERY.getStateText(),
         OrderState.IN_DEBIT.getStateText(),
-        OrderState.IN_PROCESS.getStateText()));
+        OrderState.IN_PROCESS.getStateText(),
+        OrderState.PENDING.getStateText()));
 
     statusCol.setCellValueFactory(orderStringCellDataFeatures -> {
       Order value = orderStringCellDataFeatures.getValue();
