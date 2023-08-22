@@ -52,6 +52,8 @@ public class OrderService implements IOrderService {
   public static final String MEDIA = "media";
   public static final String READER = "reader";
   public static final String ANYONE = "anyone";
+  public static final String GOOGLE_IMAGE_LINK = "https://lh3.googleusercontent.com/d/%s";
+
   OrderReportRepository orderReportRepository;
   ITimeService timeService;
   ApplicationEventPublisher publisher;
@@ -262,7 +264,7 @@ public class OrderService implements IOrderService {
           .setFields(String.join(",", ID, WEB_VIEW_LINK))
           .execute();
 
-      orderReport.setSamplePictureLink(fileMetadata.getWebViewLink());
+      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, fileMetadata.getId()));
       orderReportRepository.save(orderReport);
 
       customerOrder.setCode(orderReport.getOrderCode());
