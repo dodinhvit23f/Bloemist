@@ -1,6 +1,7 @@
 package com.bloemist.services.impl;
 
 import static com.utils.Utils.currencyToStringNumber;
+import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 
 import com.bloemist.converters.OrderMapper;
 import com.bloemist.dto.Order;
@@ -12,6 +13,9 @@ import com.bloemist.services.IOrderService;
 import com.bloemist.services.ITimeService;
 import com.constant.Constants;
 import com.constant.OrderState;
+import com.google.api.client.http.FileContent;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
 import com.utils.Utils;
 
 import java.math.BigDecimal;
@@ -19,6 +23,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,74 +56,29 @@ public class OrderService implements IOrderService {
   ITimeService timeService;
   ApplicationEventPublisher publisher;
   OrderMapper orderMapper;
-  // Drive googleDrive;
+  Drive googleDrive;
 
   @Override
+
   public Optional<Boolean> createNewOrder(Order customerOrder) {
     if (Boolean.FALSE.equals(validOrder(customerOrder))) {
       return Optional.empty();
     }
 
-    OrderReport orderReport = new OrderReport();
-    orderMapper.mapOrderToOrderReport(orderReport, customerOrder);
-    orderReport.setOrderCode(getOrderCode());
-    orderReport.setOrderStatus(OrderState.PENDING.getState());
-
-    try {
-     /* File fileMetadata = new File();
-      fileMetadata.setName(String.format("%s.jpg", orderReport.getOrderCode()));
-      fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
-      fileMetadata.setMimeType(MEDIA);
-
-      var rawFile = new java.io.File(orderReport.getSamplePictureLink());
-      FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
-
-      fileMetadata = googleDrive.files().create(fileMetadata, mediaContent)
-          .setFields(String.join(",", ID, WEB_VIEW_LINK))
-          .execute();
-
-      orderReport.setSamplePictureLink(fileMetadata.getWebViewLink());*/
-      orderReportRepository.save(orderReport);
-
-      customerOrder.setCode(orderReport.getOrderCode());
-      customerOrder.setPriority(orderReport.getOrderStatus());
-      customerOrder.setImagePath(orderReport.getSamplePictureLink());
-      customerOrder.setIsSelected(Boolean.FALSE);
-
-      publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
-    } catch (Exception ex) {
-      ex.printStackTrace();
+    Optional<Boolean> result = insertOneOrder(customerOrder);
+    if (result.isEmpty()) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
       return Optional.empty();
     }
-    return Optional.of(Boolean.TRUE);
+    publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
+    return result;
   }
 
   @Override
   public void createNewOrders(Collection<Order> orders) {
 
-    List<OrderReport> orderReports = orders.stream()
-        .map(order -> {
-          OrderReport orderReport = new OrderReport();
-          orderMapper.mapOrderToOrderReport(orderReport, order);
-          orderReport.setOrderCode(getOrderCode());
-          return orderReport;
-        }).toList();
-
     try {
-      orderReportRepository.saveAll(orderReports);
-      publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_001));
-      orders.forEach(order -> {
-        var orderReport = orderReports.stream()
-            .filter(or -> or.getClientName().equals(order.getCustomerName()) &&
-                or.getClientPhone().equals(order.getCustomerPhone()) &&
-                or.getClientSource().equals(order.getCustomerSource()) &&
-                or.getTotalAmount().toString().equals(order.getTotal()) &&
-                or.getActualPrice().toString().equals(order.getActualPrice())
-            ).findFirst().orElseThrow();
-        order.setCode(orderReport.getOrderCode());
-        order.setPriority(orderReport.getOrderStatus());
-      });
+      orders.forEach(order -> createNewOrder(order));
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
     }
@@ -281,5 +241,38 @@ public class OrderService implements IOrderService {
 
   private static String getOrderCode() {
     return String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime());
+  }
+
+  private Optional<Boolean> insertOneOrder(Order customerOrder) {
+    OrderReport orderReport = new OrderReport();
+    orderMapper.mapOrderToOrderReport(orderReport, customerOrder);
+    orderReport.setOrderCode(getOrderCode());
+    orderReport.setOrderStatus(OrderState.PENDING.getState());
+
+    try {
+      File fileMetadata = new File();
+      fileMetadata.setName(String.format("%s.jpg", orderReport.getOrderCode()));
+      fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
+      fileMetadata.setMimeType(MEDIA);
+
+      var rawFile = new java.io.File(orderReport.getSamplePictureLink());
+      FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
+
+      fileMetadata = googleDrive.files().create(fileMetadata, mediaContent)
+          .setFields(String.join(",", ID, WEB_VIEW_LINK))
+          .execute();
+
+      orderReport.setSamplePictureLink(fileMetadata.getWebViewLink());
+      orderReportRepository.save(orderReport);
+
+      customerOrder.setCode(orderReport.getOrderCode());
+      customerOrder.setPriority(orderReport.getOrderStatus());
+      customerOrder.setImagePath(orderReport.getSamplePictureLink());
+      customerOrder.setIsSelected(Boolean.FALSE);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      return Optional.empty();
+    }
+    return Optional.of(Boolean.TRUE);
   }
 }

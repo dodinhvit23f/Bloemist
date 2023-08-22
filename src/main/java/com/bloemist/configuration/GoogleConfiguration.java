@@ -1,6 +1,15 @@
 package com.bloemist.configuration;
 
-import static com.google.api.services.drive.DriveScopes.DRIVE_PHOTOS_READONLY;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ResourceUtils;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -13,15 +22,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ResourceUtils;
 
 @Configuration
 public class GoogleConfiguration {
@@ -32,10 +32,11 @@ public class GoogleConfiguration {
   public static final String OFFLINE = "offline";
   public static final int PORT = 8888;
   public static final String BLOEMIST = "BloemistDesktop";
+  public static final String FORCE = "force";
   @Value("${google.credential.path}")
   private String clientSecret;
 
- /* @Bean
+  @Bean
   public NetHttpTransport getHttpTransport() throws GeneralSecurityException, IOException {
     return GoogleNetHttpTransport.newTrustedTransport();
   }
@@ -48,7 +49,7 @@ public class GoogleConfiguration {
 
   @Bean
   Credential getGoogleCredential(final NetHttpTransport httpTransport,
-      GoogleClientSecrets googleClientSecrets) throws IOException {
+                                 GoogleClientSecrets googleClientSecrets) throws IOException {
 
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
         httpTransport, GsonFactory.getDefaultInstance(), googleClientSecrets, SCOPES)
@@ -57,6 +58,7 @@ public class GoogleConfiguration {
                 new java.io.File(
                     this.getClass().getClassLoader().getResource(TOKENS_DIRECTORY_PATH).getFile())))
         .setAccessType(OFFLINE)
+        .setApprovalPrompt(FORCE)
         .build();
 
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(PORT).build();
@@ -72,5 +74,5 @@ public class GoogleConfiguration {
     return new Drive.Builder(httpTransport, GsonFactory.getDefaultInstance(), credential)
         .setApplicationName(BLOEMIST)
         .build();
-  }*/
+  }
 }
