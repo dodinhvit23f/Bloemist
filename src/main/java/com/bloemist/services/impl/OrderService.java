@@ -52,7 +52,7 @@ public class OrderService implements IOrderService {
   public static final String MEDIA = "media";
   public static final String READER = "reader";
   public static final String ANYONE = "anyone";
-  public static final String GOOGLE_IMAGE_LINK = "https://lh3.googleusercontent.com/d/%s";
+  public static final String GOOGLE_IMAGE_LINK = "https://drive.google.com/uc?id=%s";
 
   OrderReportRepository orderReportRepository;
   ITimeService timeService;
