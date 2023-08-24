@@ -34,7 +34,7 @@ public final class ApplicationVariable {
   }
 
   public static void setOrders(List<Order> orders) {
-    order = orders;
+    order = new ArrayList<>(orders);
   }
 
   public static void add(Collection<Order> orders) {

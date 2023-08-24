@@ -279,7 +279,7 @@ public class OrderReportController extends OrderController {
   @FXML
   private void reload() {
     this.orderTable.setItems(FXCollections.observableArrayList());
-    loadPageAsync(null, this.orderTable);
+    loadPageAsync(null, this.orderTable, Boolean.FALSE);
   }
 
   private void setCellValueFactory() {
@@ -344,11 +344,11 @@ public class OrderReportController extends OrderController {
         onScrollFinished(this.orderTable));
 
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable);
+      loadPageAsync(null, this.orderTable, Boolean.FALSE);
       return;
     }
 
-    setDataOrderTable(this.orderTable);
+    setDataOrderTable(this.orderTable, Boolean.FALSE);
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
                     "" : ApplicationVariable.getUser().getFullName());
   }

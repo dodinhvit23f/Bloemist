@@ -22,8 +22,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -35,7 +33,6 @@ import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.aspectj.weaver.ast.Or;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -224,7 +221,7 @@ public class TotalReportController extends OrderController {
 
     orderService.createNewOrders(selectedOrder);
     ApplicationVariable.sortOrders();
-    setDataOrderTable(orderTable);
+    setDataOrderTable(orderTable, Boolean.FALSE);
     orderTable.refresh();
   }
 
@@ -239,7 +236,7 @@ public class TotalReportController extends OrderController {
   @FXML
   public void refresh() {
     this.orderTable.setItems(FXCollections.observableArrayList());
-    loadPageAsync(null, this.orderTable);
+    loadPageAsync(null, this.orderTable, Boolean.TRUE);
   }
 
   @FXML
@@ -669,7 +666,7 @@ public class TotalReportController extends OrderController {
   }
 
   private void updateOrderTable() {
-    setDataOrderTable(orderTable);
+    setDataOrderTable(orderTable, Boolean.TRUE);
     ApplicationVariable.setTableSequence();
   }
 
@@ -680,10 +677,10 @@ public class TotalReportController extends OrderController {
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable));
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable);
+      loadPageAsync(null, this.orderTable, Boolean.TRUE);
       return;
     }
-    setDataOrderTable(this.orderTable);
+    setDataOrderTable(this.orderTable, Boolean.TRUE);
 
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
   }

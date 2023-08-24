@@ -102,47 +102,6 @@ public class OrderService implements IOrderService {
     return Optional.empty();
   }
 
-  private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
-    var deposit = NumberUtils.parseNumber(currencyToStringNumber(order.getDeposit()),
-        BigDecimal.class);
-    var remain = NumberUtils.parseNumber(currencyToStringNumber(order.getRemain()),
-        BigDecimal.class);
-    var total = NumberUtils.parseNumber(currencyToStringNumber(order.getTotal()), BigDecimal.class);
-    var deliveryFee = NumberUtils.parseNumber(currencyToStringNumber(order.getDeliveryFee()),
-        BigDecimal.class);
-    var vatFee = NumberUtils.parseNumber(currencyToStringNumber(order.getVatFee()),
-        BigDecimal.class);
-    var actualPrice = NumberUtils.parseNumber(currencyToStringNumber(order.getActualPrice()),
-        BigDecimal.class);
-    var salePrice = NumberUtils.parseNumber(currencyToStringNumber(order.getSalePrice()),
-        BigDecimal.class);
-    var discount = NumberUtils.parseNumber(currencyToStringNumber(order.getDiscount()),
-        BigDecimal.class);
-
-    orderReport.setDepositAmount(deposit);
-    orderReport.setRemainingAmount(remain);
-    orderReport.setTotalAmount(total);
-    orderReport.setDeliveryFee(deliveryFee);
-    orderReport.setVatFee(vatFee);
-    orderReport.setActualPrice(actualPrice);
-    orderReport.setSalePrice(salePrice);
-    orderReport.setDiscount(discount);
-    // change info customer
-    orderReport.setClientName(order.getCustomerName());
-    orderReport.setClientPhone(order.getCustomerPhone());
-    orderReport.setClientSocialLink(order.getCustomerSocialLink());
-    orderReport.setClientSource(order.getCustomerSource());
-    // change delivery info
-    orderReport.setDeliveryAddress(order.getDeliveryAddress());
-    orderReport.setReceiver(order.getReceiverName());
-    orderReport.setReceiverPhone(order.getReceiverPhone());
-    orderReport.setDeliveryTime(order.getDeliveryHour());
-    // change order con
-    orderReport.setOrderDescription(order.getOrderDescription());
-    orderReport.setBannerContent(order.getBanner());
-    orderReport.setRemark(order.getCustomerNote());
-  }
-
   @Override
   public void updateOrders(List<Order> orders) {
     Optional<Order> failOrder = orders.stream()
@@ -167,7 +126,6 @@ public class OrderService implements IOrderService {
 
       orderReportRepository.saveAll(orderReports.values());
     });
-
   }
 
   @Override
@@ -276,5 +234,47 @@ public class OrderService implements IOrderService {
       return Optional.empty();
     }
     return Optional.of(Boolean.TRUE);
+  }
+
+  private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
+    var deposit = NumberUtils.parseNumber(currencyToStringNumber(order.getDeposit()),
+        BigDecimal.class);
+    var remain = NumberUtils.parseNumber(currencyToStringNumber(order.getRemain()),
+        BigDecimal.class);
+    var total = NumberUtils.parseNumber(currencyToStringNumber(order.getTotal()), BigDecimal.class);
+    var deliveryFee = NumberUtils.parseNumber(currencyToStringNumber(order.getDeliveryFee()),
+        BigDecimal.class);
+    var vatFee = NumberUtils.parseNumber(currencyToStringNumber(order.getVatFee()),
+        BigDecimal.class);
+    var actualPrice = NumberUtils.parseNumber(currencyToStringNumber(order.getActualPrice()),
+        BigDecimal.class);
+    var salePrice = NumberUtils.parseNumber(currencyToStringNumber(order.getSalePrice()),
+        BigDecimal.class);
+    var discount = NumberUtils.parseNumber(currencyToStringNumber(order.getDiscount()),
+        BigDecimal.class);
+
+    orderReport.setDepositAmount(deposit);
+    orderReport.setRemainingAmount(remain);
+    orderReport.setTotalAmount(total);
+    orderReport.setDeliveryFee(deliveryFee);
+    orderReport.setVatFee(vatFee);
+    orderReport.setActualPrice(actualPrice);
+    orderReport.setSalePrice(salePrice);
+    orderReport.setDiscount(discount);
+    // change info customer
+    orderReport.setClientName(order.getCustomerName());
+    orderReport.setClientPhone(order.getCustomerPhone());
+    orderReport.setClientSocialLink(order.getCustomerSocialLink());
+    orderReport.setClientSource(order.getCustomerSource());
+    // change delivery info
+    orderReport.setDeliveryAddress(order.getDeliveryAddress());
+    orderReport.setReceiver(order.getReceiverName());
+    orderReport.setReceiverPhone(order.getReceiverPhone());
+    orderReport.setDeliveryTime(order.getDeliveryHour());
+    // change order con
+    orderReport.setOrderDescription(order.getOrderDescription());
+    orderReport.setBannerContent(order.getBanner());
+    orderReport.setRemark(order.getCustomerNote());
+    orderReport.setOrderStatus(OrderState.getState(order.getStatus()));
   }
 }

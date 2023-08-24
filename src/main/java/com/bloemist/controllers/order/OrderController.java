@@ -8,6 +8,7 @@ import com.bloemist.services.IOrderService;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
+import com.constant.OrderState;
 import com.utils.Utils;
 
 import java.awt.Desktop;
@@ -28,6 +29,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -36,8 +38,10 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
@@ -83,13 +87,13 @@ public abstract class OrderController extends BaseController {
         .atZone(ZoneId.systemDefault()).toInstant());
   }
 
-  protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable) {
+  protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable, Boolean isMaster) {
 
     LocalDateTime endTime;
     if (ObjectUtils.isEmpty(ApplicationVariable.getOrders())) {
       endTime = LocalDateTime.now();
     } else {
-      if(Boolean.TRUE.equals(isNew)){
+      if (Boolean.TRUE.equals(isNew)) {
         var latestOrder = ApplicationVariable.getOrders()
             .stream()
             .max(Comparator.comparing(Order::getOrderDate))
@@ -97,7 +101,7 @@ public abstract class OrderController extends BaseController {
 
         endTime = LocalDate.parse(latestOrder.getOrderDate(),
             DateTimeFormatter.ofPattern(DD_MM_YYYY)).atStartOfDay();
-      }else{
+      } else {
         var oldestOrder = ApplicationVariable.getOrders()
             .stream()
             .min(Comparator.comparing(Order::getOrderDate))
@@ -131,9 +135,21 @@ public abstract class OrderController extends BaseController {
         });
 
     orderLoading.thenAccept(orders -> {
+      orders = orders.stream()
+          .filter(order -> {
+            if (isMaster) {
+              return Boolean.TRUE;
+            }
+
+            if (order.getStatus().equals(OrderState.DONE.getStateText())) {
+              return Boolean.FALSE;
+            }
+            return Boolean.TRUE;
+          }).toList();
+
       if (Objects.isNull(isNew)) {
-        ApplicationVariable.setOrders(new ArrayList<>(orders));
-        setDataOrderTable(orderTable);
+        ApplicationVariable.setOrders(orders);
+        setDataOrderTable(orderTable, Boolean.FALSE);
         return;
       }
 
@@ -170,8 +186,8 @@ public abstract class OrderController extends BaseController {
       return order;
     }).toList();
 
-    ApplicationVariable.setOrders(new ArrayList<>(orders));
-    setDataOrderTable(orderTable);
+    ApplicationVariable.setOrders(orders);
+    setDataOrderTable(orderTable, Boolean.FALSE);
   }
 
   private void handleOldData(TableView<Order> orderTable, List<Order> orders) {
@@ -187,7 +203,7 @@ public abstract class OrderController extends BaseController {
     }).toList();
 
     ApplicationVariable.add(oldOrders);
-    setDataOrderTable(orderTable);
+    setDataOrderTable(orderTable, Boolean.FALSE);
   }
 
   public void onScrollFinished(TableView<Order> orderTable) {
@@ -195,20 +211,32 @@ public abstract class OrderController extends BaseController {
     tvScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
       tvScrollBar.setDisable(Boolean.TRUE);
       if (newValue.doubleValue() == BigInteger.ONE.doubleValue()) {
-        loadPageAsync(Boolean.FALSE, orderTable);
+        loadPageAsync(Boolean.FALSE, orderTable, Boolean.FALSE);
       }
 
       if (newValue.doubleValue() == BigInteger.ZERO.doubleValue()) {
         Alert alert = confirmDialog();
         if (alert.getResult() == ButtonType.YES) {
-          loadPageAsync(Boolean.TRUE, orderTable);
+          loadPageAsync(Boolean.TRUE, orderTable, Boolean.FALSE);
         }
       }
       tvScrollBar.setDisable(Boolean.FALSE);
     });
   }
 
-  protected void setDataOrderTable(TableView<Order> orderTable) {
+  protected void setDataOrderTable(TableView<Order> orderTable, boolean isMaster) {
+    ApplicationVariable.setOrders(ApplicationVariable.getOrders().stream()
+        .filter(order -> {
+          if (isMaster) {
+            return Boolean.TRUE;
+          }
+
+          if (order.getStatus().equals(OrderState.DONE.getStateText())) {
+            return Boolean.FALSE;
+          }
+          return Boolean.TRUE;
+        }).toList());
+
     orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()
         .stream()
         .sorted(Comparator.comparing(Order::getDeliveryDate)
@@ -217,7 +245,7 @@ public abstract class OrderController extends BaseController {
         .toList()));
   }
 
-  protected void printA5(String printerName, Order order){
+  protected void printA5(String printerName, Order order) {
     try {
       printerService.printA5Order(printerName, order);
     } catch (IOException e) {

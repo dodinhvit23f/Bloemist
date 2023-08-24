@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.util.ResourceUtils;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -36,6 +37,9 @@ public class GoogleConfiguration {
   @Value("${google.credential.path}")
   private String clientSecret;
 
+  @Value("${application.user}")
+  private String userName;
+
   @Bean
   public NetHttpTransport getHttpTransport() throws GeneralSecurityException, IOException {
     return GoogleNetHttpTransport.newTrustedTransport();
@@ -48,6 +52,7 @@ public class GoogleConfiguration {
   }
 
   @Bean
+  @Primary
   Credential getGoogleCredential(final NetHttpTransport httpTransport,
                                  GoogleClientSecrets googleClientSecrets) throws IOException {
 
@@ -58,20 +63,19 @@ public class GoogleConfiguration {
                 new java.io.File(
                     this.getClass().getClassLoader().getResource(TOKENS_DIRECTORY_PATH).getFile())))
         .setAccessType(OFFLINE)
-        .setApprovalPrompt(FORCE)
         .build();
 
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(PORT).build();
 
     Credential credential = new AuthorizationCodeInstalledApp(flow, receiver)
-        .authorize(googleClientSecrets.getDetails().getClientId());
+        .authorize(userName);
 
     return credential;
   }
 
   @Bean
-  Drive getGoogleDrive(final NetHttpTransport httpTransport, Credential credential) {
-    return new Drive.Builder(httpTransport, GsonFactory.getDefaultInstance(), credential)
+  Drive getGoogleDrive(final NetHttpTransport httpTransport, Credential googleCredential) {
+    return new Drive.Builder(httpTransport, GsonFactory.getDefaultInstance(), googleCredential)
         .setApplicationName(BLOEMIST)
         .build();
   }
