@@ -245,12 +245,6 @@ public abstract class OrderController extends BaseController {
         .toList()));
   }
 
-  protected void printA5(String printerName, Order order) {
-    try {
-      printerService.printA5Order(printerName, order);
-    } catch (IOException e) {
-    }
-  }
 
   @FXML
   public abstract void extractData() throws IOException;

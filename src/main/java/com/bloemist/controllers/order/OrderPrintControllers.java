@@ -27,6 +27,7 @@ import org.springframework.util.ObjectUtils;
 
 @Component
 public class OrderPrintControllers extends OrderController {
+
   public static final String STAFF_NAME = "staff_name";
   IOrderService orderService;
   Order order;
@@ -54,13 +55,22 @@ public class OrderPrintControllers extends OrderController {
     }
 
     if (a5Bill.isSelected()) {
-      if (imageBill.isSelected()) {
+      printOrders.forEach(
+          orderForPrint -> {
+            try {
+              printerService.printA5Order(choicePrinter.getValue(), orderForPrint);
+            } catch (IOException e) {
+            }
+          }
+      );
 
-      }else {
-        printOrders.forEach(
-            orderForPrint -> printA5(choicePrinter.getValue(), orderForPrint)
-        );
-      }
+      printOrders.forEach(
+          orderForPrint -> {
+              if (imageBill.isSelected()) {
+                printerService.printA5Image(choicePrinter.getValue(), orderForPrint);
+              }
+          }
+      );
     }
   }
 

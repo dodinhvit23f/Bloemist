@@ -1,28 +1,22 @@
 package com.bloemist.services.impl;
 
+import static com.bloemist.dto.Order.IMAGE_PATH;
+
 import com.bloemist.controllers.order.OrderPrintControllers;
 import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.utils.Utils;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.print.Doc;
-import javax.print.DocFlavor;
 import javax.print.DocFlavor.INPUT_STREAM;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
@@ -32,26 +26,13 @@ import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
-import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.event.PrintJobAdapter;
-import javax.print.event.PrintJobEvent;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
-import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRSaver;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
-import net.sf.jasperreports.export.SimplePdfReportConfiguration;
-import net.sf.jasperreports.export.type.PdfPermissionsEnum;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
@@ -59,11 +40,13 @@ import org.springframework.util.ResourceUtils;
 @Component
 public class CustomPrinterService implements IPrinterService {
 
-  private static final String A5_BILL = "classpath:bill/a5_bill.jrxml";
+  private static final String A5_BILL = "bill/a5_bill.jrxml";
+  private static final String IMAGE_A5_BILL = "bill/image_a5.jrxml";
   private static final String BLOEMIST_LOGO = "classpath:Img/logo.png";
   private static final String FB_ICON = "classpath:Img/facebook.png";
   private static final String PHONE_ICON = "classpath:Img/telephone.png";
   public static final String PREVIEW_PDF = "preview.pdf";
+  public static final String IMAGE_PDF = "image.pdf";
   public static final String REPORT_LOCALE = "REPORT_LOCALE";
   public static final String TODAY = "today";
   public static final String LOGO_URL = "logo_url";
@@ -111,25 +94,7 @@ public class CustomPrinterService implements IPrinterService {
           new JRMapArrayDataSource(new Object[]{new HashMap<String, Object>()}));
 
       JasperExportManager.exportReportToPdfFile(jasperPrint, PREVIEW_PDF);
-//      exporter = new JRPdfExporter();
-//
-//      exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//      exporter.setExporterOutput(
-//          new SimpleOutputStreamExporterOutput(PREVIEW_PDF));
-//
-//      SimplePdfReportConfiguration reportConfig
-//          = new SimplePdfReportConfiguration();
-//      reportConfig.setSizePageToContent(Boolean.TRUE);
-//      reportConfig.setForceLineBreakPolicy(Boolean.FALSE);
-//
-//      SimplePdfExporterConfiguration exportConfig
-//          = new SimplePdfExporterConfiguration();
-//      exportConfig.setEncrypted(Boolean.TRUE);
-//      exportConfig.setAllowedPermissionsHint(PdfPermissionsEnum.ALL.getName());
-//
-//      exporter.setConfiguration(exportConfig);
-//      exporter.setConfiguration(reportConfig);
-//      exporter.exportReport();
+
       if (printService.isPresent()) {
         PrintService printer = printService.get();
         printFilePDF(printer, PREVIEW_PDF);
@@ -140,12 +105,44 @@ public class CustomPrinterService implements IPrinterService {
     }
   }
 
+  @Override
+  public void printA5Image(String printerName, Order order) {
+
+    Optional<PrintService> printService = Arrays.stream(
+            PrintServiceLookup.lookupPrintServices(null, null))
+        .filter(p -> p.getName().equals(printerName)).findFirst();
+
+    Map<String, Object> parameters = new HashMap<>();
+    try {
+      JasperReport jasperReport = JasperCompileManager
+          .compileReport(new ClassPathResource(IMAGE_A5_BILL).getInputStream());
+
+      parameters.put(IMAGE_PATH, order.getImagePath());
+
+      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,
+          new JRMapArrayDataSource(new Object[]{new HashMap<String, Object>()}));
+
+      JasperExportManager.exportReportToPdfFile(jasperPrint, IMAGE_PDF);
+
+      if (printService.isPresent()) {
+        PrintService printer = printService.get();
+        printFilePDF(printer, IMAGE_PDF);
+      }
+    } catch (JRException | PrintException | IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   private void printFilePDF(PrintService printService, String filePath)
       throws PrintException, IOException {
+    PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+    pras.add(new Copies(1));
+
     FileInputStream fis = new FileInputStream(filePath);
     Doc pdfDoc = new SimpleDoc(fis, INPUT_STREAM.AUTOSENSE, null);
     DocPrintJob printJob = printService.createPrintJob();
-    printJob.print(pdfDoc, new HashPrintRequestAttributeSet());
+
+    printJob.print(pdfDoc,pras );
     fis.close();
   }
 
