@@ -51,6 +51,8 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 import net.sf.jasperreports.export.type.PdfPermissionsEnum;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -102,8 +104,8 @@ public class CustomPrinterService implements IPrinterService {
       parameters.put(FB_URL, ResourceUtils.getFile(FB_ICON).getAbsolutePath());
       parameters.put(TELEPHONE_URL, ResourceUtils.getFile(PHONE_ICON).getAbsolutePath());
 
-      JasperReport jasperReport = JasperCompileManager.compileReport(
-          ResourceUtils.getFile(A5_BILL).getAbsolutePath());
+      JasperReport jasperReport = JasperCompileManager
+          .compileReport(new ClassPathResource(A5_BILL).getInputStream());
 
       JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,
           new JRMapArrayDataSource(new Object[]{new HashMap<String, Object>()}));

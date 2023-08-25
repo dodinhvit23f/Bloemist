@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -48,7 +49,7 @@ public class GoogleConfiguration {
   @Bean
   public GoogleClientSecrets getGoogleGoogleClientSecrets() throws IOException {
     return GoogleClientSecrets.load(GsonFactory.getDefaultInstance(),
-        new InputStreamReader(new FileInputStream(ResourceUtils.getFile(clientSecret))));
+        new InputStreamReader(new ClassPathResource(clientSecret).getInputStream()));
   }
 
   @Bean
