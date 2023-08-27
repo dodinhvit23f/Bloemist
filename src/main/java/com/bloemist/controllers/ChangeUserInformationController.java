@@ -3,6 +3,7 @@ package com.bloemist.controllers;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.services.IUserService;
 import com.constant.ApplicationVariable;
+import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.utils.Utils;
 import java.math.BigInteger;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -101,7 +103,10 @@ public final class ChangeUserInformationController extends BaseController {
     userDetail.setGender(gender);
     userDetail.setPhoneNumber(phoneNumber);
 
-    userService.updateUserInformation(userDetail);
+    Optional result = userService.updateUserInformation(userDetail);
+    if(result.isPresent()){
+      switchScene(ApplicationView.HOME);
+    }
   }
 
 

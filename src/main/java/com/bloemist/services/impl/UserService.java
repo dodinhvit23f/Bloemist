@@ -41,7 +41,8 @@ public class UserService implements IUserService {
   final UserRepository userRepository;
   final JobGradeRepository jobGradeRepository;
   final ApplicationEventPublisher publisher;
-  @Value("${application.slat}") String secret;
+  @Value("${application.slat}")
+  String secret;
   final MailServiceI mailService;
 
   @Override
@@ -70,7 +71,8 @@ public class UserService implements IUserService {
           AccountDetail.builder().role(EMPTY).username(username).build();
     }
     return AccountDetail.builder()
-        .role(user.getRoles().stream().map(JobGrade::getName).collect(Collectors.joining(Constants.COMMA)))
+        .role(user.getRoles().stream().map(JobGrade::getName)
+            .collect(Collectors.joining(Constants.COMMA)))
         .username(username).fullName(user.getFullName()).address(user.getAddress())
         .dob(user.getDob()).phoneNumber(user.getPhoneNumber()).gender(user.getGender())
         .password(user.getPassword()).build();
@@ -119,7 +121,7 @@ public class UserService implements IUserService {
           return Constants.ERR_SUBSCRIBER_004;
         }
         return Constants.ERR_SUBSCRIBER_005;
-      }).collect(Collectors.toList());
+      }).toList();
 
       if (errors.size() == BigInteger.TWO.intValue()) {
         publisher.publishEvent(new MessageWarning(Constants.ERR_SUBSCRIBER_006));
@@ -240,10 +242,11 @@ public class UserService implements IUserService {
   }
 
   @Override
-  public void updateUserInformation(AccountDetail detail) {
+  public Optional updateUserInformation(AccountDetail detail) {
     Optional<User> userOptional = userRepository.findByUserName(detail.getUsername());
 
-    userOptional.ifPresentOrElse(user -> {
+    if (userOptional.isPresent()) {
+      var user = userOptional.get();
       if (Objects.nonNull(detail.getDob())) {
         user.setDob(detail.getDob());
       }
@@ -258,11 +261,17 @@ public class UserService implements IUserService {
       }
 
       if (Objects.nonNull(detail.getPhoneNumber())) {
-        user.setFullName(detail.getPhoneNumber());
+        user.setPhoneNumber(detail.getPhoneNumber());
       }
 
       userRepository.save(user);
+
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_USER_INFO_001));
-    }, () -> publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_INFO_001)));
+      return Optional.of(Boolean.TRUE);
+    }
+
+    publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_INFO_001));
+    return Optional.empty();
   }
+
 }

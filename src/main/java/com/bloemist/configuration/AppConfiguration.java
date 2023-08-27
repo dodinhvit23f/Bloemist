@@ -3,7 +3,6 @@ package com.bloemist.configuration;
 import com.bloemist.manager.StageManager;
 import com.bloemist.message.Message;
 import com.constant.ApplicationView;
-import java.io.File;
 import java.util.Properties;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,10 +67,6 @@ public class AppConfiguration {
   @Lazy
   @Bean
   StageManager stageManager(Stage stage) {
-
-    String classpath = System.getProperty("java.class.path");
-    String[] classpathEntries = classpath.split(File.pathSeparator);
-
     return StageManager.builder().stage(stage).view(ApplicationView.LOGIN)
         .message(getMessage())
         .build();

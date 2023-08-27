@@ -1,18 +1,5 @@
 package com.bloemist.configuration;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.ResourceUtils;
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -24,17 +11,28 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 public class GoogleConfiguration {
 
-  private static final String TOKENS_DIRECTORY_PATH = "tokens";
+  private static final String TOKENS_DIRECTORY_PATH = ".tokens";
   private static final List<String> SCOPES =
       List.of(DriveScopes.DRIVE, DriveScopes.DRIVE_FILE);
   public static final String OFFLINE = "offline";
   public static final int PORT = 8888;
   public static final String BLOEMIST = "BloemistDesktop";
-  public static final String FORCE = "force";
+  public static final String APPDATA = String
+      .join("\\", System.getenv("APPDATA"),TOKENS_DIRECTORY_PATH);
+
   @Value("${google.credential.path}")
   private String clientSecret;
 
@@ -48,6 +46,7 @@ public class GoogleConfiguration {
 
   @Bean
   public GoogleClientSecrets getGoogleGoogleClientSecrets() throws IOException {
+
     return GoogleClientSecrets.load(GsonFactory.getDefaultInstance(),
         new InputStreamReader(new ClassPathResource(clientSecret).getInputStream()));
   }
@@ -59,10 +58,7 @@ public class GoogleConfiguration {
 
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
         httpTransport, GsonFactory.getDefaultInstance(), googleClientSecrets, SCOPES)
-        .setDataStoreFactory(
-            new FileDataStoreFactory(
-                new java.io.File(
-                    this.getClass().getClassLoader().getResource(TOKENS_DIRECTORY_PATH).getFile())))
+        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(APPDATA)))
         .setAccessType(OFFLINE)
         .build();
 

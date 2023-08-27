@@ -1,11 +1,12 @@
 package com.bloemist.services;
 
-import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
 import com.bloemist.dto.Account;
 import com.bloemist.dto.AccountApprovement;
 import com.bloemist.dto.AccountDetail;
 import com.constant.Constants;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface IUserService {
 
@@ -75,10 +76,9 @@ public interface IUserService {
   AccountDetail getUserInformation(String username);
   
   /**
-   * 
    * @param detail
    * @return
    */
   @Transactional
-  void updateUserInformation(AccountDetail detail);
+  Optional updateUserInformation(AccountDetail detail);
 }

@@ -6,6 +6,12 @@ spring:
     password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${HOST}:${PORT}/${DATABASE_NAME}
+    hikari:
+      minimum-idle: 1
+      max-lifetime: 60000
+      maximum-pool-size: 3
+      idle-timeout: 40000
+      connection-timeout: 3000
   jpa:
     properties:
       hibernate:
@@ -25,7 +31,7 @@ spring:
             enable: true
 google:
   credential:
-    path: classpath:tokens/google_credential.json
+    path: tokens/google_credential.json
 
 application:
   image-url: Img/icon.ico

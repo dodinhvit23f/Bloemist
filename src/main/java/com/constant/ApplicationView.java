@@ -1,5 +1,6 @@
 package com.constant;
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -222,5 +223,13 @@ public enum ApplicationView {
 
   public abstract String getCode();
 
+  public static Optional<ApplicationView> findViewByCode(String code){
+    for (ApplicationView view : ApplicationView.values()){
+      if(view.getCode().equals(code)){
+        return Optional.of(view);
+      }
+    }
 
+    return Optional.empty();
+  }
 }
