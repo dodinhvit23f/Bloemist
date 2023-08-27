@@ -1,5 +1,7 @@
 package com.bloemist.controllers.order;
 
+import static com.utils.Utils.openDialogChoiceImage;
+
 import com.bloemist.dto.Order;
 import com.bloemist.entity.OrderReport;
 import com.bloemist.events.MessageWarning;
@@ -28,7 +30,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -36,8 +37,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
-
-import static com.utils.Utils.openDialogChoiceImage;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -222,6 +221,7 @@ public class CreateOrderController extends OrderController {
 
     this.customerSource.setValue(Constants.FACEBOOK);
     this.deliveryHour.setText("00:00 - 00:00");
+    this.imageFile = null;
   }
 
   @FXML

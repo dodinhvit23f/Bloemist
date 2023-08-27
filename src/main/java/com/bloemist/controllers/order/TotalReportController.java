@@ -139,6 +139,7 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void updateInfo() {
+    confirmDialog();
     List<Order> selectedOrder = orderTable.getItems()
         .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
         .stream().toList();

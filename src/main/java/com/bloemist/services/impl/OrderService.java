@@ -17,7 +17,6 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.utils.Utils;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -31,11 +30,9 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
@@ -218,11 +215,16 @@ public class OrderService implements IOrderService {
       var rawFile = new java.io.File(orderReport.getSamplePictureLink());
       FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
 
+
       fileMetadata = googleDrive.files().create(fileMetadata, mediaContent)
           .setFields(String.join(",", ID, WEB_VIEW_LINK))
           .execute();
+      File trash = new File();
+      trash.setTrashed(Boolean.TRUE);
+      googleDrive.files().update(fileMetadata.getId(), trash).execute();
 
       orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, fileMetadata.getId()));
+
       orderReportRepository.save(orderReport);
 
       customerOrder.setCode(orderReport.getOrderCode());
