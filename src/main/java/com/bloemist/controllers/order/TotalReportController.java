@@ -543,7 +543,7 @@ public class TotalReportController extends OrderController {
 
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
     tableColumn.setOnEditStart(event -> {
-      if (ObjectUtils.isEmpty(textArea.getText())) {
+      if (!textArea.getText().equals(event.getOldValue())) {
         textArea.setText(event.getOldValue());
       }
       orderRow = event.getTablePosition().getRow();
