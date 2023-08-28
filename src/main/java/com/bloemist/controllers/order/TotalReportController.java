@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,6 +31,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -542,19 +545,31 @@ public class TotalReportController extends OrderController {
   }
 
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
+
     tableColumn.setOnEditStart(event -> {
-      if (!textArea.getText().equals(event.getOldValue())) {
-        textArea.setText(event.getOldValue());
-      }
+      event.consume();
       orderRow = event.getTablePosition().getRow();
       currentOrder = event.getTableView().getItems().get(orderRow);
       editableColumn = tableColumn;
+
+      if (!textArea.getText().equals(event.getOldValue()) &&
+          Objects.isNull(event.getNewValue())) {
+        if (Objects.isNull(event.getNewValue())) {
+          textArea.setText(event.getOldValue());
+          return;
+        }
+        textArea.setText(event.getNewValue());
+      }
+
     });
 
     tableColumn.setOnEditCommit(event -> {
+      event.consume();
       if (Objects.nonNull(event.getNewValue())) {
+        orderRow = event.getTablePosition().getRow();
+        currentOrder = event.getTableView().getItems().get(orderRow);
         textArea.setText(event.getNewValue());
-        setValueToColumn(editableColumn, currentOrder, event.getNewValue());
+        setValueToColumn(tableColumn, currentOrder, event.getNewValue());
       }
     });
 
@@ -677,6 +692,9 @@ public class TotalReportController extends OrderController {
     addTableViewListener();
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable));
+
+    setTabEvent();
+
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
       loadPageAsync(null, this.orderTable, Boolean.TRUE);
       return;
@@ -684,5 +702,20 @@ public class TotalReportController extends OrderController {
     setDataOrderTable(this.orderTable, Boolean.TRUE);
 
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
+  }
+
+  private void setTabEvent() {
+    // Add event handler to move focus to the next column
+  /*  orderTable.setOnKeyPressed(event -> {
+
+      if (event.getCode().equals(KeyCode.TAB)) {
+        event.consume();
+        TableView.TableViewSelectionModel<Order> selectionModel = orderTable.getSelectionModel();
+        int currentColumnIndex = selectionModel.getSelectedCells().get(0).getColumn();
+        int nextColumnIndex = (currentColumnIndex + 1) % orderTable.getColumns().size();
+        selectionModel.select(selectionModel.getSelectedIndex(),
+            orderTable.getColumns().get(nextColumnIndex));
+      }
+    });*/
   }
 }

@@ -67,7 +67,7 @@ public class AppConfiguration {
   @Lazy
   @Bean
   StageManager stageManager(Stage stage) {
-    return StageManager.builder().stage(stage).view(ApplicationView.LOGIN)
+    return StageManager.builder().stage(stage).view(ApplicationView.MASTER_ORDER)
         .message(getMessage())
         .build();
   }

@@ -58,52 +58,52 @@
       <TableColumn fx:id="checkAll" prefWidth="68.0" text="Chọn" />
     </columns>
   </TableView>
-  <TextArea fx:id="textArea" layoutX="525.0" layoutY="14.0" prefHeight="69.0" prefWidth="1380.0" promptText="On click hiển thị text ở đây" />
-  <Button layoutX="278.0" layoutY="14.0" mnemonicParsing="false" onAction="#seeImage" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Hình ảnh mẫu" textAlignment="CENTER" wrapText="true">
+  <TextArea fx:id="textArea" focusTraversable="false" layoutX="525.0" layoutY="14.0" prefHeight="69.0" prefWidth="1380.0" promptText="On click hiển thị text ở đây" />
+  <Button focusTraversable="false" layoutX="278.0" layoutY="14.0" mnemonicParsing="false" onAction="#seeImage" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: BLANCHEDALMOND;" text="Hình ảnh mẫu" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="403.0" layoutY="14.0" mnemonicParsing="false" onAction="#updateInfo" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: CORNSILK;" text="Sửa thông tin" textAlignment="CENTER" wrapText="true">
+  <Button focusTraversable="false" layoutX="403.0" layoutY="14.0" mnemonicParsing="false" onAction="#updateInfo" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: CORNSILK;" text="Sửa thông tin" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="341.0" layoutY="14.0" mnemonicParsing="false" onAction="#saveSelectedOrders" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="Nhập nhiều đơn" textAlignment="CENTER" wrapText="true">
+  <Button focusTraversable="false" layoutX="341.0" layoutY="14.0" mnemonicParsing="false" onAction="#saveSelectedOrders" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="Nhập nhiều đơn" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="466.0" layoutY="14.0" mnemonicParsing="false" onAction="#printSelectedOrders" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="In hóa đơn" textAlignment="CENTER" wrapText="true">
+  <Button focusTraversable="false" layoutX="466.0" layoutY="14.0" mnemonicParsing="false" onAction="#printSelectedOrders" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: FLORALWHITE;" text="In hóa đơn" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="25.0" layoutY="966.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LINEN;" text="Màn hình chính">
+  <Button focusTraversable="false" layoutX="25.0" layoutY="966.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: LINEN;" text="Màn hình chính">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button fx:id="rowAdd" layoutX="417.0" layoutY="966.0" mnemonicParsing="false" onAction="#addNewRow" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: CORNSILK;" text="Thêm dòng">
+  <Button fx:id="rowAdd" focusTraversable="false" layoutX="417.0" layoutY="966.0" mnemonicParsing="false" onAction="#addNewRow" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: CORNSILK;" text="Thêm dòng">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="217.0" layoutY="14.0" mnemonicParsing="false" onAction="#refresh" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: LINEN;" text="Tải lại màn hình" textAlignment="CENTER" wrapText="true">
+  <Button focusTraversable="false" layoutX="217.0" layoutY="14.0" mnemonicParsing="false" onAction="#refresh" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: LINEN;" text="Tải lại màn hình" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
 
 
-  <DatePicker layoutX="25.0" layoutY="14.0" onAction="#cancel" promptText="Từ ngày" />
-  <DatePicker layoutX="25.0" layoutY="58.0" promptText="Đến ngày" />
-   <Button layoutX="156.0" layoutY="966.0" mnemonicParsing="false" onAction="#extractData" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất Excel" textAlignment="CENTER" wrapText="true">
+  <DatePicker focusTraversable="false" layoutX="25.0" layoutY="14.0" promptText="Từ ngày" />
+  <DatePicker focusTraversable="false" layoutX="25.0" layoutY="58.0" promptText="Đến ngày" />
+   <Button focusTraversable="false" layoutX="156.0" layoutY="966.0" mnemonicParsing="false" onAction="#extractData" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: BLANCHEDALMOND;" text="Xuất Excel" textAlignment="CENTER" wrapText="true">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
    </Button>
-   <Button fx:id="rowCancel" layoutX="548.0" layoutY="966.0" mnemonicParsing="false" onAction="#deleteSelectedRow" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: FLORALWHITE;" text="Xóa dòng">
+   <Button fx:id="rowCancel" focusTraversable="false" layoutX="548.0" layoutY="966.0" mnemonicParsing="false" onAction="#deleteSelectedRow" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: FLORALWHITE;" text="Xóa dòng">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
@@ -113,7 +113,7 @@
          <Font name="System Bold" size="12.0" />
       </font>
    </Button>
-   <Button fx:id="rowAdd1" layoutX="286.0" layoutY="966.0" mnemonicParsing="false" onAction="#clearScreen" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: MISTYROSE;" text="Xóa màn hình">
+   <Button fx:id="rowAdd1" focusTraversable="false" layoutX="286.0" layoutY="966.0" mnemonicParsing="false" onAction="#clearScreen" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: MISTYROSE;" text="Xóa màn hình">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
