@@ -1,15 +1,21 @@
 package com.bloemist.controllers;
 
+import com.bloemist.dto.AccountDetail;
 import com.bloemist.events.StageEvent;
 import com.bloemist.manager.StageManager;
 import com.bloemist.services.MailServiceI;
+import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
+
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
@@ -63,6 +69,30 @@ public abstract class BaseController implements Initializable {
         ButtonType.NO);
     alert.showAndWait();
     return alert;
+  }
+
+  public void shutdown() {
+    switch (stageManager.getView()) {
+      case HOME,
+          RECOVER_PASSWORD,
+          REGISTRATOR -> {
+        switchScene(ApplicationView.LOGIN);
+        ApplicationVariable.setUser(null);
+      }
+      case CHANGE_PASSWORD,
+          CHANGE_USER_INFO,
+          CREATE_ORDER,
+          EMPLOYEES_MANAGEMENT,
+          INQUIRY_ORDER,
+          MASTER_ORDER,
+          PRINT_ORDER,
+          SUB_ORDER_SCREEN,
+          USER_APPOINTMENT -> switchScene(ApplicationView.HOME);
+      case LOGIN -> {
+
+        Platform.exit();
+      }
+    }
   }
 
   @Override

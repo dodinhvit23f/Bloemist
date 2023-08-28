@@ -1,5 +1,6 @@
 package com.bloemist.listener;
 
+import com.bloemist.controllers.BaseController;
 import com.bloemist.events.StageEvent;
 import com.bloemist.manager.StageManager;
 import java.io.FileInputStream;
@@ -9,6 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,8 +57,12 @@ public class StageListener implements ApplicationListener<StageEvent> {
       stage.getIcons().add(new Image((getClass().getClassLoader().getResourceAsStream(iconResource))));
       stage.setMinWidth(panel.getPrefWidth());
       stage.setMinHeight(panel.getPrefHeight());
-      //stage.setMaximized(true);
-      //stage.setResizable(false);
+
+      stage.setOnCloseRequest(e -> {
+        e.consume();
+        ((BaseController)fxmlLoader.getController()).shutdown();
+      });
+
       stage.show();
 
     } catch (IOException e) {

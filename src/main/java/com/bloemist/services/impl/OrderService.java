@@ -17,6 +17,8 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.utils.Utils;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -216,12 +219,11 @@ public class OrderService implements IOrderService {
       FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
 
 
-      fileMetadata = googleDrive.files().create(fileMetadata, mediaContent)
+      final File googleFile = googleDrive.files().create(fileMetadata, mediaContent)
           .setFields(String.join(",", ID, WEB_VIEW_LINK))
           .execute();
-      File trash = new File();
-      trash.setTrashed(Boolean.TRUE);
-      googleDrive.files().update(fileMetadata.getId(), trash).execute();
+
+      moveFileToTrashAsync(googleFile);
 
       orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, fileMetadata.getId()));
 
@@ -236,6 +238,18 @@ public class OrderService implements IOrderService {
       return Optional.empty();
     }
     return Optional.of(Boolean.TRUE);
+  }
+
+  private void moveFileToTrashAsync(File googleFile) {
+    CompletableFuture.runAsync(() -> {
+      File trash = new File();
+      trash.setTrashed(Boolean.TRUE);
+      try {
+        googleDrive.files().update(googleFile.getId(), trash).execute();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
