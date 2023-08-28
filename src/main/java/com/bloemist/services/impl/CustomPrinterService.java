@@ -7,6 +7,7 @@ import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.utils.Utils;
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,15 +18,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.print.Doc;
-import javax.print.DocFlavor.INPUT_STREAM;
+import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
+import javax.print.attribute.HashDocAttributeSet;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.Sides;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -137,13 +142,21 @@ public class CustomPrinterService implements IPrinterService {
       throws PrintException, IOException {
     PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
     pras.add(new Copies(1));
+    pras.add(new MediaPrintableArea(2, 2, 148 , 152, MediaPrintableArea.MM)); // print stapled
+    pras.add(Sides.ONE_SIDED);
+    pras.add(OrientationRequested.LANDSCAPE);
+    //pras.add(ColorSupported.SUPPORTED);
 
-    FileInputStream fis = new FileInputStream(filePath);
-    Doc pdfDoc = new SimpleDoc(fis, INPUT_STREAM.AUTOSENSE, null);
+    DocFlavor docFlavor = DocFlavor.INPUT_STREAM.PDF;
+
+    final BufferedInputStream inputStream =  new BufferedInputStream(new FileInputStream(filePath));
+
+
+    Doc pdfDoc = new SimpleDoc(inputStream, docFlavor, new HashDocAttributeSet());
     DocPrintJob printJob = printService.createPrintJob();
 
-    printJob.print(pdfDoc,pras );
-    fis.close();
+    printJob.print(pdfDoc, pras);
+    inputStream.close();
   }
 
 }

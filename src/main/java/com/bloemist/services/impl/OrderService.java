@@ -80,7 +80,7 @@ public class OrderService implements IOrderService {
   public void createNewOrders(Collection<Order> orders) {
 
     try {
-      orders.forEach(order -> createNewOrder(order));
+      orders.forEach(this::createNewOrder);
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
     }
@@ -140,16 +140,20 @@ public class OrderService implements IOrderService {
   }
 
   @Override
-  public void changeOrderStateInfo(Order order) {
+  public Optional changeOrderStateInfo(Order order) {
     var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
 
-    optionalOrderReport.ifPresentOrElse(orderReport -> {
+    if (optionalOrderReport.isPresent()) {
+      var orderReport = optionalOrderReport.get();
       orderReport.setOrderStatus(OrderState.getState(order.getStatus()));
       orderReport.setActualDeliveryFee(new BigDecimal(order.getActualDeliveryFee()));
       orderReport.setRemark(order.getCustomerNote());
-
       publisher.publishEvent(new MessageSuccess(Constants.SUS_ORDER_STATUS));
-    }, () -> publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004)));
+      return Optional.of(Boolean.TRUE);
+    }
+    publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004));
+
+    return Optional.empty();
   }
 
   @Override
@@ -240,17 +244,6 @@ public class OrderService implements IOrderService {
     return Optional.of(Boolean.TRUE);
   }
 
-  private void moveFileToTrashAsync(File googleFile) {
-    CompletableFuture.runAsync(() -> {
-      File trash = new File();
-      trash.setTrashed(Boolean.TRUE);
-      try {
-        googleDrive.files().update(googleFile.getId(), trash).execute();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-  }
 
   private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
     var deposit = NumberUtils.parseNumber(currencyToStringNumber(order.getDeposit()),
@@ -292,5 +285,17 @@ public class OrderService implements IOrderService {
     orderReport.setBannerContent(order.getBanner());
     orderReport.setRemark(order.getCustomerNote());
     orderReport.setOrderStatus(OrderState.getState(order.getStatus()));
+  }
+
+  private void moveFileToTrashAsync(File googleFile) {
+    CompletableFuture.runAsync(() -> {
+      File trash = new File();
+      trash.setTrashed(Boolean.TRUE);
+      try {
+        googleDrive.files().update(googleFile.getId(), trash).execute();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 }

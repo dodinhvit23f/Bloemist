@@ -1,26 +1,20 @@
 package com.bloemist.controllers.order;
 
 import com.bloemist.dto.Order;
-import com.bloemist.services.IOrderService;
 import com.constant.ApplicationVariable;
-import com.constant.ApplicationView;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.ResourceBundle;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
-
+import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -29,7 +23,6 @@ import org.springframework.util.ObjectUtils;
 public class OrderPrintControllers extends OrderController {
 
   public static final String STAFF_NAME = "staff_name";
-  IOrderService orderService;
   Order order;
   @FXML
   private ChoiceBox<String> choicePrinter;
@@ -40,14 +33,13 @@ public class OrderPrintControllers extends OrderController {
   @FXML
   private RadioButton imageBill;
 
-  protected OrderPrintControllers(ApplicationEventPublisher publisher, IOrderService orderService) {
+  protected OrderPrintControllers(ApplicationEventPublisher publisher) {
     super(publisher);
-    this.orderService = orderService;
   }
 
   @FXML
-  public void applyPrint() throws IOException {
-    Set<Order> printOrders = ApplicationVariable.getOrders().stream().filter(o -> o.getIsSelected())
+  public void applyPrint() {
+    Set<Order> printOrders = ApplicationVariable.getOrders().stream().filter(Order::getIsSelected)
         .collect(Collectors.toSet());
 
     if (ObjectUtils.isEmpty(printOrders)) {
@@ -78,7 +70,7 @@ public class OrderPrintControllers extends OrderController {
   public void initialize(URL location, ResourceBundle resources) {
     super.initialize(location, resources);
 
-    var printerServices = PrintServiceLookup.lookupPrintServices(null, null);
+    var printerServices = PrintServiceLookup.lookupPrintServices(DocFlavor.INPUT_STREAM.PDF, null);
     order = ApplicationVariable.currentOrder;
     choicePrinter.setItems(
         FXCollections.observableList(

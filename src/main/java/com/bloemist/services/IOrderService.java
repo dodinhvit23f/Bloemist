@@ -1,7 +1,6 @@
 package com.bloemist.services;
 
 import com.bloemist.dto.Order;
-import com.bloemist.entity.OrderReport;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +24,7 @@ public interface IOrderService {
   void deleteOrder(String orderCode);
 
   @Transactional
-  void changeOrderStateInfo(Order order);
+  Optional changeOrderStateInfo(Order order);
 
   @Transactional(readOnly = true)
   List<Order> getPage(LocalDateTime startTime, LocalDateTime endTime);

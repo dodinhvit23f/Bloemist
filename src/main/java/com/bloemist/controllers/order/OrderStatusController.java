@@ -8,23 +8,19 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.constant.OrderState;
-
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
-
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -72,8 +68,11 @@ public class OrderStatusController extends BaseController {
       order.setStatus(changeStatus.getValue());
     }
 
-    orderService.changeOrderStateInfo(order);
-    ApplicationVariable.sortOrders();
+    Optional result = orderService.changeOrderStateInfo(order);
+    if (result.isPresent()) {
+      ApplicationVariable.sortOrders();
+      cancel();
+    }
   }
 
   @Override

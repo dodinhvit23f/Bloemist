@@ -142,91 +142,99 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void updateInfo() {
-    confirmDialog();
-    List<Order> selectedOrder = orderTable.getItems()
-        .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
-        .stream().toList();
+    Alert alert = confirmDialog();
 
-    orderService.updateOrders(selectedOrder);
+    if (alert.getResult() == ButtonType.YES) {
+      List<Order> selectedOrder = orderTable.getItems()
+          .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
+          .stream().toList();
+
+      orderService.updateOrders(selectedOrder);
+    }
   }
 
   @FXML
   public void saveSelectedOrders() {
-    List<Order> selectedOrder = orderTable.getItems()
-        .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
-        .stream()
-        .map(order -> {
-          order.setTotal(
-              getTotalPrice(Double.valueOf(Utils.currencyToStringNumber(order.getSalePrice())),
-                  Double.valueOf(Utils.currencyToStringNumber(order.getDeliveryFee())),
-                  Double.valueOf(Utils.currencyToStringNumber(order.getVatFee()))).toString());
-          order.setRemain(String.valueOf(Double.parseDouble(order.getTotal()) - Double.parseDouble(
-              Utils.currencyToStringNumber(order.getDeposit()))));
+    Alert alert = confirmDialog();
 
-          order.setActualPrice(Utils.currencyToStringNumber(order.getActualPrice()));
-          order.setActualVatFee(Utils.currencyToStringNumber(order.getActualVatFee()));
-          order.setActualDeliveryFee(Utils.currencyToStringNumber(order.getActualDeliveryFee()));
-          order.setSalePrice(Utils.currencyToStringNumber(order.getSalePrice()));
-          order.setDeliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()));
-          order.setDeposit(Utils.currencyToStringNumber(order.getDeposit()));
-          order.setDiscount(Utils.currencyToStringNumber(order.getDiscount()));
-          order.setVatFee(Utils.currencyToStringNumber(order.getVatFee()));
-          order.setMaterialsFee(Utils.currencyToStringNumber(order.getMaterialsFee()));
+    if (alert.getResult() == ButtonType.YES) {
+      List<Order> selectedOrder = orderTable.getItems()
+          .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
+          .stream()
+          .map(order -> {
+            order.setTotal(
+                getTotalPrice(Double.valueOf(Utils.currencyToStringNumber(order.getSalePrice())),
+                    Double.valueOf(Utils.currencyToStringNumber(order.getDeliveryFee())),
+                    Double.valueOf(Utils.currencyToStringNumber(order.getVatFee()))).toString());
+            order.setRemain(
+                String.valueOf(Double.parseDouble(order.getTotal()) - Double.parseDouble(
+                    Utils.currencyToStringNumber(order.getDeposit()))));
 
-          return order;
-        }).toList();
+            order.setActualPrice(Utils.currencyToStringNumber(order.getActualPrice()));
+            order.setActualVatFee(Utils.currencyToStringNumber(order.getActualVatFee()));
+            order.setActualDeliveryFee(Utils.currencyToStringNumber(order.getActualDeliveryFee()));
+            order.setSalePrice(Utils.currencyToStringNumber(order.getSalePrice()));
+            order.setDeliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()));
+            order.setDeposit(Utils.currencyToStringNumber(order.getDeposit()));
+            order.setDiscount(Utils.currencyToStringNumber(order.getDiscount()));
+            order.setVatFee(Utils.currencyToStringNumber(order.getVatFee()));
+            order.setMaterialsFee(Utils.currencyToStringNumber(order.getMaterialsFee()));
 
-    var failOrder = selectedOrder.stream()
-        .filter(order -> {
-          if (validateOrderInfo(Order.builder()
-              .customerName(order.getCustomerName())
-              .customerPhone(order.getCustomerPhone())
-              .customerSocialLink(order.getCustomerSocialLink())
-              .deliveryAddress(order.getDeliveryAddress())
-              .deliveryHour(order.getDeliveryHour())
-              .deliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()))
-              .vatFee(order.getVatFee())
-              .actualPrice(order.getActualPrice())
-              .salePrice(order.getSalePrice())
-              .deposit(order.getDeposit())
-              .remain(order.getRemain())
-              .total(order.getTotal())
-              // .imagePath(order.getImagePath())
-              .imagePath("12313")
-              .build())) {
+            return order;
+          }).toList();
 
-            if (ObjectUtils.isEmpty(order.getCustomerSource()) ||
-                ObjectUtils.isEmpty(order.getDeliveryDate()) ||
-                ObjectUtils.isEmpty(order.getDiscount()) ||
-                ObjectUtils.isEmpty(order.getMaterialsFee()) ||
-                !Utils.isNumber(order.getMaterialsFee()) ||
-                ObjectUtils.isEmpty(order.getActualDeliveryFee()) ||
-                !Utils.isNumber(order.getActualDeliveryFee()) ||
-                ObjectUtils.isEmpty(order.getActualVatFee()) ||
-                !Utils.isNumber(order.getActualVatFee())) {
-              return Boolean.TRUE;
+      var failOrder = selectedOrder.stream()
+          .filter(order -> {
+            if (validateOrderInfo(Order.builder()
+                .customerName(order.getCustomerName())
+                .customerPhone(order.getCustomerPhone())
+                .customerSocialLink(order.getCustomerSocialLink())
+                .deliveryAddress(order.getDeliveryAddress())
+                .deliveryHour(order.getDeliveryHour())
+                .deliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()))
+                .vatFee(order.getVatFee())
+                .actualPrice(order.getActualPrice())
+                .salePrice(order.getSalePrice())
+                .deposit(order.getDeposit())
+                .remain(order.getRemain())
+                .total(order.getTotal())
+                // .imagePath(order.getImagePath())
+                .imagePath("12313")
+                .build())) {
+
+              if (ObjectUtils.isEmpty(order.getCustomerSource()) ||
+                  ObjectUtils.isEmpty(order.getDeliveryDate()) ||
+                  ObjectUtils.isEmpty(order.getDiscount()) ||
+                  ObjectUtils.isEmpty(order.getMaterialsFee()) ||
+                  !Utils.isNumber(order.getMaterialsFee()) ||
+                  ObjectUtils.isEmpty(order.getActualDeliveryFee()) ||
+                  !Utils.isNumber(order.getActualDeliveryFee()) ||
+                  ObjectUtils.isEmpty(order.getActualVatFee()) ||
+                  !Utils.isNumber(order.getActualVatFee())) {
+                return Boolean.TRUE;
+              }
+
+              if (ObjectUtils.isEmpty(order.getReceiverName())) {
+                order.setReceiverName(order.getCustomerName());
+              }
+
+              if (ObjectUtils.isEmpty(order.getReceiverPhone())) {
+                order.setReceiverPhone(order.getCustomerPhone());
+              }
+              return Boolean.FALSE;
             }
+            return Boolean.TRUE;
+          }).findFirst();
 
-            if (ObjectUtils.isEmpty(order.getReceiverName())) {
-              order.setReceiverName(order.getCustomerName());
-            }
+      if (failOrder.isPresent()) {
+        return;
+      }
 
-            if (ObjectUtils.isEmpty(order.getReceiverPhone())) {
-              order.setReceiverPhone(order.getCustomerPhone());
-            }
-            return Boolean.FALSE;
-          }
-          return Boolean.TRUE;
-        }).findFirst();
-
-    if (failOrder.isPresent()) {
-      return;
+      orderService.createNewOrders(selectedOrder);
+      ApplicationVariable.sortOrders();
+      setDataOrderTable(orderTable, Boolean.FALSE);
+      orderTable.refresh();
     }
-
-    orderService.createNewOrders(selectedOrder);
-    ApplicationVariable.sortOrders();
-    setDataOrderTable(orderTable, Boolean.FALSE);
-    orderTable.refresh();
   }
 
   @FXML
