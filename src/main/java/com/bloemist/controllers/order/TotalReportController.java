@@ -11,11 +11,16 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -129,9 +135,11 @@ public class TotalReportController extends OrderController {
   @FXML
   private TableColumn<Order, String> pictureLink;
 
-  private TableColumn<Order, String> editableColumn;
+  private AtomicReference<TableColumn<Order, ?>> editableColumn = new AtomicReference<>();
   private Order currentOrder;
   private int orderRow;
+
+  private Map<Integer, TableColumn> tableColumnMap = new ConcurrentHashMap<>();
 
   private void setCellValueFactory() {
     setColumnsValues();
@@ -486,6 +494,7 @@ public class TotalReportController extends OrderController {
     categoryFee.setCellFactory(TextFieldTableCell.forTableColumn());
     actualDeliveryFee.setCellFactory(TextFieldTableCell.forTableColumn());
     actualVatFee.setCellFactory(TextFieldTableCell.forTableColumn());
+    pictureLink.setCellFactory(TextFieldTableCell.forTableColumn());
     checkAll.setCellFactory(CheckBoxTableCell.forTableColumn(checkAll));
   }
 
@@ -549,6 +558,7 @@ public class TotalReportController extends OrderController {
     setEditEventTableCell(actualDeliveryFee);
     setEditEventTableCell(actualVatFee);
     setEditEventTableCell(categoryFee);
+    setEditEventTableCell(pictureLink);
 
   }
 
@@ -558,12 +568,14 @@ public class TotalReportController extends OrderController {
       event.consume();
       orderRow = event.getTablePosition().getRow();
       currentOrder = event.getTableView().getItems().get(orderRow);
-      editableColumn = tableColumn;
+      editableColumn.set(tableColumn);
 
       if (!textArea.getText().equals(event.getOldValue()) &&
           Objects.isNull(event.getNewValue())) {
         if (Objects.isNull(event.getNewValue())) {
-          textArea.setText(event.getOldValue());
+          if(Objects.nonNull(event.getOldValue())){
+            textArea.setText(event.getOldValue());
+          }
           return;
         }
         textArea.setText(event.getNewValue());
@@ -577,6 +589,7 @@ public class TotalReportController extends OrderController {
         orderRow = event.getTablePosition().getRow();
         currentOrder = event.getTableView().getItems().get(orderRow);
         textArea.setText(event.getNewValue());
+        editableColumn.set(tableColumn);
         setValueToColumn(tableColumn, currentOrder, event.getNewValue());
       }
     });
@@ -587,14 +600,14 @@ public class TotalReportController extends OrderController {
   private void setAfterEditEvent() {
     textArea.textProperty().addListener((observable, oldValue, newValue) -> {
       if (Objects.nonNull(currentOrder)) {
-        setValueToColumn(editableColumn, currentOrder, newValue);
+        setValueToColumn(editableColumn.get(), currentOrder, newValue);
         orderTable.refresh();
       }
     });
 
     textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (Boolean.FALSE.equals(newValue)) {
-        editableColumn = null;
+        editableColumn.set(null);
         textArea.setText("");
       }
     });
@@ -709,21 +722,47 @@ public class TotalReportController extends OrderController {
     }
     setDataOrderTable(this.orderTable, Boolean.TRUE);
 
+
+
     //TODO empName.setText(ApplicationVariable.getUser().getFullName());
   }
 
   private void setTabEvent() {
-    // Add event handler to move focus to the next column
-  /*  orderTable.setOnKeyPressed(event -> {
+    AtomicInteger atomicInteger = new AtomicInteger(0);
 
-      if (event.getCode().equals(KeyCode.TAB)) {
+    for (TableColumn column : orderTable.getColumns()){
+      if(column.getColumns().size() > 1){
+        for (Object subCol : column.getColumns()){
+          tableColumnMap.put(atomicInteger.getAndIncrement(), (TableColumn) subCol);
+        }
+      }else {
+        tableColumnMap.put(atomicInteger.getAndIncrement(), column);
+      }
+    }
+
+    // Add event handler to move focus to the next column
+    orderTable.setOnKeyPressed(event -> {
+
+      if (event.getCode().equals(KeyCode.TAB) ||
+          event.getCode().equals(KeyCode.ENTER)) {
         event.consume();
         TableView.TableViewSelectionModel<Order> selectionModel = orderTable.getSelectionModel();
-        int currentColumnIndex = selectionModel.getSelectedCells().get(0).getColumn();
-        int nextColumnIndex = (currentColumnIndex + 1) % orderTable.getColumns().size();
-        selectionModel.select(selectionModel.getSelectedIndex(),
-            orderTable.getColumns().get(nextColumnIndex));
+        TablePosition tablePosition = selectionModel.getSelectedCells().get(0);
+        Optional<Integer> position = tableColumnMap.entrySet().stream()
+            .filter(entry -> entry.getValue().equals(editableColumn.get()))
+            .map(entry ->entry.getKey())
+            .findFirst();
+
+        if(position.isEmpty()){
+          int currentColumnIndex = tablePosition.getColumn();
+          position = Optional.of(currentColumnIndex);
+        }
+
+        TableColumn column = tableColumnMap.get(position.get() + 1);
+        if (Objects.nonNull(column)) {
+          orderTable.edit(tablePosition.getRow(), column);
+        }
       }
-    });*/
+    });
   }
 }
