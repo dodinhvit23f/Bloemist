@@ -565,7 +565,6 @@ public class TotalReportController extends OrderController {
   private void setEditEventTableCell(TableColumn<Order, String> tableColumn) {
 
     tableColumn.setOnEditStart(event -> {
-      event.consume();
       orderRow = event.getTablePosition().getRow();
       currentOrder = event.getTableView().getItems().get(orderRow);
       editableColumn.set(tableColumn);
@@ -584,12 +583,12 @@ public class TotalReportController extends OrderController {
     });
 
     tableColumn.setOnEditCommit(event -> {
-      event.consume();
       if (Objects.nonNull(event.getNewValue())) {
         orderRow = event.getTablePosition().getRow();
         currentOrder = event.getTableView().getItems().get(orderRow);
         textArea.setText(event.getNewValue());
         editableColumn.set(tableColumn);
+        System.out.println(tableColumn.getText());
         setValueToColumn(tableColumn, currentOrder, event.getNewValue());
       }
     });
@@ -745,7 +744,6 @@ public class TotalReportController extends OrderController {
 
       if (event.getCode().equals(KeyCode.TAB) ||
           event.getCode().equals(KeyCode.ENTER)) {
-        event.consume();
         TableView.TableViewSelectionModel<Order> selectionModel = orderTable.getSelectionModel();
         TablePosition tablePosition = selectionModel.getSelectedCells().get(0);
         Optional<Integer> position = tableColumnMap.entrySet().stream()
@@ -754,15 +752,18 @@ public class TotalReportController extends OrderController {
             .findFirst();
 
         if(position.isEmpty()){
-          int currentColumnIndex = tablePosition.getColumn();
-          position = Optional.of(currentColumnIndex);
+          System.err.println("Not found column");
+          return;
         }
 
         TableColumn column = tableColumnMap.get(position.get() + 1);
         if (Objects.nonNull(column)) {
+          orderTable.getSelectionModel().select(tablePosition.getRow(), column);
           orderTable.edit(tablePosition.getRow(), column);
         }
       }
+      event.consume();
     });
+
   }
 }
