@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javax.print.DocFlavor;
+import javax.print.DocFlavor.INPUT_STREAM;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import org.springframework.context.ApplicationEventPublisher;
@@ -70,7 +71,7 @@ public class OrderPrintControllers extends OrderController {
   public void initialize(URL location, ResourceBundle resources) {
     super.initialize(location, resources);
 
-    var printerServices = PrintServiceLookup.lookupPrintServices(DocFlavor.INPUT_STREAM.PDF, null);
+    var printerServices = PrintServiceLookup.lookupPrintServices(INPUT_STREAM.AUTOSENSE, null);
     order = ApplicationVariable.currentOrder;
     choicePrinter.setItems(
         FXCollections.observableList(

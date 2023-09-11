@@ -10,6 +10,7 @@ import com.utils.Utils;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,8 +18,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+
 import javax.print.Doc;
 import javax.print.DocFlavor;
+import javax.print.DocFlavor.INPUT_STREAM;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
@@ -28,6 +32,7 @@ import javax.print.attribute.HashDocAttributeSet;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.JobName;
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.print.attribute.standard.Sides;
@@ -140,20 +145,21 @@ public class CustomPrinterService implements IPrinterService {
 
   private void printFilePDF(PrintService printService, String filePath)
       throws PrintException, IOException {
+
+    DocFlavor docFlavor = INPUT_STREAM.AUTOSENSE;
+    final InputStream inputStream =  new BufferedInputStream(new FileInputStream(filePath));
+
+    Doc pdfDoc = new SimpleDoc(inputStream, docFlavor, null);
+    DocPrintJob printJob = printService.createPrintJob();
+
     PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-    pras.add(new Copies(1));
+   pras.add(new Copies(1));
     pras.add(new MediaPrintableArea(2, 2, 148 , 152, MediaPrintableArea.MM)); // print stapled
     pras.add(Sides.ONE_SIDED);
     pras.add(OrientationRequested.LANDSCAPE);
     //pras.add(ColorSupported.SUPPORTED);
+    pras.add(new JobName(UUID.randomUUID().toString(), null));
 
-    DocFlavor docFlavor = DocFlavor.INPUT_STREAM.PDF;
-
-    final BufferedInputStream inputStream =  new BufferedInputStream(new FileInputStream(filePath));
-
-
-    Doc pdfDoc = new SimpleDoc(inputStream, docFlavor, new HashDocAttributeSet());
-    DocPrintJob printJob = printService.createPrintJob();
 
     printJob.print(pdfDoc, pras);
     inputStream.close();
