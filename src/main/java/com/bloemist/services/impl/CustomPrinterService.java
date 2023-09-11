@@ -7,10 +7,11 @@ import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.utils.Utils;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.awt.*;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +44,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.printing.PDFPageable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
@@ -55,7 +58,7 @@ public class CustomPrinterService implements IPrinterService {
   private static final String BLOEMIST_LOGO = "classpath:Img/logo.png";
   private static final String FB_ICON = "classpath:Img/facebook.png";
   private static final String PHONE_ICON = "classpath:Img/telephone.png";
-  public static final String PREVIEW_PDF = "preview.pdf";
+  public static final String PREVIEW_PDF = "./preview.pdf";
   public static final String IMAGE_PDF = "image.pdf";
   public static final String REPORT_LOCALE = "REPORT_LOCALE";
   public static final String TODAY = "today";
@@ -110,7 +113,7 @@ public class CustomPrinterService implements IPrinterService {
         printFilePDF(printer, PREVIEW_PDF);
       }
 
-    } catch (JRException | PrintException | IOException e) {
+    } catch (JRException | PrintException | IOException | PrinterException e) {
       e.printStackTrace();
     }
   }
@@ -138,22 +141,29 @@ public class CustomPrinterService implements IPrinterService {
         PrintService printer = printService.get();
         printFilePDF(printer, IMAGE_PDF);
       }
-    } catch (JRException | PrintException | IOException e) {
+    } catch (JRException | PrintException | IOException | PrinterException e) {
       e.printStackTrace();
     }
   }
 
   private void printFilePDF(PrintService printService, String filePath)
-      throws PrintException, IOException {
+          throws PrintException, IOException, PrinterException {
 
-    DocFlavor docFlavor = INPUT_STREAM.AUTOSENSE;
+    PDDocument document = PDDocument.load(new File(filePath));
+
+    PrinterJob job = PrinterJob.getPrinterJob();
+    job.setPageable(new PDFPageable(document));
+    job.setPrintService(printService);
+    job.print();
+
+   /* DocFlavor docFlavor = INPUT_STREAM.AUTOSENSE;
     final InputStream inputStream =  new BufferedInputStream(new FileInputStream(filePath));
 
     Doc pdfDoc = new SimpleDoc(inputStream, docFlavor, null);
     DocPrintJob printJob = printService.createPrintJob();
 
     PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-   pras.add(new Copies(1));
+    pras.add(new Copies(1));
     pras.add(new MediaPrintableArea(2, 2, 148 , 152, MediaPrintableArea.MM)); // print stapled
     pras.add(Sides.ONE_SIDED);
     pras.add(OrientationRequested.LANDSCAPE);
@@ -162,7 +172,7 @@ public class CustomPrinterService implements IPrinterService {
 
 
     printJob.print(pdfDoc, pras);
-    inputStream.close();
+    inputStream.close();*/
   }
 
 }
