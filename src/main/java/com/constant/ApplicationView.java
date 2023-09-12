@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public enum ApplicationView {
+
   PRINT_ORDER {
     @Override
     public String getUrl() {
@@ -232,4 +233,6 @@ public enum ApplicationView {
 
     return Optional.empty();
   }
+
+  public static final ApplicationView [] NOT_LOGIN = {REGISTRATOR, LOGIN, RECOVER_PASSWORD} ;
 }

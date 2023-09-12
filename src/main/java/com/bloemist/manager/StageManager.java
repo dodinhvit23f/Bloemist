@@ -56,6 +56,15 @@ public class StageManager implements Serializable {
     return null;
   }
 
+  public static URL getUrlFxmlFile(String viewUrl) {
+    try {
+      return ResourceUtils.getURL(viewUrl);
+    } catch (FileNotFoundException e) {
+      System.exit(0);
+    }
+    return null;
+  }
+
   public String getPath(String url) {
     return String.join(PATH_DIRECTION, url);
   }

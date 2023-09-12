@@ -55,6 +55,7 @@ public final class LoginController extends BaseController {
     }
 
     AccountDetail account = userService.login(username, password);
+    account.setCanAccess(Boolean.TRUE);
 
     ApplicationVariable.setUser(account);
 

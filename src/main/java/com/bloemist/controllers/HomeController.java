@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -63,7 +66,8 @@ public final class HomeController extends BaseController {
   public void createOrder() throws IOException {
     final Stage dialog = new Stage();
     dialog.initModality(Modality.APPLICATION_MODAL);
-    FXMLLoader fxmlLoader =  new FXMLLoader(ResourceUtils.getURL((ApplicationView.CREATE_ORDER.getUrl())));
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        ResourceUtils.getURL((ApplicationView.CREATE_ORDER.getUrl())));
     fxmlLoader.setControllerFactory(context::getBean);
     fxmlLoader.setCharset(StandardCharsets.UTF_8);
 
@@ -101,6 +105,4 @@ public final class HomeController extends BaseController {
     }
     switchScene(view.get());
   }
-
-
 }
