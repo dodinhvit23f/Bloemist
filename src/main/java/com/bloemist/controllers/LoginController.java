@@ -91,5 +91,9 @@ public final class LoginController extends BaseController {
         login();
       }
     });
+
+    if(!ObjectUtils.isEmpty(ApplicationVariable.getUser())){
+      userIdentify.setText(ApplicationVariable.getUser().getUsername());
+    }
   }
 }
