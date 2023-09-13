@@ -31,14 +31,16 @@ public class InactiveScreenSchedule {
   @Autowired
   StageManager stageManager;
 
-  private final Duration inactivityDuration = Duration.minutes(5D);  // Duration for the timeout
+  private final Duration inactivityDuration = Duration.minutes(1D);  // Duration for the timeout
 
   private void enableInactiveTime() {
     Timeline inactivityTimer = new Timeline(new KeyFrame(inactivityDuration, event -> {
       if (!stageListener.isActive()) {
 
-        stageManager.setView(ApplicationView.LOGIN);
-        publisher.publishEvent(new StageEvent(stageManager));
+        if(!stageManager.getView().equals(ApplicationView.LOGIN)){
+          stageManager.setView(ApplicationView.LOGIN);
+          publisher.publishEvent(new StageEvent(stageManager));
+        }
 
         enableInactiveTime();
         return;

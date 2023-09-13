@@ -60,8 +60,11 @@ public class StageListener implements ApplicationListener<StageEvent> {
       if (Objects.isNull(ApplicationVariable.getUser()) ||
           !ApplicationVariable.getUser().isCanAccess()) {
         fxmlLoader = new FXMLLoader(getUrlFxmlFile(ApplicationView.LOGIN.getUrl()));
+        manager.setView(ApplicationView.LOGIN);
+
       } else {
         fxmlLoader = new FXMLLoader(manager.getUrlFxmlFile());
+
       }
 
       //fxmlLoader = new FXMLLoader(manager.getUrlFxmlFile());
