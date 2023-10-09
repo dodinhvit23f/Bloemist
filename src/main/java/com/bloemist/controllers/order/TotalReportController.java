@@ -1,27 +1,32 @@
 package com.bloemist.controllers.order;
 
+import static com.constant.Constants.CUSTOMER;
+import static com.constant.Constants.FACEBOOK;
+import static com.constant.Constants.HOTLINE;
+import static com.constant.Constants.INSTAGRAM;
+import static com.constant.Constants.REGULAR_CUSTOMER;
+import static com.constant.Constants.TIKTOK;
+import static com.constant.Constants.ZALO;
+import static com.utils.Utils.openDialogChoiceImage;
+
 import com.bloemist.dto.Order;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.OrderState;
 import com.utils.Utils;
-
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -42,20 +47,10 @@ import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-
-import static com.constant.Constants.CUSTOMER;
-import static com.constant.Constants.FACEBOOK;
-import static com.constant.Constants.HOTLINE;
-import static com.constant.Constants.INSTAGRAM;
-import static com.constant.Constants.REGULAR_CUSTOMER;
-import static com.constant.Constants.TIKTOK;
-import static com.constant.Constants.ZALO;
-import static com.utils.Utils.openDialogChoiceImage;
 
 @Component
 public class TotalReportController extends OrderController {
@@ -240,7 +235,6 @@ public class TotalReportController extends OrderController {
 
       orderService.createNewOrders(selectedOrder);
       ApplicationVariable.sortOrders();
-      setDataOrderTable(orderTable, Boolean.FALSE);
       orderTable.refresh();
     }
   }
@@ -256,7 +250,8 @@ public class TotalReportController extends OrderController {
   @FXML
   public void refresh() {
     this.orderTable.setItems(FXCollections.observableArrayList());
-    loadPageAsync(null, this.orderTable, Boolean.TRUE);
+    loadPageAsync(null, this.orderTable,
+        (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
   }
 
   @FXML
@@ -425,6 +420,10 @@ public class TotalReportController extends OrderController {
     }
   }
 
+  protected void setDataOrderTable(TableView<Order> orderTable) {
+    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()));
+  }
+
   private void setColumnsValues() {
     customerName.setCellValueFactory(new PropertyValueFactory<>(Order.CUSTOMER_NAME));
     deliveryDateCol.setCellValueFactory(new PropertyValueFactory<>(Order.DELIVERY_DATE));
@@ -572,7 +571,7 @@ public class TotalReportController extends OrderController {
       if (!textArea.getText().equals(event.getOldValue()) &&
           Objects.isNull(event.getNewValue())) {
         if (Objects.isNull(event.getNewValue())) {
-          if(Objects.nonNull(event.getOldValue())){
+          if (Objects.nonNull(event.getOldValue())) {
             textArea.setText(event.getOldValue());
           }
           return;
@@ -702,7 +701,6 @@ public class TotalReportController extends OrderController {
   }
 
   private void updateOrderTable() {
-    setDataOrderTable(orderTable, Boolean.TRUE);
     ApplicationVariable.setTableSequence();
   }
 
@@ -711,30 +709,27 @@ public class TotalReportController extends OrderController {
     initEvent();
     addTableViewListener();
     this.stageManager.getStage().setOnShown(event ->
-        onScrollFinished(this.orderTable));
+        onScrollFinished(this.orderTable,
+            (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())));
 
     setTabEvent();
 
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable, Boolean.TRUE);
+      loadPageAsync(null, this.orderTable,
+          (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
       return;
     }
-    setDataOrderTable(this.orderTable, Boolean.TRUE);
-
-
-
-    //TODO empName.setText(ApplicationVariable.getUser().getFullName());
   }
 
   private void setTabEvent() {
     AtomicInteger atomicInteger = new AtomicInteger(0);
 
-    for (TableColumn column : orderTable.getColumns()){
-      if(column.getColumns().size() > 1){
-        for (Object subCol : column.getColumns()){
+    for (TableColumn column : orderTable.getColumns()) {
+      if (column.getColumns().size() > 1) {
+        for (Object subCol : column.getColumns()) {
           tableColumnMap.put(atomicInteger.getAndIncrement(), (TableColumn) subCol);
         }
-      }else {
+      } else {
         tableColumnMap.put(atomicInteger.getAndIncrement(), column);
       }
     }
@@ -748,13 +743,8 @@ public class TotalReportController extends OrderController {
         TablePosition tablePosition = selectionModel.getSelectedCells().get(0);
         Optional<Integer> position = tableColumnMap.entrySet().stream()
             .filter(entry -> entry.getValue().equals(editableColumn.get()))
-            .map(entry ->entry.getKey())
+            .map(entry -> entry.getKey())
             .findFirst();
-
-        if(position.isEmpty()){
-          System.err.println("Not found column");
-          return;
-        }
 
         TableColumn column = tableColumnMap.get(position.get() + 1);
         if (Objects.nonNull(column)) {

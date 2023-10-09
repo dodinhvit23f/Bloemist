@@ -157,14 +157,32 @@ public class OrderService implements IOrderService {
   }
 
   @Override
-  public List<Order> getPage(LocalDateTime startTime, LocalDateTime endTime) {
+  public List<Order> getStaffPage(LocalDateTime startTime, LocalDateTime endTime) {
     AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
 
     final var startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
     final var endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
 
     var pageOrderReport = orderReportRepository
-        .getOrders(startDate, endDate);
+        .getOrdersForStaff(startDate, endDate);
+
+    return pageOrderReport.stream()
+        .map(orderReport -> {
+          var order = OrderMapper.MAPPER.orderReportToOrder(orderReport);
+          order.setStt(String.valueOf(stt.getAndIncrement()));
+          return order;
+        }).toList();
+  }
+
+  @Override
+  public List<Order> getAdminPage(LocalDateTime startTime, LocalDateTime endTime) {
+    AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
+
+    final var startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
+    final var endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
+
+    var pageOrderReport = orderReportRepository
+        .getOrdersAdmin(startDate, endDate);
 
     return pageOrderReport.stream()
         .map(orderReport -> {

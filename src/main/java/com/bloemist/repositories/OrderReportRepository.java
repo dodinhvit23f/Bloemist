@@ -16,13 +16,23 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
 
   @Query("SELECT order "
       + "FROM OrderReport order "
-      + "WHERE  order.orderStatus <> 6 AND "
+      + "WHERE  order.orderStatus NOT IN (6, 7) AND "
       + "order.orderDate >= :startTime AND "
       + "order.orderDate <= :endTime "
-      + "ORDER BY order.deliveryDate ASC,"
-      + "order.deliveryTime ASC, "
-      + "order.orderStatus ASC")
-  List<OrderReport> getOrders(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+      + "ORDER BY order.orderStatus ASC,"
+      + "order.deliveryDate DESC,"
+      + "order.deliveryTime DESC")
+  List<OrderReport> getOrdersForStaff(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+
+  @Query("SELECT order "
+      + "FROM OrderReport order "
+      + "WHERE "
+      + "order.orderDate >= :startTime AND "
+      + "order.orderDate <= :endTime "
+      + "ORDER BY order.orderStatus ASC,"
+      + "order.deliveryDate DESC,"
+      + "order.deliveryTime DESC")
+  List<OrderReport> getOrdersAdmin(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
   List<OrderReport> findOrderReportByOrderCodeIn(List<String> codes);
 }

@@ -10,7 +10,6 @@ import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.constant.OrderState;
 import com.utils.Utils;
-
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -34,10 +31,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
@@ -94,7 +89,7 @@ public class CreateOrderController extends OrderController {
 
   File imageFile;
 
-  Boolean isPopup;
+  static Boolean isPopup;
 
   @FXML
   public void openImage() throws IOException {
@@ -293,6 +288,7 @@ public class CreateOrderController extends OrderController {
       switchScene(ApplicationView.INQUIRY_ORDER);
       return;
     }
+    isPopup = Boolean.FALSE;
     ((Stage)discountAmount.getScene().getWindow()).close();
   }
 
@@ -301,11 +297,11 @@ public class CreateOrderController extends OrderController {
     throw new UnsupportedOperationException();
   }
 
-  public Boolean isPopup() {
+  public static Boolean isPopup() {
     return isPopup;
   }
 
-  public void setPopup(Boolean popup) {
+  public static void setPopup(Boolean popup) {
     isPopup = popup;
   }
 }

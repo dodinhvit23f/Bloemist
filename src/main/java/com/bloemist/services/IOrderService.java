@@ -26,8 +26,9 @@ public interface IOrderService {
   @Transactional
   Optional changeOrderStateInfo(Order order);
 
-  @Transactional(readOnly = true)
-  List<Order> getPage(LocalDateTime startTime, LocalDateTime endTime);
+  List<Order> getStaffPage(LocalDateTime startTime, LocalDateTime endTime);
+
+  List<Order> getAdminPage(LocalDateTime startTime, LocalDateTime endTime);
 
   boolean validOrder(Order orderInfo);
 }

@@ -8,9 +8,7 @@ import com.bloemist.services.IOrderService;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
-import com.constant.OrderState;
 import com.utils.Utils;
-
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -29,7 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.function.Function;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -38,19 +36,18 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.util.Pair;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class OrderController extends BaseController {
 
-  public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.TRUE);
+  public static final AtomicBoolean isEnd = new AtomicBoolean(Boolean.FALSE);
   public static final String DD_MM_YYYY = "dd-MM-yyyy";
   @Autowired
   IOrderService orderService;
@@ -87,69 +84,62 @@ public abstract class OrderController extends BaseController {
         .atZone(ZoneId.systemDefault()).toInstant());
   }
 
-  protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable, Boolean isMaster) {
+  private LocalDateTime getPageEndTime(Boolean isNew, Order oldestOrder) {
 
-    LocalDateTime endTime;
-    if (ObjectUtils.isEmpty(ApplicationVariable.getOrders())) {
-      endTime = LocalDateTime.now();
-    } else {
-      if (Boolean.TRUE.equals(isNew)) {
-        var latestOrder = ApplicationVariable.getOrders()
-            .stream()
-            .max(Comparator.comparing(Order::getOrderDate))
-            .get();
+    if (Boolean.TRUE.equals(isNew) || Objects.isNull(isNew)) {
+      return LocalDateTime.now().plus(1, ChronoUnit.MONTHS);
+    }
+    return LocalDate.parse(oldestOrder.getOrderDate(),
+            DateTimeFormatter.ofPattern(DD_MM_YYYY))
+        .atStartOfDay();
+  }
 
-        endTime = LocalDate.parse(latestOrder.getOrderDate(),
-            DateTimeFormatter.ofPattern(DD_MM_YYYY)).atStartOfDay();
-      } else {
-        var oldestOrder = ApplicationVariable.getOrders()
-            .stream()
-            .min(Comparator.comparing(Order::getOrderDate))
-            .get();
+  private Order getOrderRecordInApp() {
+    return ApplicationVariable.getOrders()
+        .stream()
+        .min(Comparator.comparing(Order::getOrderDate))
+        .orElse(null);
+  }
 
-        endTime = LocalDate.parse(oldestOrder.getOrderDate(),
-            DateTimeFormatter.ofPattern(DD_MM_YYYY)).atStartOfDay();
-      }
-
+  private LocalDateTime getPageStartTime(Boolean isNew, Order oldestOrder) {
+    if (Objects.isNull(isNew)) {
+      return LocalDateTime.now().minus(1, ChronoUnit.MONTHS);
     }
 
-    LocalDateTime startTime = endTime.minusMonths(BigInteger.ONE.intValue())
-        .toLocalDate()
+    if (Boolean.TRUE.equals(isNew)) {
+      return LocalDateTime.now().toLocalDate().atStartOfDay();
+    }
+
+    return LocalDate.parse(oldestOrder.getOrderDate(),
+            DateTimeFormatter.ofPattern(DD_MM_YYYY))
+        .minusMonths(1)
         .atStartOfDay();
+  }
+
+
+  protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable,
+      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+    Order oldestOrder = getOrderRecordInApp();
+    LocalDateTime endTime = getPageEndTime(isNew, oldestOrder);
+    LocalDateTime startTime = getPageStartTime(isNew, oldestOrder);
+
     CompletableFuture<List<Order>> orderLoading = CompletableFuture
         .supplyAsync(() -> {
-
-          if (Objects.isNull(isNew)) {
-            return orderService.getPage(startTime, endTime);
-          }
-          // load new record
-          if (Boolean.TRUE.equals(isNew)) {
-            return orderService.getPage(endTime, LocalDateTime.now());
-          }
-          // load old record
           if (isEnd.get()) {
             return Collections.emptyList();
           }
 
-          return orderService.getPage(startTime, endTime);
+          return consumer.apply(Pair.of(startTime, endTime));
         });
 
     orderLoading.thenAccept(orders -> {
-      orders = orders.stream()
-          .filter(order -> {
-            if (isMaster) {
-              return Boolean.TRUE;
-            }
-
-            if (order.getStatus().equals(OrderState.DONE.getStateText())) {
-              return Boolean.FALSE;
-            }
-            return Boolean.TRUE;
-          }).toList();
+      if (ObjectUtils.isEmpty(orders)) {
+        isEnd.set(Boolean.TRUE);
+      }
 
       if (Objects.isNull(isNew)) {
         ApplicationVariable.setOrders(orders);
-        setDataOrderTable(orderTable, Boolean.FALSE);
+        setDataOrderTable(orderTable);
         return;
       }
 
@@ -187,7 +177,7 @@ public abstract class OrderController extends BaseController {
     }).toList();
 
     ApplicationVariable.setOrders(orders);
-    setDataOrderTable(orderTable, Boolean.FALSE);
+    setDataOrderTable(orderTable);
   }
 
   private void handleOldData(TableView<Order> orderTable, List<Order> orders) {
@@ -203,46 +193,30 @@ public abstract class OrderController extends BaseController {
     }).toList();
 
     ApplicationVariable.add(oldOrders);
-    setDataOrderTable(orderTable, Boolean.FALSE);
+    setDataOrderTable(orderTable);
   }
 
-  public void onScrollFinished(TableView<Order> orderTable) {
+  public void onScrollFinished(TableView<Order> orderTable,
+      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
     var tvScrollBar = (ScrollBar) orderTable.lookup(".scroll-bar:vertical");
     tvScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
       tvScrollBar.setDisable(Boolean.TRUE);
       if (newValue.doubleValue() == BigInteger.ONE.doubleValue()) {
-        loadPageAsync(Boolean.FALSE, orderTable, Boolean.FALSE);
+        loadPageAsync(Boolean.FALSE, orderTable, consumer);
       }
 
       if (newValue.doubleValue() == BigInteger.ZERO.doubleValue()) {
         Alert alert = confirmDialog();
         if (alert.getResult() == ButtonType.YES) {
-          loadPageAsync(Boolean.TRUE, orderTable, Boolean.FALSE);
+          loadPageAsync(Boolean.TRUE, orderTable, consumer);
         }
       }
       tvScrollBar.setDisable(Boolean.FALSE);
     });
   }
 
-  protected void setDataOrderTable(TableView<Order> orderTable, boolean isMaster) {
-    ApplicationVariable.setOrders(ApplicationVariable.getOrders().stream()
-        .filter(order -> {
-          if (isMaster) {
-            return Boolean.TRUE;
-          }
-
-          if (order.getStatus().equals(OrderState.DONE.getStateText())) {
-            return Boolean.FALSE;
-          }
-          return Boolean.TRUE;
-        }).toList());
-
-    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()
-        .stream()
-        .sorted(Comparator.comparing(Order::getDeliveryDate)
-            .thenComparing(Order::getDeliveryHour)
-            .thenComparing(Order::getPriority))
-        .toList()));
+  protected void setDataOrderTable(TableView<Order> orderTable) {
+    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()));
   }
 
 
