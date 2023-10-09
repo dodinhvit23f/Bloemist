@@ -6,14 +6,18 @@ import com.bloemist.events.MessageWarning;
 import com.bloemist.services.IUserService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -32,7 +36,7 @@ public final class UserAppointmentController extends BaseController {
   IUserService userService;
 
   UserAppointmentController(ApplicationEventPublisher publisher,
-      IUserService userService) {
+                            IUserService userService) {
     super(publisher);
     this.userService = userService;
   }
@@ -40,6 +44,8 @@ public final class UserAppointmentController extends BaseController {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     pickLevel.setItems(FXCollections.observableArrayList(Constants.SUPERVISOR, Constants.STAFF));
+
+    pickDivision.setItems(FXCollections.observableArrayList(Constants.FLORIST));
 
     pickUser.setItems(FXCollections.observableArrayList(
         userService.findApprovableUser()
@@ -52,9 +58,11 @@ public final class UserAppointmentController extends BaseController {
   public void approvePosition() {
     String userName = pickUser.getSelectionModel().getSelectedItem();
     String role = pickLevel.getSelectionModel().getSelectedItem();
+    String division = pickDivision.getSelectionModel().getSelectedItem();
 
     if (ObjectUtils.isEmpty(userName) ||
-        ObjectUtils.isEmpty(role)) {
+        ObjectUtils.isEmpty(role) ||
+        ObjectUtils.isEmpty(division)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_USER_APPROVEMENT_002));
       return;
     }
@@ -65,6 +73,7 @@ public final class UserAppointmentController extends BaseController {
         .approvedUser(Account.builder()
             .username(userName)
             .role(role)
+            .division(division)
             .build())
         .build());
 

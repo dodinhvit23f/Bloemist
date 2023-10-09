@@ -18,7 +18,7 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "FROM OrderReport order "
       + "WHERE  order.orderStatus NOT IN (6, 7) AND "
       + "order.orderDate >= :startTime AND "
-      + "order.orderDate <= :endTime "
+      + "order.orderDate < :endTime "
       + "ORDER BY order.orderStatus ASC,"
       + "order.deliveryDate DESC,"
       + "order.deliveryTime DESC")
@@ -28,7 +28,7 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "FROM OrderReport order "
       + "WHERE "
       + "order.orderDate >= :startTime AND "
-      + "order.orderDate <= :endTime "
+      + "order.orderDate < :endTime "
       + "ORDER BY order.orderStatus ASC,"
       + "order.deliveryDate DESC,"
       + "order.deliveryTime DESC")

@@ -9,6 +9,7 @@ import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.constant.Constants;
 import com.utils.Utils;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -19,29 +20,36 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.util.Pair;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 @FieldDefaults(level = AccessLevel.PROTECTED)
@@ -53,6 +61,8 @@ public abstract class OrderController extends BaseController {
   IOrderService orderService;
   @Autowired
   IPrinterService printerService;
+
+  AtomicBoolean isLoadingPage = new AtomicBoolean(Boolean.FALSE);
 
   protected OrderController(ApplicationEventPublisher publisher) {
     super(publisher);
@@ -110,15 +120,25 @@ public abstract class OrderController extends BaseController {
       return LocalDateTime.now().toLocalDate().atStartOfDay();
     }
 
-    return LocalDate.parse(oldestOrder.getOrderDate(),
+    var previousMonth = LocalDate.parse(oldestOrder.getOrderDate(),
             DateTimeFormatter.ofPattern(DD_MM_YYYY))
-        .minusMonths(1)
+        .minusMonths(2);
+
+    return previousMonth
+        .withMonth(previousMonth.getMonth().getValue())
         .atStartOfDay();
   }
 
 
   protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable,
-      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+                               Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+
+    if (isLoadingPage.get()) {
+      return;
+    }
+
+    isLoadingPage.set(Boolean.TRUE);
+
     Order oldestOrder = getOrderRecordInApp();
     LocalDateTime endTime = getPageEndTime(isNew, oldestOrder);
     LocalDateTime startTime = getPageStartTime(isNew, oldestOrder);
@@ -132,29 +152,44 @@ public abstract class OrderController extends BaseController {
           return consumer.apply(Pair.of(startTime, endTime));
         });
 
-    orderLoading.thenAccept(orders -> {
-      if (ObjectUtils.isEmpty(orders)) {
-        isEnd.set(Boolean.TRUE);
-      }
-
+    try {
+      List<Order> orders = orderLoading.get(3, TimeUnit.SECONDS);
       if (Objects.isNull(isNew)) {
         ApplicationVariable.setOrders(orders);
         setDataOrderTable(orderTable);
-        return;
-      }
-
-      if (Boolean.TRUE.equals(isNew)) {
+      } else if (Boolean.TRUE.equals(isNew)) {
         handleLatest(orderTable, orders);
-        return;
+      } else {
+        handleOldData(orders, orderTable);
       }
 
-      handleOldData(orderTable, orders);
-    });
+    } catch (ExecutionException | InterruptedException | TimeoutException e) {
+      e.printStackTrace();
+    }
+
+    setCountDownToEnableScrollEvent(() -> isLoadingPage.set(Boolean.FALSE));
+  }
+
+  private void handleOldData(List<Order> orders, TableView<Order> orderTable) {
+    if (ObjectUtils.isEmpty(orders)) {
+      isEnd.set(Boolean.TRUE);
+      isLoadingPage.set(Boolean.FALSE);
+      return;
+    }
+
+    var existCode = ApplicationVariable.getOrders().stream().map(Order::getCode).collect(Collectors.toSet());
+
+    ApplicationVariable.getOrders().addAll(orders.stream()
+        .filter(order -> !existCode.contains(order.getCode()))
+        .toList());
+
+    updateApplicationData(orderTable);
+    reprintOrderStt();
+    setDataOrderTable(orderTable);
   }
 
   private void handleLatest(TableView<Order> orderTable, List<Order> orders) {
-
-    if (CollectionUtils.isEmpty(orders)) {
+    if (ObjectUtils.isEmpty(orders)) {
       return;
     }
 
@@ -177,48 +212,66 @@ public abstract class OrderController extends BaseController {
     }).toList();
 
     ApplicationVariable.setOrders(orders);
-    setDataOrderTable(orderTable);
   }
 
-  private void handleOldData(TableView<Order> orderTable, List<Order> orders) {
-    if (CollectionUtils.isEmpty(orders)) {
-      isEnd.set(Boolean.TRUE);
-      return;
+  private void setCountDownToEnableScrollEvent(Runnable runnable) {
+    var task = new TimerTask() {
+      @Override
+      public void run() {
+        runnable.run();
+      }
+    };
+    new Timer().schedule(task, 2000);
+  }
+
+  protected void reprintOrderStt() {
+    for (int i = 1; i < ApplicationVariable.getOrders().size(); i = i + 1) {
+      ApplicationVariable.getOrders().get(i).setStt(String.valueOf(i));
     }
-
-    var raise = ApplicationVariable.getOrders().size();
-    var oldOrders = orders.stream().map(order -> {
-      order.setStt(order.getStt() + raise);
-      return order;
-    }).toList();
-
-    ApplicationVariable.add(oldOrders);
-    setDataOrderTable(orderTable);
   }
 
   public void onScrollFinished(TableView<Order> orderTable,
-      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+                               Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
     var tvScrollBar = (ScrollBar) orderTable.lookup(".scroll-bar:vertical");
     tvScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
-      tvScrollBar.setDisable(Boolean.TRUE);
       if (newValue.doubleValue() == BigInteger.ONE.doubleValue()) {
         loadPageAsync(Boolean.FALSE, orderTable, consumer);
       }
 
       if (newValue.doubleValue() == BigInteger.ZERO.doubleValue()) {
-        Alert alert = confirmDialog();
-        if (alert.getResult() == ButtonType.YES) {
-          loadPageAsync(Boolean.TRUE, orderTable, consumer);
-        }
+        loadPageAsync(Boolean.TRUE, orderTable, consumer);
       }
-      tvScrollBar.setDisable(Boolean.FALSE);
+
     });
   }
 
-  protected void setDataOrderTable(TableView<Order> orderTable) {
-    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()));
+  private void setDataOrderTable(TableView<Order> orderTable) {
+    orderTable.setItems(FXCollections.observableList(Collections.emptyList()));
+    orderTable.setItems(FXCollections.observableList(ApplicationVariable.getOrders()));
   }
 
+  void updateApplicationData(TableView<Order> orderTable) {
+    List newOrders = ApplicationVariable.getOrders()
+        .stream()
+        .sorted(Comparator.comparing(Order::getStatus)
+            .thenComparing((o1, o2) -> {
+              var date1 = Utils.toDate(o1.getDeliveryDate());
+              var date2 = Utils.toDate(o2.getDeliveryDate());
+
+              if (date2.after(date1)) {
+                return 1;
+              }
+
+              if (date2.before(date1)) {
+                return -1;
+              }
+
+              return 0;
+            })
+            .thenComparing(Order::getDeliveryHour))
+        .toList();
+    ApplicationVariable.setOrders(new ArrayList(newOrders));
+  }
 
   @FXML
   public abstract void extractData() throws IOException;

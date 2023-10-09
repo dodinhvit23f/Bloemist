@@ -5,13 +5,11 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,6 +25,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
+
+import static com.constant.Constants.MANAGER;
+import static com.constant.Constants.SUPERVISOR;
 
 @Component
 public final class HomeController extends BaseController {
@@ -84,7 +85,15 @@ public final class HomeController extends BaseController {
 
   @FXML
   public void manageOrder() {
-    switchScene(ApplicationView.MASTER_ORDER);
+    if (isManager()) {
+      switchScene(ApplicationView.MASTER_ORDER);
+    }
+  }
+
+  private boolean isManager() {
+    return Objects.nonNull(ApplicationVariable.getUser()) &&
+        (ApplicationVariable.getUser().getRole().contains(MANAGER) ||
+            ApplicationVariable.getUser().getRole().contains(SUPERVISOR));
   }
 
   @FXML
@@ -104,5 +113,11 @@ public final class HomeController extends BaseController {
       return;
     }
     switchScene(view.get());
+  }
+
+  public void managerStaff(ActionEvent actionEvent) {
+    if (isManager()) {
+      switchScene(ApplicationView.USER_APPOINTMENT);
+    }
   }
 }

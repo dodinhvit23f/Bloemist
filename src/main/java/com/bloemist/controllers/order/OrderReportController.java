@@ -6,6 +6,7 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.utils.Utils;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -17,6 +18,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -31,11 +33,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -229,7 +234,7 @@ public class OrderReportController extends OrderController {
   public void seeImage() {
     try {
       viewImage(currentOrder);
-    } catch (IOException e){
+    } catch (IOException e) {
 
     }
   }
@@ -339,15 +344,15 @@ public class OrderReportController extends OrderController {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initEvent();
+
+    ApplicationVariable.getOrders().clear();
+
+    loadPageAsync(null, this.orderTable,
+        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
+
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable,
             pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond())));
-
-    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable,
-          pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
-      return;
-    }
 
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
                     "" : ApplicationVariable.getUser().getFullName());

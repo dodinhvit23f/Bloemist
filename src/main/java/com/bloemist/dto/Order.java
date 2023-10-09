@@ -82,4 +82,9 @@ public class Order {
   Integer priority;
   StringProperty statusProperty;
   StringProperty customerSourceProperty;
+
+
+  public boolean equals(Order obj) {
+    return code.equals(obj.getCode());
+  }
 }

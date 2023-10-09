@@ -3,16 +3,19 @@ package com.bloemist.services.impl;
 import com.bloemist.dto.Account;
 import com.bloemist.dto.AccountApprovement;
 import com.bloemist.dto.AccountDetail;
+import com.bloemist.entity.Department;
 import com.bloemist.entity.JobGrade;
 import com.bloemist.entity.User;
 import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
+import com.bloemist.repositories.DivisionRepository;
 import com.bloemist.repositories.JobGradeRepository;
 import com.bloemist.repositories.UserRepository;
 import com.bloemist.services.IUserService;
 import com.bloemist.services.MailServiceI;
 import com.constant.Constants;
 import com.utils.Utils;
+
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Collections;
@@ -23,9 +26,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -40,6 +45,7 @@ public class UserService implements IUserService {
   private static final String EMPTY = "";
   final UserRepository userRepository;
   final JobGradeRepository jobGradeRepository;
+  final DivisionRepository divisionRepository;
   final ApplicationEventPublisher publisher;
   @Value("${application.slat}")
   String secret;
@@ -199,26 +205,35 @@ public class UserService implements IUserService {
     Optional<User> userOptional =
         userRepository.findByUserName(approvement.getApprovedUser().getUsername());
 
-    userOptional.ifPresentOrElse(approvedUser -> {
-      Optional<JobGrade> roleOptional =
-          jobGradeRepository.findByName(approvement.getApprovedUser().getRole());
+    if (userOptional.isEmpty()) {
+      publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_003));
+    }
 
-      roleOptional.ifPresentOrElse(role -> {
-            if (CollectionUtils.isEmpty(approvedUser.getRoles())) {
-              Set<JobGrade> roles = new HashSet<>();
-              roles.add(role);
-              approvedUser.setRoles(roles);
-              approvedUser.setApproveBy(approvement.getApprover().getUsername());
-            } else if (!approvedUser.getRoles().add(role)) { // can't add existed role
-              publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_005));
-              return;
-            }
-            userRepository.save(approvedUser);
-            publisher.publishEvent(new MessageSuccess(Constants.SUSS_USER_APPROVEMENT));
-          },
-          () -> publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_004)));
+    Optional<Department> departmentOptional =
+        divisionRepository.findByName(approvement.getApprovedUser().getDivision());
 
-    }, () -> publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_003)));
+    Optional<JobGrade> roleOptional =
+        jobGradeRepository.findByName(approvement.getApprovedUser().getRole());
+
+    if (departmentOptional.isEmpty() || roleOptional.isEmpty()) {
+      publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_004));
+    }
+
+    var approvedUser = userOptional.get();
+    var role = roleOptional.get();
+
+    if (CollectionUtils.isEmpty(approvedUser.getRoles())) {
+      Set<JobGrade> roles = new HashSet<>();
+      roles.add(role);
+      approvedUser.setRoles(roles);
+      approvedUser.setApproveBy(approvement.getApprover().getUsername());
+
+    } else if (!approvedUser.getRoles().add(role)) { // can't add existed role
+      publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_005));
+      return;
+    }
+    userRepository.save(approvedUser);
+    publisher.publishEvent(new MessageSuccess(Constants.SUSS_USER_APPROVEMENT));
   }
 
   @Override

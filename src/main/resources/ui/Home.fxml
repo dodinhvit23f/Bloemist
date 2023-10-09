@@ -14,6 +14,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#changeUserInformation" text="Sửa thông tin cá nhân" />
               <MenuItem mnemonicParsing="false" onAction="#changePassword" text="Đổi mật khẩu" />
                   <MenuItem mnemonicParsing="false" text="Đăng ký nghỉ phép/ OT" />
+                  <MenuItem mnemonicParsing="false" onAction="#managerStaff" text="Chức năng quản lý" />
                   <MenuItem mnemonicParsing="false" text="Thông tin chấm công" />
                   <MenuItem mnemonicParsing="false" text="Bảng lương" />
                   <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />

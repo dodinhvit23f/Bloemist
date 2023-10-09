@@ -17,7 +17,11 @@ import com.utils.Utils;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -283,7 +287,7 @@ public class TotalReportController extends OrderController {
         .filter(Order::getIsSelected)
         .toList());
 
-    updateOrderTable();
+    reprintOrderStt();
   }
 
   @FXML
@@ -303,7 +307,7 @@ public class TotalReportController extends OrderController {
         .customerSourceProperty(new SimpleStringProperty(FACEBOOK))
         .build());
 
-    updateOrderTable();
+    reprintOrderStt();
   }
 
   @FXML
@@ -418,10 +422,6 @@ public class TotalReportController extends OrderController {
             ButtonType.OK).show();
       }
     }
-  }
-
-  protected void setDataOrderTable(TableView<Order> orderTable) {
-    orderTable.setItems(FXCollections.observableArrayList(ApplicationVariable.getOrders()));
   }
 
   private void setColumnsValues() {
@@ -700,25 +700,23 @@ public class TotalReportController extends OrderController {
         });
   }
 
-  private void updateOrderTable() {
-    ApplicationVariable.setTableSequence();
-  }
-
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initEvent();
     addTableViewListener();
+
+    setTabEvent();
+    ApplicationVariable.getOrders().clear();
+    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
+      loadPageAsync(null, this.orderTable,
+          (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
+    }
+
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable,
             (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())));
 
-    setTabEvent();
-
-    if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
-      loadPageAsync(null, this.orderTable,
-          (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
-      return;
-    }
+    orderTable.refresh();
   }
 
   private void setTabEvent() {
