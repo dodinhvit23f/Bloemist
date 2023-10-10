@@ -1,15 +1,19 @@
 package com.bloemist.services.impl;
 
+import static com.constant.Constants.CONNECTION_FAIL;
+
 import com.bloemist.dto.Account;
 import com.bloemist.dto.AccountApprovement;
 import com.bloemist.dto.AccountDetail;
 import com.bloemist.entity.Department;
 import com.bloemist.entity.JobGrade;
+import com.bloemist.entity.StaffDescription;
 import com.bloemist.entity.User;
 import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.DivisionRepository;
 import com.bloemist.repositories.JobGradeRepository;
+import com.bloemist.repositories.StaffDescriptionRepository;
 import com.bloemist.repositories.UserRepository;
 import com.bloemist.services.IUserService;
 import com.bloemist.services.MailServiceI;
@@ -46,6 +50,7 @@ public class UserService implements IUserService {
   final UserRepository userRepository;
   final JobGradeRepository jobGradeRepository;
   final DivisionRepository divisionRepository;
+  final StaffDescriptionRepository staffDescriptionRepository;
   final ApplicationEventPublisher publisher;
   @Value("${application.slat}")
   String secret;
@@ -219,21 +224,35 @@ public class UserService implements IUserService {
       publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_004));
     }
 
-    var approvedUser = userOptional.get();
+    User approvedUser = userOptional.get();
+    StaffDescription staffDescription = new StaffDescription();
+
     var role = roleOptional.get();
 
     if (CollectionUtils.isEmpty(approvedUser.getRoles())) {
-      Set<JobGrade> roles = new HashSet<>();
-      roles.add(role);
-      approvedUser.setRoles(roles);
       approvedUser.setApproveBy(approvement.getApprover().getUsername());
+
+
+
 
     } else if (!approvedUser.getRoles().add(role)) { // can't add existed role
       publisher.publishEvent(new MessageSuccess(Constants.ERR_USER_APPROVEMENT_005));
       return;
     }
-    userRepository.save(approvedUser);
-    publisher.publishEvent(new MessageSuccess(Constants.SUSS_USER_APPROVEMENT));
+    try {
+      userRepository.save(approvedUser);
+
+      staffDescription.setDepartmentId(departmentOptional.get().getId());
+      staffDescription.setUserId(approvedUser.getId());
+      staffDescription.setJobGradeId(role.getId());
+
+      staffDescriptionRepository.save(staffDescription);
+
+      publisher.publishEvent(new MessageSuccess(Constants.SUSS_USER_APPROVEMENT));
+    } catch (Exception e){
+      publisher.publishEvent(new MessageSuccess(CONNECTION_FAIL));
+    }
+
   }
 
   @Override

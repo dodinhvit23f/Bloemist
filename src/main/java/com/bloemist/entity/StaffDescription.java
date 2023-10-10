@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
@@ -15,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name="staff_description")
 @EqualsAndHashCode(callSuper = false)
+@Data
 @SuperBuilder
 public class StaffDescription extends BaseEntity {
 	private static final long serialVersionUID = 1L;

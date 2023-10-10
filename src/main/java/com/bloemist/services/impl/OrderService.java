@@ -247,7 +247,7 @@ public class OrderService implements IOrderService {
 
       moveFileToTrashAsync(googleFile);
 
-      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, fileMetadata.getId()));
+      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.getId()));
 
       orderReportRepository.save(orderReport);
 

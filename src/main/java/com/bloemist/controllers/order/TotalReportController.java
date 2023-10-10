@@ -17,11 +17,7 @@ import com.utils.Utils;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -587,7 +583,6 @@ public class TotalReportController extends OrderController {
         currentOrder = event.getTableView().getItems().get(orderRow);
         textArea.setText(event.getNewValue());
         editableColumn.set(tableColumn);
-        System.out.println(tableColumn.getText());
         setValueToColumn(tableColumn, currentOrder, event.getNewValue());
       }
     });
@@ -712,11 +707,12 @@ public class TotalReportController extends OrderController {
           (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
     }
 
-    this.stageManager.getStage().setOnShown(event ->
+    orderTable.refresh();
+
+    this.stageManager.getStage()
+        .setOnShown(event ->
         onScrollFinished(this.orderTable,
             (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())));
-
-    orderTable.refresh();
   }
 
   private void setTabEvent() {

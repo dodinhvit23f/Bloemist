@@ -6,19 +6,15 @@ import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
 import com.constant.Constants;
 import com.utils.Utils;
-
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -33,17 +29,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -196,6 +188,7 @@ public class OrderReportController extends OrderController {
               .total(totalAmount)
               .code(currentOrder.getCode())
               .imagePath(currentOrder.getImagePath())
+              .status(currentOrder.getStatus())
               .build());
 
       currentOrder.setCustomerName(customerName);

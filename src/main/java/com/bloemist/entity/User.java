@@ -1,15 +1,10 @@
 package com.bloemist.entity;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Set;
-
+import com.constant.Constants;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -18,14 +13,14 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
-
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import com.constant.Constants;
 
 @Data
 @Entity
@@ -86,8 +81,7 @@ public class User extends BaseEntity {
 
   @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
   @JoinTable(name = "staff_description", joinColumns = @JoinColumn(name = "user_id", table = "users"),
-      inverseJoinColumns = @JoinColumn(name = "job_grade_id", table = "staff_description"),
-      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT, name = "none"))
+      inverseJoinColumns = @JoinColumn(name = "job_grade_id", table = "staff_description"))
   private Set<JobGrade> roles;
 
 }
