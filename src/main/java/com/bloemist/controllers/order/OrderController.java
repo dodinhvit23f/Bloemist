@@ -167,7 +167,7 @@ public abstract class OrderController extends BaseController {
       e.printStackTrace();
     }
 
-    setCountDownToEnableScrollEvent(() -> isLoadingPage.set(Boolean.FALSE));
+    setCountDownEvent(() -> isLoadingPage.set(Boolean.FALSE));
   }
 
   private void handleOldData(List<Order> orders, TableView<Order> orderTable) {
@@ -179,9 +179,17 @@ public abstract class OrderController extends BaseController {
 
     var existCode = ApplicationVariable.getOrders().stream().map(Order::getCode).collect(Collectors.toSet());
 
-    ApplicationVariable.getOrders().addAll(orders.stream()
+    var ordersNotDuplicate = orders.stream()
         .filter(order -> !existCode.contains(order.getCode()))
-        .toList());
+        .toList();
+
+    if(ObjectUtils.isEmpty(ordersNotDuplicate)){
+      isEnd.set(Boolean.TRUE);
+      isLoadingPage.set(Boolean.FALSE);
+      return;
+    }
+
+    ApplicationVariable.getOrders().addAll(ordersNotDuplicate);
 
     updateApplicationData(orderTable);
     reprintOrderStt();
@@ -192,6 +200,7 @@ public abstract class OrderController extends BaseController {
     if (ObjectUtils.isEmpty(orders)) {
       return;
     }
+    orders = new ArrayList<>(orders);
 
     Date now = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     var index = Integer.parseInt(ApplicationVariable.getOrders().stream()
@@ -204,6 +213,7 @@ public abstract class OrderController extends BaseController {
         .stream()
         .filter(order -> Integer.parseInt(order.getStt()) > index)
         .forEach(orders::add);
+
     AtomicInteger integer = new AtomicInteger(BigInteger.ZERO.intValue());
 
     orders = orders.stream().map(order -> {
@@ -214,7 +224,7 @@ public abstract class OrderController extends BaseController {
     ApplicationVariable.setOrders(orders);
   }
 
-  private void setCountDownToEnableScrollEvent(Runnable runnable) {
+  protected void setCountDownEvent(Runnable runnable) {
     var task = new TimerTask() {
       @Override
       public void run() {
@@ -270,7 +280,7 @@ public abstract class OrderController extends BaseController {
             })
             .thenComparing(Order::getDeliveryHour))
         .toList();
-    ApplicationVariable.setOrders(new ArrayList(newOrders));
+    ApplicationVariable.setOrders(newOrders);
   }
 
   @FXML

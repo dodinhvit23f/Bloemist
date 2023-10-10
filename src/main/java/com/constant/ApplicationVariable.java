@@ -5,6 +5,7 @@ import com.bloemist.dto.Order;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Setter;
@@ -33,7 +34,7 @@ public final class ApplicationVariable {
   }
 
   public static void setOrders(List<Order> orders) {
-    order = new ArrayList<>(orders);
+    order = Collections.synchronizedList(new ArrayList<>(orders));
   }
 
   public static void add(Collection<Order> orders) {

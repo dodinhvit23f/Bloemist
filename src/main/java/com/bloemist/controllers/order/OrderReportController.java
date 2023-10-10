@@ -15,6 +15,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -108,6 +109,8 @@ public class OrderReportController extends OrderController {
   @FXML
   private Label orderDate;
 
+  private final static AtomicBoolean onUpdate = new AtomicBoolean(Boolean.FALSE);
+
   private Order currentOrder;
 
   protected OrderReportController(ApplicationEventPublisher publisher) {
@@ -123,6 +126,14 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private void updateOrder() {
+
+    if(onUpdate.get()){
+      Alert alert = new Alert(AlertType.CONFIRMATION, "Quá trình sửa dữ liệu trước đó vẫn đang chạy"
+          , ButtonType.YES, ButtonType.NO);
+      alert.showAndWait();
+      return;
+    }
+
     var customerName = this.customerName.getText().strip(); //NOSONAR
     var customerPhone = this.customerPhone.getText().strip(); //NOSONAR
     var deliveryAddress = this.deliveryAddress.getText().strip(); //NOSONAR
@@ -139,6 +150,7 @@ public class OrderReportController extends OrderController {
     var remainAmount = Utils.currencyToStringNumber(this.outstandingBalance.getText());//NOSONAR
     var totalAmount = Utils.currencyToStringNumber(this.totalAmount.getText());//NOSONAR
     var customerNote = this.orderNote.getText().strip();
+    var changeDeliveryDate = Utils.formatDate(new Date(Date.parse(deliveryDate.getEditor().getText())));
 
     if (!Utils.isNumber(discount)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_008));
@@ -163,6 +175,7 @@ public class OrderReportController extends OrderController {
 
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
+      onUpdate.set(Boolean.TRUE);
       orderService.updateOrder(
           Order.builder()
               .customerName(customerName)
@@ -171,7 +184,7 @@ public class OrderReportController extends OrderController {
               .receiverPhone(receiverPhone)
               .receiverName(receiverName)
               .orderDate(currentOrder.getOrderDate())
-              .deliveryDate(Utils.formatDate(deliveryDateTime))
+              .deliveryDate(changeDeliveryDate)
               .orderDescription(orderDescription)
               .deliveryHour(deliveryTime)
               .customerNote(customerNote)
@@ -196,7 +209,7 @@ public class OrderReportController extends OrderController {
       currentOrder.setDeliveryAddress(deliveryAddress);
       currentOrder.setReceiverPhone(receiverPhone);
       currentOrder.setReceiverName(receiverName);
-      currentOrder.setDeliveryDate(Utils.formatDate(deliveryDateTime));
+      currentOrder.setDeliveryDate(changeDeliveryDate);
       currentOrder.setOrderDescription(orderDescription);
       currentOrder.setDeliveryHour(deliveryTime);
       currentOrder.setCustomerNote(customerNote);
@@ -211,8 +224,10 @@ public class OrderReportController extends OrderController {
       currentOrder.setTotal(totalAmount);
 
       orderService.updateOrder(currentOrder);
+      setCountDownEvent(() -> onUpdate.set(Boolean.FALSE));
     }
     orderTable.refresh();
+
   }
 
   @FXML
@@ -338,14 +353,14 @@ public class OrderReportController extends OrderController {
   public void initialize(URL location, ResourceBundle resources) {
     initEvent();
 
-    ApplicationVariable.getOrders().clear();
-
-    loadPageAsync(null, this.orderTable,
-        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
-
     this.stageManager.getStage().setOnShown(event ->
         onScrollFinished(this.orderTable,
             pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond())));
+
+    ApplicationVariable.getOrders().clear();
+    loadPageAsync(null, this.orderTable,
+        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
+
 
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
                     "" : ApplicationVariable.getUser().getFullName());

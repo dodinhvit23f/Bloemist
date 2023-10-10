@@ -77,4 +77,7 @@ public class StageManager implements Serializable {
     this.previousView = view;
   }
 
+  public void setStage(Stage stage){
+    this.stage = stage;
+  }
 }

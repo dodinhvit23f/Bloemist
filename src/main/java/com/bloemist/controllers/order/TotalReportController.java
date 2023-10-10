@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -193,6 +194,7 @@ public class TotalReportController extends OrderController {
                 .customerPhone(order.getCustomerPhone())
                 .customerSocialLink(order.getCustomerSocialLink())
                 .deliveryAddress(order.getDeliveryAddress())
+                .deliveryDate(order.getDeliveryDate())
                 .deliveryHour(order.getDeliveryHour())
                 .deliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()))
                 .vatFee(order.getVatFee())
@@ -234,7 +236,6 @@ public class TotalReportController extends OrderController {
       }
 
       orderService.createNewOrders(selectedOrder);
-      ApplicationVariable.sortOrders();
       orderTable.refresh();
     }
   }
@@ -700,6 +701,7 @@ public class TotalReportController extends OrderController {
     initEvent();
     addTableViewListener();
 
+
     setTabEvent();
     ApplicationVariable.getOrders().clear();
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
@@ -707,12 +709,10 @@ public class TotalReportController extends OrderController {
           (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
     }
 
-    orderTable.refresh();
-
     this.stageManager.getStage()
         .setOnShown(event ->
-        onScrollFinished(this.orderTable,
-            (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())));
+            onScrollFinished(this.orderTable,
+                (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())));
   }
 
   private void setTabEvent() {

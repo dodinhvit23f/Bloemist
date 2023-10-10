@@ -1,6 +1,7 @@
 package com.bloemist.services.impl;
 
 import static com.utils.Utils.currencyToStringNumber;
+import static com.utils.Utils.isDate;
 import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 
 import com.bloemist.converters.OrderMapper;
@@ -81,6 +82,7 @@ public class OrderService implements IOrderService {
 
     try {
       orders.forEach(this::createNewOrder);
+      publisher.publishEvent(new MessageWarning(Constants.SUSS_ORDER_INFO_001));
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
     }
@@ -124,7 +126,12 @@ public class OrderService implements IOrderService {
         }
       });
 
-      orderReportRepository.saveAll(orderReports.values());
+      try {
+        orderReportRepository.saveAll(orderReports.values());
+        publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
+      } catch (Exception e){
+        publisher.publishEvent(new MessageSuccess(Constants.ERR_ORDER_INFO_009));
+      }
     });
   }
 
@@ -196,6 +203,7 @@ public class OrderService implements IOrderService {
   public boolean validOrder(Order orderInfo) {
     if (ObjectUtils.isEmpty(orderInfo.getCustomerName())
         || ObjectUtils.isEmpty(orderInfo.getCustomerPhone())
+        || ObjectUtils.isEmpty(orderInfo.getDeliveryDate())
         || ObjectUtils.isEmpty(orderInfo.getDeliveryAddress())
         || ObjectUtils.isEmpty(orderInfo.getDeliveryHour())
         || ObjectUtils.isEmpty(orderInfo.getImagePath())
@@ -214,6 +222,10 @@ public class OrderService implements IOrderService {
         || !Utils.isNumber(orderInfo.getVatFee())
         || !Utils.isNumber(orderInfo.getDeposit())) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_002));
+      return Boolean.FALSE;
+    }
+
+    if(!isDate(orderInfo.getDeliveryDate())){
       return Boolean.FALSE;
     }
 
@@ -298,6 +310,7 @@ public class OrderService implements IOrderService {
     orderReport.setReceiver(order.getReceiverName());
     orderReport.setReceiverPhone(order.getReceiverPhone());
     orderReport.setDeliveryTime(order.getDeliveryHour());
+    orderReport.setDeliveryDate(Utils.toDate(order.getDeliveryDate()));
     // change order con
     orderReport.setOrderDescription(order.getOrderDescription());
     orderReport.setBannerContent(order.getBanner());

@@ -11,14 +11,14 @@ public enum OrderState {
   DONE(6),
   CANCEL(7);
 
-  public static final String PENDING_TEXT = "Chưa giải quyết";
-  public static final String IN_PROCESS_TEXT = "Đang xử lý";
-  public static final String DONE_PROCESS_TEXT = "Đã xử lý";
-  public static final String IN_DELIVERY_TEXT = "Đang giao";
-  public static final String DONE_DELIVERY_TEXT = "Đã giao";
-  public static final String IN_DEBIT_TEXT = "Đang nợ";
-  public static final String DONE_TEXT = "Hoàn Thành";
-  public static final String CANCEL_TEXT = "Hủy";
+  public static final String PENDING_TEXT = "1. Chưa giải quyết";
+  public static final String IN_PROCESS_TEXT = "2. Đang xử lý";
+  public static final String DONE_PROCESS_TEXT = "3. Đã xử lý";
+  public static final String IN_DELIVERY_TEXT = "4. Đang giao";
+  public static final String DONE_DELIVERY_TEXT = "5. Đã giao";
+  public static final String IN_DEBIT_TEXT = "6. Nợ";
+  public static final String DONE_TEXT = "7. Hoàn Thành";
+  public static final String CANCEL_TEXT = "8. Hủy";
   private final int number;
 
   OrderState(int number) {

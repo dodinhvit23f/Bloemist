@@ -54,6 +54,16 @@ public final class Utils {
     return currency.replace(Constants.COMMA, "").strip();
   }
 
+  public  static boolean isDate(String date){
+    SimpleDateFormat dt = new SimpleDateFormat("dd-MM-yyyy");
+    try {
+      dt.parse(date);
+      return Boolean.TRUE;
+    }catch (Exception ex){
+      return Boolean.FALSE;
+    }
+  }
+
   public static String formatDate(Date date) {
     SimpleDateFormat dt = new SimpleDateFormat("dd-MM-yyyy");
     return dt.format(date);
