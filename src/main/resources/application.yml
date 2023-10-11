@@ -35,7 +35,7 @@ spring:
       pool:
         core-size: 2
         max-size: 2
-    thread-name-prefix: Bloemist-
+      thread-name-prefix: Bloemist-
 google:
   credential:
     path: tokens/google_credential.json
