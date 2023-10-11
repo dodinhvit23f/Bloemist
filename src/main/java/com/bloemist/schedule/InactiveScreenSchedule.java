@@ -31,7 +31,7 @@ public class InactiveScreenSchedule {
   @Autowired
   StageManager stageManager;
 
-  private final Duration inactivityDuration = Duration.minutes(5D);  // Duration for the timeout
+  private final Duration inactivityDuration = Duration.minutes(35D);  // Duration for the timeout
 
   private void enableInactiveTime() {
     Timeline inactivityTimer = new Timeline(new KeyFrame(inactivityDuration, event -> {
