@@ -176,6 +176,7 @@ public class OrderReportController extends OrderController {
     Alert alert = confirmDialog();
     if (alert.getResult() == ButtonType.YES) {
       onUpdate.set(Boolean.TRUE);
+
       orderService.updateOrder(
           Order.builder()
               .customerName(customerName)
@@ -223,8 +224,7 @@ public class OrderReportController extends OrderController {
       currentOrder.setRemain(remainAmount);
       currentOrder.setTotal(totalAmount);
 
-      orderService.updateOrder(currentOrder);
-      setCountDownEvent(() -> onUpdate.set(Boolean.FALSE));
+      setCountDownEvent(() -> onUpdate.set(Boolean.FALSE), 2000);
     }
     orderTable.refresh();
 
@@ -353,14 +353,12 @@ public class OrderReportController extends OrderController {
   public void initialize(URL location, ResourceBundle resources) {
     initEvent();
 
-    this.stageManager.getStage().setOnShown(event ->
-        onScrollFinished(this.orderTable,
-            pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond())));
-
     ApplicationVariable.getOrders().clear();
     loadPageAsync(null, this.orderTable,
         pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
 
+    setCountDownEvent(() -> onScrollFinished(this.orderTable,
+        (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())), 4000);
 
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
                     "" : ApplicationVariable.getUser().getFullName());

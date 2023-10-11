@@ -167,7 +167,7 @@ public abstract class OrderController extends BaseController {
       e.printStackTrace();
     }
 
-    setCountDownEvent(() -> isLoadingPage.set(Boolean.FALSE));
+    setCountDownEvent(() -> isLoadingPage.set(Boolean.FALSE), 2000);
   }
 
   private void handleOldData(List<Order> orders, TableView<Order> orderTable) {
@@ -224,19 +224,19 @@ public abstract class OrderController extends BaseController {
     ApplicationVariable.setOrders(orders);
   }
 
-  protected void setCountDownEvent(Runnable runnable) {
+  protected void setCountDownEvent(Runnable runnable, int delayMilliseconds) {
     var task = new TimerTask() {
       @Override
       public void run() {
         runnable.run();
       }
     };
-    new Timer().schedule(task, 2000);
+    new Timer().schedule(task, delayMilliseconds);
   }
 
   protected void reprintOrderStt() {
-    for (int i = 1; i < ApplicationVariable.getOrders().size(); i = i + 1) {
-      ApplicationVariable.getOrders().get(i).setStt(String.valueOf(i));
+    for (int i = 0; i < ApplicationVariable.getOrders().size(); i = i + 1) {
+      ApplicationVariable.getOrders().get(i).setStt(String.valueOf(i + 1));
     }
   }
 

@@ -1,19 +1,5 @@
 package com.bloemist.controllers.order;
 
-import static com.constant.Constants.CUSTOMER;
-import static com.constant.Constants.FACEBOOK;
-import static com.constant.Constants.HOTLINE;
-import static com.constant.Constants.INSTAGRAM;
-import static com.constant.Constants.REGULAR_CUSTOMER;
-import static com.constant.Constants.TIKTOK;
-import static com.constant.Constants.ZALO;
-import static com.utils.Utils.openDialogChoiceImage;
-
-import com.bloemist.dto.Order;
-import com.constant.ApplicationVariable;
-import com.constant.ApplicationView;
-import com.constant.OrderState;
-import com.utils.Utils;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
@@ -25,9 +11,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
+import com.bloemist.dto.Order;
+import com.constant.ApplicationVariable;
+import com.constant.ApplicationView;
+import com.constant.OrderState;
+import com.utils.Utils;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -48,10 +44,15 @@ import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
+
+import static com.constant.Constants.CUSTOMER;
+import static com.constant.Constants.FACEBOOK;
+import static com.constant.Constants.HOTLINE;
+import static com.constant.Constants.INSTAGRAM;
+import static com.constant.Constants.REGULAR_CUSTOMER;
+import static com.constant.Constants.TIKTOK;
+import static com.constant.Constants.ZALO;
+import static com.utils.Utils.openDialogChoiceImage;
 
 @Component
 public class TotalReportController extends OrderController {
@@ -162,6 +163,7 @@ public class TotalReportController extends OrderController {
     Alert alert = confirmDialog();
 
     if (alert.getResult() == ButtonType.YES) {
+
       List<Order> selectedOrder = orderTable.getItems()
           .filtered(order -> Objects.equals(order.getIsSelected(), Boolean.TRUE))
           .stream()
@@ -203,8 +205,7 @@ public class TotalReportController extends OrderController {
                 .deposit(order.getDeposit())
                 .remain(order.getRemain())
                 .total(order.getTotal())
-                // .imagePath(order.getImagePath())
-                .imagePath("12313")
+                .imagePath(order.getImagePath())
                 .build())) {
 
               if (ObjectUtils.isEmpty(order.getCustomerSource()) ||
@@ -229,7 +230,8 @@ public class TotalReportController extends OrderController {
               return Boolean.FALSE;
             }
             return Boolean.TRUE;
-          }).findFirst();
+          })
+          .findFirst();
 
       if (failOrder.isPresent()) {
         return;
@@ -250,6 +252,7 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void refresh() {
+    ApplicationVariable.getOrders().clear();
     this.orderTable.setItems(FXCollections.observableArrayList());
     loadPageAsync(null, this.orderTable,
         (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
@@ -305,6 +308,7 @@ public class TotalReportController extends OrderController {
         .build());
 
     reprintOrderStt();
+    orderTable.setItems(FXCollections.observableList(ApplicationVariable.getOrders()));
   }
 
   @FXML
@@ -701,7 +705,6 @@ public class TotalReportController extends OrderController {
     initEvent();
     addTableViewListener();
 
-
     setTabEvent();
     ApplicationVariable.getOrders().clear();
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
@@ -709,10 +712,9 @@ public class TotalReportController extends OrderController {
           (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
     }
 
-    this.stageManager.getStage()
-        .setOnShown(event ->
-            onScrollFinished(this.orderTable,
-                (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())));
+    setCountDownEvent(() -> onScrollFinished(this.orderTable,
+        (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())), 4000);
+
   }
 
   private void setTabEvent() {
@@ -746,7 +748,9 @@ public class TotalReportController extends OrderController {
           orderTable.edit(tablePosition.getRow(), column);
         }
       }
-      event.consume();
+      if (!event.getCode().equals(KeyCode.ENTER)) {
+        event.consume();
+      }
     });
 
   }

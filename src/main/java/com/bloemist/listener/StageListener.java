@@ -7,17 +7,21 @@ import com.bloemist.events.StageEvent;
 import com.bloemist.manager.StageManager;
 import com.constant.ApplicationVariable;
 import com.constant.ApplicationView;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -40,15 +44,13 @@ public class StageListener implements ApplicationListener<StageEvent> {
   public StageListener(ApplicationContext context) {
     this.context = context;
   }
+
   private boolean isActive = Boolean.FALSE;
 
   @Override
   public void onApplicationEvent(StageEvent event) {
     try {
       var manager = (StageManager) event.getSource();
-
-      manager.getStage().close();
-      manager.setStage(new Stage());
       var stage = manager.getStage();
 
       FXMLLoader fxmlLoader;
@@ -93,7 +95,7 @@ public class StageListener implements ApplicationListener<StageEvent> {
     }
   }
 
-  public void setActive( boolean isActive){
+  public void setActive(boolean isActive) {
     this.isActive = isActive;
   }
 }

@@ -68,7 +68,8 @@ public class OrderService implements IOrderService {
       return Optional.empty();
     }
 
-    Optional<Boolean> result = insertOneOrder(customerOrder);
+    Optional<Boolean> result = insertOneOrder(customerOrder, OrderState.PENDING.getState());
+
     if (result.isEmpty()) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
       return Optional.empty();
@@ -81,7 +82,7 @@ public class OrderService implements IOrderService {
   public void createNewOrders(Collection<Order> orders) {
 
     try {
-      orders.forEach(this::createNewOrder);
+      orders.forEach(customerOrder -> insertOneOrder(customerOrder, OrderState.getState(customerOrder.getStatus())));
       publisher.publishEvent(new MessageWarning(Constants.SUSS_ORDER_INFO_001));
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
@@ -237,11 +238,11 @@ public class OrderService implements IOrderService {
     return String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime());
   }
 
-  private Optional<Boolean> insertOneOrder(Order customerOrder) {
+  private Optional<Boolean> insertOneOrder(Order customerOrder, int status) {
     OrderReport orderReport = new OrderReport();
     orderMapper.mapOrderToOrderReport(orderReport, customerOrder);
     orderReport.setOrderCode(getOrderCode());
-    orderReport.setOrderStatus(OrderState.PENDING.getState());
+    orderReport.setOrderStatus(status);
 
     try {
       File fileMetadata = new File();
