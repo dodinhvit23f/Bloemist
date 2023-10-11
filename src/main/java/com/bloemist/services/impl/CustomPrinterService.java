@@ -7,11 +7,12 @@ import com.bloemist.dto.Order;
 import com.bloemist.services.IPrinterService;
 import com.constant.ApplicationVariable;
 import com.utils.Utils;
-
-import java.awt.*;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,24 +20,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
-
-import javax.print.Doc;
-import javax.print.DocFlavor;
-import javax.print.DocFlavor.INPUT_STREAM;
-import javax.print.DocPrintJob;
-import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
-import javax.print.SimpleDoc;
-import javax.print.attribute.HashDocAttributeSet;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.Copies;
-import javax.print.attribute.standard.JobName;
-import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.OrientationRequested;
-import javax.print.attribute.standard.Sides;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -48,17 +33,16 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 @Component
 public class CustomPrinterService implements IPrinterService {
 
   private static final String A5_BILL = "bill/a5_bill.jrxml";
   private static final String IMAGE_A5_BILL = "bill/image_a5.jrxml";
-  private static final String BLOEMIST_LOGO = "classpath:Img/logo.png";
-  private static final String FB_ICON = "classpath:Img/facebook.png";
-  private static final String PHONE_ICON = "classpath:Img/telephone.png";
-  public static final String PREVIEW_PDF = "./preview.pdf";
+  private static final String BLOEMIST_LOGO = "Img/logo.png";
+  private static final String FB_ICON = "Img/facebook.png";
+  private static final String PHONE_ICON = "Img/telephone.png";
+  public static final String PREVIEW_PDF = "preview.pdf";
   public static final String IMAGE_PDF = "image.pdf";
   public static final String REPORT_LOCALE = "REPORT_LOCALE";
   public static final String TODAY = "today";
@@ -96,9 +80,9 @@ public class CustomPrinterService implements IPrinterService {
           Objects.isNull(ApplicationVariable.getUser()) ? ""
               : ApplicationVariable.getUser().getFullName());
       parameters.put(REPORT_LOCALE, new Locale("vi-VN"));
-      parameters.put(LOGO_URL, ResourceUtils.getFile(BLOEMIST_LOGO).getAbsolutePath());
-      parameters.put(FB_URL, ResourceUtils.getFile(FB_ICON).getAbsolutePath());
-      parameters.put(TELEPHONE_URL, ResourceUtils.getFile(PHONE_ICON).getAbsolutePath());
+      parameters.put(LOGO_URL, new ByteArrayInputStream(getResource(BLOEMIST_LOGO).readAllBytes()));
+      parameters.put(FB_URL, new ByteArrayInputStream(getResource(FB_ICON).readAllBytes()));
+      parameters.put(TELEPHONE_URL, new ByteArrayInputStream(getResource(PHONE_ICON).readAllBytes()));
 
       JasperReport jasperReport = JasperCompileManager
           .compileReport(new ClassPathResource(A5_BILL).getInputStream());
@@ -113,7 +97,7 @@ public class CustomPrinterService implements IPrinterService {
         printFilePDF(printer, PREVIEW_PDF);
       }
 
-    } catch (JRException | PrintException | IOException | PrinterException e) {
+    } catch (JRException  | IOException | PrinterException e) {
       e.printStackTrace();
     }
   }
@@ -141,13 +125,13 @@ public class CustomPrinterService implements IPrinterService {
         PrintService printer = printService.get();
         printFilePDF(printer, IMAGE_PDF);
       }
-    } catch (JRException | PrintException | IOException | PrinterException e) {
+    } catch (JRException | IOException | PrinterException e) {
       e.printStackTrace();
     }
   }
 
   private void printFilePDF(PrintService printService, String filePath)
-          throws PrintException, IOException, PrinterException {
+          throws IOException, PrinterException {
 
     PDDocument document = PDDocument.load(new File(filePath));
 
@@ -156,23 +140,14 @@ public class CustomPrinterService implements IPrinterService {
     job.setPrintService(printService);
     job.print();
 
-   /* DocFlavor docFlavor = INPUT_STREAM.AUTOSENSE;
-    final InputStream inputStream =  new BufferedInputStream(new FileInputStream(filePath));
-
-    Doc pdfDoc = new SimpleDoc(inputStream, docFlavor, null);
-    DocPrintJob printJob = printService.createPrintJob();
-
-    PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-    pras.add(new Copies(1));
-    pras.add(new MediaPrintableArea(2, 2, 148 , 152, MediaPrintableArea.MM)); // print stapled
-    pras.add(Sides.ONE_SIDED);
-    pras.add(OrientationRequested.LANDSCAPE);
-    //pras.add(ColorSupported.SUPPORTED);
-    pras.add(new JobName(UUID.randomUUID().toString(), null));
-
-
-    printJob.print(pdfDoc, pras);
-    inputStream.close();*/
   }
+  private InputStream getResource(String path){
+    try {
+      return new ClassPathResource(path).getInputStream();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
+    return new ByteArrayInputStream(new byte[0]);
+  }
 }
