@@ -7,50 +7,49 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="anchorPane" maxHeight="794.0" maxWidth="1356.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="794.0" prefWidth="1356.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.OrderReportController">
-<Pane prefHeight="794.0" prefWidth="785.0">
+<AnchorPane id="anchorPane" maxHeight="1000.0" maxWidth="1920.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bloemist.controllers.order.OrderReportController">
+<Pane prefHeight="1000.0" prefWidth="1357.0">
 
-  <TableView id="orderTable" fx:id="orderTable" editable="true" layoutX="25.0" layoutY="108.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="617.0" prefWidth="731.0" tableMenuButtonVisible="true">
+  <TableView id="orderTable" fx:id="orderTable" editable="true" layoutX="26.0" layoutY="108.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="837.0" prefWidth="1330.0" tableMenuButtonVisible="true">
     <columns>
-      <TableColumn fx:id="statusCol" editable="false" minWidth="125.0" prefWidth="125.0" text="Tình trạng" />
-      <TableColumn fx:id="orderCodeCol" editable="false" prefWidth="75.0" text="Mã đơn" />
+      <TableColumn fx:id="statusCol" editable="false" minWidth="107.0" prefWidth="107.0" text="Tình trạng" />
+      <TableColumn fx:id="orderCodeCol" editable="false" prefWidth="93.0" text="Mã đơn" />
       <TableColumn fx:id="deliveryHourCol" editable="false" prefWidth="76.0" text="Giờ giao" />
       <TableColumn fx:id="deliveryDateCol" editable="false" minWidth="1.0" prefWidth="75.0" text="Ngày giao" />
       <TableColumn fx:id="customerNameCol" editable="false" prefWidth="75.0" text="Tên KH" />
       <TableColumn fx:id="customerSocialLink" editable="false" prefWidth="75.0" text="Mạng XH" />
-      <TableColumn fx:id="orderDescriptionCol" editable="false" prefWidth="113.0" text="Mô tả đơn" />
-      <TableColumn fx:id="orderBanner" editable="false" prefWidth="113.0" text="Banner" />
-      <TableColumn fx:id="orderRemarkCol" editable="false" minWidth="113.0"  prefWidth="113.0" text="KH Ghi chú" />
-      <TableColumn fx:id="choice" minWidth="125.0" prefWidth="125.0" text="Chọn Đơn In" />
+      <TableColumn fx:id="orderDescriptionCol" editable="false" prefWidth="324.0" text="Mô tả đơn" />
+      <TableColumn fx:id="orderBanner" editable="false" prefWidth="254.0" text="Banner" />
+      <TableColumn fx:id="orderRemarkCol" editable="false" minWidth="0.0" prefWidth="156.0" text="KH Ghi chú" />
+      <TableColumn fx:id="choice" minWidth="19.0" prefWidth="81.0" text="Chọn Đơn In" />
     </columns>
   </TableView>
-  <TextArea fx:id="orderNote" layoutX="296.0" layoutY="22.0" prefHeight="67.0" prefWidth="459.0" promptText="On click hiển thị text ở đây" />
   <Button layoutX="26.0" layoutY="21.0" mnemonicParsing="false" onMouseClicked="#createOrder" prefHeight="67.0" prefWidth="76.0" style="-fx-background-color: PAPAYAWHIP;" text="Tạo đơn hàng mới" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="475.0" layoutY="730.0" mnemonicParsing="false" onAction="#extractData" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: SEASHELL;" text="Xuất Excel">
+  <Button layoutX="1063.0" layoutY="952.0" mnemonicParsing="false" onAction="#extractData" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: SEASHELL;" text="Xuất Excel">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="202.0" layoutY="21.0" mnemonicParsing="false" onMouseClicked="#updateOrder" prefHeight="67.0" prefWidth="76.0" style="-fx-background-color: PERU;" text="Sửa thông tin đơn đã chọn" textAlignment="CENTER" wrapText="true">
+  <Button layoutX="291.0" layoutY="22.0" mnemonicParsing="false" onMouseClicked="#updateOrder" prefHeight="67.0" prefWidth="76.0" style="-fx-background-color: PERU;" text="Sửa thông tin đơn đã chọn" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="112.0" layoutY="730.0" mnemonicParsing="false" onAction="#printOrder" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: PAPAYAWHIP;" text="In phiếu">
+  <Button layoutX="26.0" layoutY="952.0" mnemonicParsing="false" onAction="#printOrder" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: PAPAYAWHIP;" text="In phiếu">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-      <Button layoutX="198.0" layoutY="730.0" mnemonicParsing="false" onAction="#reload" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: BEIGE;" text="Tải lại">
+      <Button layoutX="112.0" layoutY="952.0" mnemonicParsing="false" onAction="#reload" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: BEIGE;" text="Tải lại">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-  <Button layoutX="26.0" layoutY="730.0" mnemonicParsing="false" onMouseClicked="#seeImage" prefHeight="25.0" prefWidth="76.0" style="-fx-background-color: NAVAJOWHITE;" text="Ảnh mẫu" textAlignment="CENTER" wrapText="true">
+  <Button layoutX="203.0" layoutY="21.0" mnemonicParsing="false" onMouseClicked="#seeImage" prefHeight="67.0" prefWidth="76.0" style="-fx-background-color: NAVAJOWHITE;" text="Ảnh mẫu" textAlignment="CENTER" wrapText="true">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
@@ -60,19 +59,25 @@
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button layoutX="572.0" layoutY="730.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: MISTYROSE;" text="Báo cáo">
+  <Button layoutX="1160.0" layoutY="952.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: MISTYROSE;" text="Báo cáo">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-      <Button layoutX="669.0" layoutY="730.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: LIGHTPINK;" text="Home">
+      <Button layoutX="1257.0" layoutY="952.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: LIGHTPINK;" text="Home">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
+      <Button layoutX="936.0" layoutY="64.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: LIGHTPINK;" text="Tìm kiếm">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <TextField layoutX="1033.0" layoutY="64.0" prefHeight="25.0" prefWidth="309.0" promptText="Nhập thông tin cần tìm ..." />
 
 </Pane>
-<Pane fx:id="printPane" maxHeight="794.0" maxWidth="559.0" minHeight="794.0" minWidth="559.0" prefHeight="794.0" prefWidth="559.0" style="-fx-background-color: white;" AnchorPane.rightAnchor="0">
+<Pane fx:id="printPane" maxHeight="1000.0" maxWidth="559.0" minHeight="794.0" minWidth="559.0" prefHeight="1000.0" prefWidth="559.0" style="-fx-background-color: white;" AnchorPane.rightAnchor="0">
 
   <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="22.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
     <image>
@@ -162,86 +167,86 @@
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <TextArea fx:id="orderDescription" layoutX="24.0" layoutY="277.0" prefHeight="83.0" prefWidth="506.0" promptText="Mô tả đơn hàng" />
-  <Label layoutX="24.0" layoutY="369.0" text="Thông tin giao hàng:">
+  <TextArea fx:id="orderDescription" layoutX="24.0" layoutY="277.0" prefHeight="67.0" prefWidth="506.0" promptText="Mô tả đơn hàng" />
+  <Label layoutX="24.0" layoutY="431.0" text="Thông tin giao hàng:">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <TextArea fx:id="deliveryAddress" layoutX="24.0" layoutY="391.0" prefHeight="57.0" prefWidth="506.0" promptText="Địa chỉ nhận hoa" />
-  <TextField fx:id="receiverName" layoutX="24.0" layoutY="457.0" prefHeight="25.0" prefWidth="166.0" promptText="Tên người nhận" />
-  <TextField fx:id="receiverPhone" layoutX="233.0" layoutY="457.0" prefHeight="25.0" prefWidth="242.0" promptText="Số điện thoại người nhận" />
-  <Label layoutX="24.0" layoutY="492.0" text="Thời gian giao hàng">
+  <TextArea fx:id="deliveryAddress" layoutX="24.0" layoutY="451.0" prefHeight="67.0" prefWidth="506.0" promptText="Địa chỉ nhận hoa" />
+  <TextField fx:id="receiverName" layoutX="24.0" layoutY="529.0" prefHeight="25.0" prefWidth="166.0" promptText="Tên người nhận" />
+  <TextField fx:id="receiverPhone" layoutX="233.0" layoutY="529.0" prefHeight="25.0" prefWidth="242.0" promptText="Số điện thoại người nhận" />
+  <Label layoutX="24.0" layoutY="675.0" text="Thời gian giao hàng">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="24.0" layoutY="517.0" text="Giờ giao:">
+  <Label layoutX="24.0" layoutY="700.0" text="Giờ giao:">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <TextField fx:id="deliveryHour" layoutX="76.0" layoutY="512.0" prefHeight="25.0" prefWidth="116.0" promptText="Giờ" />
-  <Label layoutX="237.0" layoutY="516.0" text="Ngày giao:">
+  <TextField fx:id="deliveryHour" layoutX="76.0" layoutY="695.0" prefHeight="25.0" prefWidth="116.0" promptText="Giờ" />
+  <Label layoutX="237.0" layoutY="699.0" text="Ngày giao:">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <DatePicker fx:id="deliveryDate" layoutX="293.0" layoutY="511.0" promptText="Ngày giao hoa" />
-  <Label layoutX="24.0" layoutY="559.0" text="Giá trị đơn hàng:">
+  <DatePicker fx:id="deliveryDate" layoutX="293.0" layoutY="694.0" promptText="Ngày giao hoa" />
+  <Label layoutX="24.0" layoutY="742.0" text="Giá trị đơn hàng:">
     <font>
       <Font name="Times New Roman" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="24.0" layoutY="590.0" text="Khuyến mãi:">
+  <Label layoutX="24.0" layoutY="773.0" text="Khuyến mãi:">
     <font>
       <Font name="Times New Roman" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="346.0" layoutY="559.0" text="Phí vận chuyển:">
+  <Label layoutX="346.0" layoutY="742.0" text="Phí vận chuyển:">
     <font>
       <Font name="Times New Roman" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="24.0" layoutY="621.0" text="Tổng cộng:">
+  <Label layoutX="24.0" layoutY="804.0" text="Tổng cộng:">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="346.0" layoutY="621.0" text="Khách đặt cọc:">
+  <Label layoutX="346.0" layoutY="804.0" text="Khách đặt cọc:">
     <font>
       <Font name="Times New Roman" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="24.0" layoutY="652.0" text="Số tiền còn lại:">
+  <Label layoutX="24.0" layoutY="835.0" text="Số tiền còn lại:">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="24.0" layoutY="686.0" text="Khách hàng">
+  <Label layoutX="24.0" layoutY="869.0" text="Khách hàng">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="225.0" layoutY="686.0" text="Nhân viên giao hàng">
+  <Label layoutX="225.0" layoutY="869.0" text="Nhân viên giao hàng">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <Label layoutX="411.0" layoutY="686.0" text="Nhân viên thu ngân">
+  <Label layoutX="411.0" layoutY="869.0" text="Nhân viên thu ngân">
     <font>
       <Font name="Times New Roman Bold" size="12.0" />
     </font>
   </Label>
-  <TextField fx:id="actualPrice" layoutX="106.0" layoutY="554.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="deliveryFee" layoutX="428.0" layoutY="554.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="discountRate" layoutX="106.0" layoutY="585.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="vatFee" layoutX="428.0" layoutY="585.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="totalAmount" editable="false" layoutX="106.0" layoutY="616.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="depositAmount" layoutX="428.0" layoutY="616.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="outstandingBalance" layoutX="106.0" layoutY="647.0" prefHeight="25.0" prefWidth="102.0" />
-  <TextField fx:id="empName" editable="false" layoutX="389.0" layoutY="751.0" promptText="Tên NV thực hiện" />
-  <Label layoutX="346.0" layoutY="590.0" text="Phí VAT:">
+  <TextField fx:id="actualPrice" layoutX="106.0" layoutY="737.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="deliveryFee" layoutX="428.0" layoutY="737.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="discountRate" layoutX="106.0" layoutY="768.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="vatFee" layoutX="428.0" layoutY="768.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="totalAmount" editable="false" layoutX="106.0" layoutY="799.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="depositAmount" layoutX="428.0" layoutY="799.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="outstandingBalance" layoutX="106.0" layoutY="830.0" prefHeight="25.0" prefWidth="102.0" />
+  <TextField fx:id="empName" editable="false" layoutX="389.0" layoutY="956.0" promptText="Tên NV thực hiện" />
+  <Label layoutX="346.0" layoutY="773.0" text="Phí VAT:">
     <font>
       <Font name="Times New Roman" size="12.0" />
     </font>
@@ -256,6 +261,13 @@
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Label>
+  <TextArea fx:id="orderNote" layoutX="25.0" layoutY="585.0" prefHeight="76.0" prefWidth="506.0" promptText="Ghi chú" />
+      <Label layoutX="24.0" layoutY="561.0" text="Ghi chú:">
+         <font>
+            <Font name="Times New Roman Bold" size="12.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="orderBanner" layoutX="25.0" layoutY="354.0" prefHeight="67.0" prefWidth="506.0" promptText="Nội dung banner" />
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
