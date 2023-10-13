@@ -358,7 +358,7 @@ public class OrderReportController extends OrderController {
         pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
 
     setCountDownEvent(() -> onScrollFinished(this.orderTable,
-        (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond())), 4000);
+        (pair) -> orderService.getStaffPage(pair.getFirst(), pair.getSecond())), 4000);
 
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
                     "" : ApplicationVariable.getUser().getFullName());

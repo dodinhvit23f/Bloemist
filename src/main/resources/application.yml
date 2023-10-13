@@ -29,6 +29,12 @@ spring:
           auth: true
           starttls:
             enable: true
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 2
+      thread-name-prefix: Bloemist-
 
 google:
   credential:

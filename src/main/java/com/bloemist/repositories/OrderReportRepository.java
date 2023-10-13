@@ -14,24 +14,24 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
 
   Optional<OrderReport> findByOrderCode(String code);
 
-  @Query("SELECT order "
-      + "FROM OrderReport order "
-      + "WHERE  order.orderStatus NOT IN (6, 7) AND "
-      + "order.orderDate >= :startTime AND "
-      + "order.orderDate < :endTime "
-      + "ORDER BY order.orderStatus ASC,"
-      + "order.deliveryDate DESC,"
-      + "order.deliveryTime DESC")
+  @Query("SELECT orders "
+      + "FROM OrderReport orders "
+      + "WHERE  orders.orderStatus NOT IN (6, 7) AND "
+      + "orders.orderDate >= :startTime AND "
+      + "orders.orderDate < :endTime "
+      + "ORDER BY orders.orderStatus ASC,"
+      + "orders.deliveryDate DESC,"
+      + "orders.deliveryTime DESC")
   List<OrderReport> getOrdersForStaff(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
-  @Query("SELECT order "
-      + "FROM OrderReport order "
-      + "WHERE order.orderStatus != 7 AND "
-      + "order.orderDate >= :startTime AND "
-      + "order.orderDate < :endTime "
-      + "ORDER BY order.orderStatus ASC,"
-      + "order.deliveryDate DESC,"
-      + "order.deliveryTime DESC")
+  @Query("SELECT orders "
+      + "FROM OrderReport orders "
+      + "WHERE orders.orderStatus != 7 AND "
+      + "orders.orderDate >= :startTime AND "
+      + "orders.orderDate < :endTime "
+      + "ORDER BY orders.orderStatus ASC,"
+      + "orders.deliveryDate DESC,"
+      + "orders.deliveryTime DESC")
   List<OrderReport> getOrdersAdmin(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
   List<OrderReport> findOrderReportByOrderCodeIn(List<String> codes);
