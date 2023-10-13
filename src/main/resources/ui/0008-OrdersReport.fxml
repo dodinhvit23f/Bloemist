@@ -268,6 +268,7 @@
          </font>
       </Label>
       <TextArea fx:id="orderBanner" layoutX="25.0" layoutY="354.0" prefHeight="67.0" prefWidth="506.0" promptText="Nội dung banner" />
+      <TextField fx:id="socialLink" layoutX="273.0" layoutY="187.0" prefHeight="25.0" prefWidth="258.0" promptText="Liên kết mạng xã hội" />
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
