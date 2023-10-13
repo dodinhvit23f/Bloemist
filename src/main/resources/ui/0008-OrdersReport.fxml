@@ -69,7 +69,7 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <Button layoutX="936.0" layoutY="64.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: LIGHTPINK;" text="Tìm kiếm">
+      <Button layoutX="936.0" layoutY="64.0" mnemonicParsing="false" onAction="#inquiryCustomer" prefHeight="25.0" prefWidth="87.0" style="-fx-background-color: LIGHTPINK;" text="Tìm kiếm">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
