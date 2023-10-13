@@ -21,29 +21,29 @@
         <Tooltip text="Nhập địa chỉ nhận hoa" />
       </tooltip>
     </TextField>
-    <TextField id="orderTime" fx:id="deliveryHour" layoutX="272.0" layoutY="85.0" prefHeight="25.0" prefWidth="222.0" promptText="00:00 - 00:00 - Khoảng nhận hoa">
+    <TextField id="orderTime" fx:id="deliveryHour" layoutX="272.0" layoutY="85.0" prefHeight="25.0" prefWidth="222.0" promptText="00:00 - 00:00 - Ghi đúng định dạng">
       <tooltip>
         <Tooltip text="Nhập vào khoảng giờ nhận hoa" />
       </tooltip>
     </TextField>
     <DatePicker id="OrderDate" fx:id="deliveryDate" layoutX="272.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Ngày nhận hoa" />
     <TextField fx:id="socialLink" layoutX="26.0" layoutY="124.0" prefHeight="25.0" prefWidth="222.0" promptText="Link FB/Insta (nếu có)" />
-    <TextField fx:id="receiverName" layoutX="272.0" layoutY="162.0" prefHeight="25.0" prefWidth="222.0" promptText="Người nhận hoa">
+    <TextField fx:id="receiverName" layoutX="272.0" layoutY="162.0" prefHeight="25.0" prefWidth="222.0" promptText="Người nhận hoa (nếu khác người đặt)">
       <tooltip>
         <Tooltip text="Nhập vào tên người nhận" />
       </tooltip>
     </TextField>
-    <TextField fx:id="receiverPhone" layoutX="272.0" layoutY="197.0" prefHeight="25.0" prefWidth="222.0" promptText="SĐT người nhận hoa">
+    <TextField fx:id="receiverPhone" layoutX="272.0" layoutY="197.0" prefHeight="25.0" prefWidth="222.0" promptText="SĐT người nhận (nếu khác người đặt)">
       <tooltip>
         <Tooltip text="Nhập vào số điện thoại người nhận" />
       </tooltip>
     </TextField>
     <ComboBox fx:id="customerSource" layoutX="26.0" layoutY="162.0" prefHeight="25.0" prefWidth="222.0" promptText="Nguồn khách" />
-    <Button layoutX="25.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#chooseImage" prefHeight="25.0" prefWidth="92.0" text="Chọn ảnh" />
+    <Button layoutX="25.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#chooseImage" prefHeight="25.0" prefWidth="139.0" text="Chọn ảnh (bắt buộc)" />
     <Label layoutX="25.0" layoutY="18.0" text="Thông tin đặt hàng" />
     <Label layoutX="25.0" layoutY="400.0" text="Thông tin thanh toán" />
     <TextArea id="orderDescription" fx:id="orderDescription" layoutX="25.0" layoutY="276.0" prefHeight="50.0" prefWidth="279.0" promptText="Mô tả đơn hàng" />
-    <TextArea id="orderNote" fx:id="customerRemark" layoutX="325.0" layoutY="276.0" prefHeight="50.0" prefWidth="169.0" promptText="Ghi chú (xuất VAT, khi giao hoa ...)" />
+    <TextArea id="orderNote" fx:id="customerRemark" layoutX="325.0" layoutY="276.0" prefHeight="50.0" prefWidth="169.0" promptText="Ghi chú (xuất VAT, khi giao hoa ...) (nếu có)" />
     <TextArea fx:id="bannerContent" layoutX="25.0" layoutY="339.0" prefHeight="50.0" prefWidth="469.0" promptText="Nội dung Banner (nếu có)" />
     <TextField id="actualPrice" fx:id="actualPrice" layoutX="69.0" layoutY="428.0" prefHeight="25.0" prefWidth="179.0" promptText="Giá niêm yết">
       <tooltip>
@@ -65,7 +65,7 @@
         <Tooltip text="Nhập vào phí VAT" />
       </tooltip>
     </TextField>
-    <TextField id="depositAmount" fx:id="depositAmount" layoutX="69.0" layoutY="498.0" prefHeight="30.0" prefWidth="179.0" promptText="Số tiền khách đặt cọc">
+    <TextField id="depositAmount" fx:id="depositAmount" layoutX="70.0" layoutY="535.0" prefHeight="30.0" prefWidth="179.0" promptText="Số tiền khách đặt cọc">
       <tooltip>
         <Tooltip text="Nhập vào số tiền đặt cọc" />
       </tooltip>
@@ -82,12 +82,12 @@
         <Font size="14.0" />
       </font>
     </TextField>
-    <TextField id="salePriceValue" fx:id="salePriceValue" editable="false" layoutX="70.0" layoutY="533.0" prefHeight="30.0" prefWidth="179.0" promptText="Giá bán ra">
+    <TextField id="salePriceValue" fx:id="salePriceValue" editable="false" layoutX="70.0" layoutY="499.0" prefHeight="30.0" prefWidth="179.0" promptText="Giá bán ra">
       <font>
         <Font size="14.0" />
       </font>
     </TextField>
-    <TextField fx:id="totalAmountValue" editable="false" layoutX="266.0" layoutY="534.0" prefHeight="30.0" prefWidth="228.0" promptText="Tổng giá trị đơn hàng: ">
+    <TextField fx:id="totalAmountValue" editable="false" layoutX="325.0" layoutY="534.0" prefHeight="30.0" prefWidth="169.0" promptText="Tổng giá trị đơn hàng: ">
       <font>
         <Font size="14.0" />
       </font>
@@ -103,9 +103,10 @@
          </font>
       </Label>
       <Label layoutX="25.0" layoutY="432.0" prefHeight="17.0" prefWidth="44.0" text="Giá Tiền" />
-      <Label layoutX="25.0" layoutY="505.0" text="Đặt cọc" />
-      <Label layoutX="25.0" layoutY="540.0" text="Giá thực" />
+      <Label layoutX="26.0" layoutY="542.0" text="Đặt cọc" />
+      <Label layoutX="25.0" layoutY="506.0" text="Giá thực" />
       <Label layoutX="268.0" layoutY="505.0" text="Còn lại" />
       <Label layoutX="25.0" layoutY="469.0" prefHeight="17.0" prefWidth="44.0" text="CK" />
+      <Label layoutX="268.0" layoutY="540.0" text="Tổng" />
   </children>
 </AnchorPane>
