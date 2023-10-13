@@ -97,7 +97,11 @@ public class OrderService implements IOrderService {
 
     var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
     if (optionalOrderReport.isPresent()) {
-      updateFieldsCanChange(order, optionalOrderReport.get());
+      try{
+        updateFieldsCanChange(order, optionalOrderReport.get());
+      } catch (Exception exception){
+
+      }
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
       return Optional.of(Boolean.TRUE);
     }
