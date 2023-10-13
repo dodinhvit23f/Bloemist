@@ -1,5 +1,7 @@
 package com.bloemist.controllers.order;
 
+import static com.bloemist.controllers.HomeController.openCreateOrderDialog;
+
 import com.bloemist.dto.Order;
 import com.bloemist.events.MessageWarning;
 import com.constant.ApplicationVariable;
@@ -13,11 +15,13 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -35,10 +39,12 @@ import lombok.experimental.FieldDefaults;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -94,10 +100,16 @@ public class OrderReportController extends OrderController {
   @FXML
   private TextField empName;
   @FXML
+  private TextField socialLink;
+  @FXML
+  private TextField findTextField;
+  @FXML
   private TextArea orderDescription;
 
   @FXML
   private TextArea orderNote;
+  @FXML
+  private TextArea currentOrderBanner;
   @FXML
   private TextArea deliveryAddress;
   @FXML
@@ -110,24 +122,25 @@ public class OrderReportController extends OrderController {
   private Label orderDate;
 
   private final static AtomicBoolean onUpdate = new AtomicBoolean(Boolean.FALSE);
-
   private Order currentOrder;
 
-  protected OrderReportController(ApplicationEventPublisher publisher) {
+  final ApplicationContext context;
+
+  protected OrderReportController(ApplicationEventPublisher publisher, ApplicationContext context) {
     super(publisher);
+    this.context = context;
     currentOrder = new Order();
   }
 
   @FXML
-  private void createOrder() {
-    switchScene(ApplicationView.CREATE_ORDER);
-    CreateOrderController.setPopup(Boolean.FALSE);
+  public void createOrder() throws IOException {
+    openCreateOrderDialog(context);
   }
 
   @FXML
   private void updateOrder() {
 
-    if(onUpdate.get()){
+    if (onUpdate.get()) {
       Alert alert = new Alert(AlertType.CONFIRMATION, "Quá trình sửa dữ liệu trước đó vẫn đang chạy"
           , ButtonType.YES, ButtonType.NO);
       alert.showAndWait();
@@ -141,7 +154,7 @@ public class OrderReportController extends OrderController {
     var receiverPhone = this.receiverPhone.getText().strip(); //NOSONAR
     var deliveryTime = this.deliveryHour.getText().strip(); //NOSONAR
     var orderDescription = this.orderDescription.getText().strip(); //NOSONAR
-    var banner = this.orderBanner.getText().strip(); //NOSONAR
+    var banner = this.currentOrderBanner.getText().strip(); //NOSONAR
     var discount = Utils.currencyToStringNumber(this.discountRate.getText().strip()); //NOSONAR
     var deliveryFee = Utils.currencyToStringNumber(this.deliveryFee.getText().strip()); //NOSONAR
     var vatFee = Utils.currencyToStringNumber(this.vatFee.getText().strip());//NOSONAR
@@ -150,7 +163,8 @@ public class OrderReportController extends OrderController {
     var remainAmount = Utils.currencyToStringNumber(this.outstandingBalance.getText());//NOSONAR
     var totalAmount = Utils.currencyToStringNumber(this.totalAmount.getText());//NOSONAR
     var customerNote = this.orderNote.getText().strip();
-    var changeDeliveryDate = Utils.formatDate(new Date(Date.parse(deliveryDate.getEditor().getText())));
+    var changeDeliveryDate = Utils.formatDate(
+        new Date(Date.parse(deliveryDate.getEditor().getText())));
 
     if (!Utils.isNumber(discount)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_008));
@@ -276,6 +290,15 @@ public class OrderReportController extends OrderController {
     this.switchScene(ApplicationView.SUB_ORDER_SCREEN);
   }
 
+  @FXML
+  private void reload() {
+    this.orderTable.setItems(FXCollections.observableArrayList());
+    loadPageAsync(null, this.orderTable,
+        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
+  }
+
+
+
   private void addTableViewListener() {
     orderTable.getSelectionModel().selectedItemProperty()
         .addListener((obs, oldSelection, newSelection) -> {
@@ -285,13 +308,6 @@ public class OrderReportController extends OrderController {
             ApplicationVariable.setCurrentOrder(currentOrder);
           }
         });
-  }
-
-  @FXML
-  private void reload() {
-    this.orderTable.setItems(FXCollections.observableArrayList());
-    loadPageAsync(null, this.orderTable,
-        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
   }
 
   private void setCellValueFactory() {
@@ -330,12 +346,13 @@ public class OrderReportController extends OrderController {
     this.orderDescription.setText(currentOrder.getOrderDescription());
     this.deliveryAddress.setText(currentOrder.getDeliveryAddress());
     this.orderNote.setText(currentOrder.getCustomerNote());
+    this.currentOrderBanner.setText(currentOrder.getBanner());
     this.deliveryDate.setValue(
         LocalDate.ofInstant(Utils.toDate(currentOrder.getDeliveryDate()).toInstant(),
             ZoneId.systemDefault()));
     this.orderCode.setText(currentOrder.getCode());
     this.orderDate.setText(currentOrder.getOrderDate());
-
+    this.socialLink.setText(currentOrder.getCustomerSocialLink());
   }
 
   @Override
@@ -361,7 +378,7 @@ public class OrderReportController extends OrderController {
         (pair) -> orderService.getStaffPage(pair.getFirst(), pair.getSecond())), 4000);
 
     empName.setText(Objects.isNull(ApplicationVariable.getUser()) ?
-                    "" : ApplicationVariable.getUser().getFullName());
+        "" : ApplicationVariable.getUser().getFullName());
   }
 
   @Override
@@ -445,4 +462,22 @@ public class OrderReportController extends OrderController {
     return Boolean.FALSE;
   }
 
+  public void inquiryCustomer(ActionEvent actionEvent) {
+    var searchText = findTextField.getText().strip();
+    if (StringUtils.isEmpty(findTextField.getText().strip())) {
+      return;
+    }
+
+    if (searchText.length() < 4) {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setContentText("Thông tin tìm kiếm phải lớn hơn 4 ký tự");
+      alert.showAndWait();
+      return;
+    }
+
+    List<Order> orders = orderService.searchUserByConditionForStaff(
+        findTextField.getText().strip());
+    ApplicationVariable.setOrders(orders);
+    orderTable.setItems(FXCollections.observableList(orders));
+  }
 }

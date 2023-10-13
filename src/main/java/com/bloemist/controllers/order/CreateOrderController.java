@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -89,7 +90,7 @@ public class CreateOrderController extends OrderController {
 
   File imageFile;
 
-  static Boolean isPopup;
+  private static final AtomicBoolean isPopup = new AtomicBoolean(Boolean.FALSE);
 
   @FXML
   public void openImage() throws IOException {
@@ -288,7 +289,7 @@ public class CreateOrderController extends OrderController {
       switchScene(ApplicationView.INQUIRY_ORDER);
       return;
     }
-    isPopup = Boolean.FALSE;
+    isPopup.set(Boolean.FALSE);
     ((Stage)discountAmount.getScene().getWindow()).close();
   }
 
@@ -298,10 +299,10 @@ public class CreateOrderController extends OrderController {
   }
 
   public static Boolean isPopup() {
-    return isPopup;
+    return isPopup.get();
   }
 
   public static void setPopup(Boolean popup) {
-    isPopup = popup;
+    isPopup.set(popup);
   }
 }

@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableView;
@@ -131,9 +133,12 @@ public abstract class OrderController extends BaseController {
 
 
   protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable,
-                               Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
 
     if (isLoadingPage.get()) {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setContentText("Tải lại đang trong quá trình xử lý ");
+      alert.showAndWait();
       return;
     }
 
@@ -167,7 +172,11 @@ public abstract class OrderController extends BaseController {
       e.printStackTrace();
     }
 
-    setCountDownEvent(() -> isLoadingPage.set(Boolean.FALSE), 2000);
+    setCountDownEvent(() -> {
+      isLoadingPage.set(Boolean.FALSE);
+      orderTable.refresh();
+    }, 2000);
+
   }
 
   private void handleOldData(List<Order> orders, TableView<Order> orderTable) {
@@ -177,13 +186,14 @@ public abstract class OrderController extends BaseController {
       return;
     }
 
-    var existCode = ApplicationVariable.getOrders().stream().map(Order::getCode).collect(Collectors.toSet());
+    var existCode = ApplicationVariable.getOrders().stream().map(Order::getCode)
+        .collect(Collectors.toSet());
 
     var ordersNotDuplicate = orders.stream()
         .filter(order -> !existCode.contains(order.getCode()))
         .toList();
 
-    if(ObjectUtils.isEmpty(ordersNotDuplicate)){
+    if (ObjectUtils.isEmpty(ordersNotDuplicate)) {
       isEnd.set(Boolean.TRUE);
       isLoadingPage.set(Boolean.FALSE);
       return;
@@ -241,7 +251,7 @@ public abstract class OrderController extends BaseController {
   }
 
   public void onScrollFinished(TableView<Order> orderTable,
-                               Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
     var tvScrollBar = (ScrollBar) orderTable.lookup(".scroll-bar:vertical");
     tvScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue.doubleValue() == BigInteger.ONE.doubleValue()) {

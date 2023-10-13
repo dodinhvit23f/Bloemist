@@ -74,7 +74,7 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <TextField layoutX="1033.0" layoutY="64.0" prefHeight="25.0" prefWidth="309.0" promptText="Nhập thông tin cần tìm ..." />
+      <TextField fx:id="findTextField" layoutX="1033.0" layoutY="64.0" prefHeight="25.0" prefWidth="309.0" promptText="Nhập thông tin cần tìm ..." />
 
 </Pane>
 <Pane fx:id="printPane" maxHeight="1000.0" maxWidth="559.0" minHeight="794.0" minWidth="559.0" prefHeight="1000.0" prefWidth="559.0" style="-fx-background-color: white;" AnchorPane.rightAnchor="0">
@@ -267,8 +267,8 @@
             <Font name="Times New Roman Bold" size="12.0" />
          </font>
       </Label>
-      <TextArea fx:id="orderBanner" layoutX="25.0" layoutY="354.0" prefHeight="67.0" prefWidth="506.0" promptText="Nội dung banner" />
-      <TextField fx:id="socialLink" layoutX="273.0" layoutY="187.0" prefHeight="25.0" prefWidth="258.0" promptText="Liên kết mạng xã hội" />
+      <TextArea fx:id="currentOrderBanner" editable="false" layoutX="25.0" layoutY="354.0" prefHeight="67.0" prefWidth="506.0" promptText="Nội dung banner" />
+      <TextField fx:id="socialLink" editable="false" layoutX="273.0" layoutY="187.0" prefHeight="25.0" prefWidth="258.0" promptText="Liên kết mạng xã hội" />
       <opaqueInsets>
          <Insets />
       </opaqueInsets>

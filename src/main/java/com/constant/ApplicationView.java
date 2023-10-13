@@ -72,7 +72,6 @@ public enum ApplicationView {
     }
   },
   CREATE_ORDER {
-
     @Override
     public String getUrl() {
       return "classpath:ui/0003-NewOrder.fxml";
@@ -89,7 +88,6 @@ public enum ApplicationView {
     }
   },
   USER_APPOINTMENT {
-
     @Override
     public String getUrl() {
       return "classpath:ui/0004-UserAppointment.fxml";
@@ -216,6 +214,22 @@ public enum ApplicationView {
     public String getCode() {
       return "0013";
     }
+  },
+  LOADING {
+    @Override
+    public String getUrl() {
+      return "classpath:ui/Loading.fxml";
+    }
+
+    @Override
+    public String getTitle() {
+      return "Loading";
+    }
+
+    @Override
+    public String getCode() {
+      return "-0000";
+    }
   };
 
   public abstract String getUrl();
@@ -224,9 +238,9 @@ public enum ApplicationView {
 
   public abstract String getCode();
 
-  public static Optional<ApplicationView> findViewByCode(String code){
-    for (ApplicationView view : ApplicationView.values()){
-      if(view.getCode().equals(code)){
+  public static Optional<ApplicationView> findViewByCode(String code) {
+    for (ApplicationView view : ApplicationView.values()) {
+      if (view.getCode().equals(code)) {
         return Optional.of(view);
       }
     }
@@ -234,5 +248,5 @@ public enum ApplicationView {
     return Optional.empty();
   }
 
-  public static final ApplicationView [] NOT_LOGIN = {REGISTRATOR, LOGIN, RECOVER_PASSWORD} ;
+  public static final ApplicationView[] NOT_LOGIN = {REGISTRATOR, LOGIN, RECOVER_PASSWORD};
 }

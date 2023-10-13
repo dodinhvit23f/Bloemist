@@ -35,4 +35,23 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
   List<OrderReport> getOrdersAdmin(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
   List<OrderReport> findOrderReportByOrderCodeIn(List<String> codes);
+
+  @Query("SELECT orders "
+      + "FROM OrderReport orders "
+      + "WHERE orders.clientName ILIKE :condition% OR "
+      + "orders.clientPhone = :condition OR "
+      + "orders.receiver ILIKE :condition% OR "
+      + "orders.receiverPhone = :condition OR "
+      + "orders.orderCode = :condition")
+  List<OrderReport> searchOrderReportByConditionForStaff(@Param("condition")String condition);
+
+  @Query("SELECT orders "
+      + "FROM OrderReport orders "
+      + "WHERE orders.clientName ILIKE %:condition% OR "
+      + "orders.clientPhone = :condition OR "
+      + "orders.receiver ILIKE %:condition% OR "
+      + "orders.receiverPhone = :condition OR "
+      + "orders.orderCode = :condition OR "
+      + "orders.clientSocialLink ILIKE %:condition%")
+  List<OrderReport> searchOrderReportByConditionForAdmin(@Param("condition")String condition);
 }
