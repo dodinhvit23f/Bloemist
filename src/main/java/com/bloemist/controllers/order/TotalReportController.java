@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.TextField;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -44,6 +46,7 @@ import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.util.StringUtils;
 
 import static com.constant.Constants.CUSTOMER;
 import static com.constant.Constants.FACEBOOK;
@@ -131,6 +134,9 @@ public class TotalReportController extends OrderController {
   private TableColumn<Order, Boolean> checkAll;
   @FXML
   private TableColumn<Order, String> pictureLink;
+
+  @FXML
+  private TextField findTextField;
 
   private AtomicReference<TableColumn<Order, ?>> editableColumn = new AtomicReference<>();
   private Order currentOrder;
@@ -256,6 +262,11 @@ public class TotalReportController extends OrderController {
     this.orderTable.setItems(FXCollections.observableArrayList());
     loadPageAsync(null, this.orderTable,
         (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
+    this.currentOrder = null;
+    this.editableColumn = new AtomicReference<>();
+    this.orderRow = 0;
+    this.textArea.clear();
+    this.findTextField.clear();
   }
 
   @FXML
@@ -282,12 +293,14 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void deleteSelectedRow() {
-    ApplicationVariable.getOrders().removeAll(ApplicationVariable.getOrders()
-        .stream()
-        .filter(Order::getIsSelected)
+    ApplicationVariable.setOrders(ApplicationVariable.getOrders()
+        .parallelStream()
+        .filter(order -> !order.getIsSelected())
         .toList());
 
     reprintOrderStt();
+    orderTable.setItems(FXCollections.observableList(ApplicationVariable.getOrders()));
+    orderTable.refresh();
   }
 
   @FXML
@@ -753,5 +766,24 @@ public class TotalReportController extends OrderController {
       }
     });
 
+  }
+
+  public void inquiryCustomer(ActionEvent actionEvent) {
+    var searchText = findTextField.getText().strip();
+    if (StringUtils.isEmpty(findTextField.getText().strip())) {
+      return;
+    }
+
+    if (searchText.length() < 4) {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setContentText("Thông tin tìm kiếm phải lớn hơn 4 ký tự");
+      alert.showAndWait();
+      return;
+    }
+
+    List<Order> orders = orderService.searchUserByConditionForAdmin(
+        findTextField.getText().strip());
+    ApplicationVariable.setOrders(orders);
+    orderTable.setItems(FXCollections.observableList(orders));
   }
 }

@@ -31,4 +31,8 @@ public interface IOrderService {
   List<Order> getAdminPage(LocalDateTime startTime, LocalDateTime endTime);
 
   boolean validOrder(Order orderInfo);
+
+  List<Order> searchUserByConditionForStaff(String condition);
+
+  List<Order> searchUserByConditionForAdmin(String condition);
 }

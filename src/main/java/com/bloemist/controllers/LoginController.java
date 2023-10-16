@@ -43,6 +43,7 @@ public final class LoginController extends BaseController {
     this.userService = userService;
   }
 
+  @FXML
   public void login() {
 
     String username = userIdentify.getText();
@@ -74,11 +75,12 @@ public final class LoginController extends BaseController {
     switchScene(ApplicationView.HOME);
   }
 
-
+  @FXML
   public void registerAccount() {
     switchScene(ApplicationView.REGISTRATOR);
   }
 
+  @FXML
   public void restoreAccount() {
     switchScene(ApplicationView.RECOVER_PASSWORD);
   }
@@ -87,12 +89,19 @@ public final class LoginController extends BaseController {
   public void initialize(URL location, ResourceBundle resources) {
     super.initialize(location, resources);
     loginButton.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-      if (event.getCode().equals(KeyCode.ENTER)){
+      if (event.getCode().equals(KeyCode.ENTER)) {
         login();
       }
     });
 
-    if(!ObjectUtils.isEmpty(ApplicationVariable.getUser())){
+    userPassword.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER) {
+        login();
+        event.consume();
+      }
+    });
+
+    if (!ObjectUtils.isEmpty(ApplicationVariable.getUser())) {
       userIdentify.setText(ApplicationVariable.getUser().getUsername());
     }
   }

@@ -1,5 +1,6 @@
 package com.bloemist.services.impl;
 
+import static com.constant.Constants.ERR_ORDER_INFO_001;
 import static com.utils.Utils.currencyToStringNumber;
 import static com.utils.Utils.isDate;
 import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
@@ -7,6 +8,7 @@ import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 import com.bloemist.converters.OrderMapper;
 import com.bloemist.dto.Order;
 import com.bloemist.entity.OrderReport;
+import com.bloemist.events.MessageLoading;
 import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.OrderReportRepository;
@@ -34,6 +36,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.application.Platform;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -64,6 +68,7 @@ public class OrderService implements IOrderService {
   @Override
 
   public Optional<Boolean> createNewOrder(Order customerOrder) {
+
     if (Boolean.FALSE.equals(validOrder(customerOrder))) {
       return Optional.empty();
     }
@@ -82,7 +87,10 @@ public class OrderService implements IOrderService {
   public void createNewOrders(Collection<Order> orders) {
 
     try {
-      orders.forEach(customerOrder -> insertOneOrder(customerOrder, OrderState.getState(customerOrder.getStatus())));
+
+      orders.forEach(customerOrder -> insertOneOrder(customerOrder,
+          OrderState.getState(customerOrder.getStatus())));
+
       publisher.publishEvent(new MessageWarning(Constants.SUSS_ORDER_INFO_001));
     } catch (Exception ex) {
       publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL));
@@ -94,50 +102,58 @@ public class OrderService implements IOrderService {
     if (Boolean.FALSE.equals(validOrder(order))) {
       return Optional.empty();
     }
-
     var optionalOrderReport = orderReportRepository.findByOrderCode(order.getCode());
     if (optionalOrderReport.isPresent()) {
-      try{
+      try {
         updateFieldsCanChange(order, optionalOrderReport.get());
-      } catch (Exception exception){
-
+      } catch (Exception exception) {
+        publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004));
       }
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
       return Optional.of(Boolean.TRUE);
     }
-    publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004));
+
     return Optional.empty();
   }
 
   @Override
   public void updateOrders(List<Order> orders) {
+
     Optional<Order> failOrder = orders.stream()
-        .filter(this::validOrder)
+        .filter(order -> !validOrder(order))
         .findFirst();
+
+    if (failOrder.isPresent()) {
+      publisher.publishEvent(new MessageWarning(ERR_ORDER_INFO_001));
+      return;
+    }
+
 
     Map<String, Order> orderMap = orders.stream()
         .collect(Collectors.toMap(Order::getCode, Function.identity()));
 
-    failOrder.ifPresent(order -> {
-      final List<String> codes = orders.stream().map(Order::getCode).toList();
-      Map<String, OrderReport> orderReports = orderReportRepository
-          .findOrderReportByOrderCodeIn(codes)
-          .stream()
-          .collect(Collectors.toMap(OrderReport::getOrderCode, Function.identity()));
+    final List<String> codes = orders.stream().map(Order::getCode).toList();
 
-      codes.forEach(code -> {
-        if (orderReports.containsKey(code)) {
-          updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
-        }
-      });
+    Map<String, OrderReport> orderReports = orderReportRepository
+        .findOrderReportByOrderCodeIn(codes)
+        .stream()
+        .collect(Collectors.toMap(OrderReport::getOrderCode, Function.identity()));
 
-      try {
-        orderReportRepository.saveAll(orderReports.values());
-        publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
-      } catch (Exception e){
-        publisher.publishEvent(new MessageSuccess(Constants.ERR_ORDER_INFO_009));
+    codes.forEach(code -> {
+      if (orderReports.containsKey(code)) {
+        updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
       }
     });
+
+    try {
+      orderReportRepository.saveAll(orderReports.values());
+
+      publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
+    } catch (Exception e) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_009));
+    }
+
+
   }
 
   @Override
@@ -170,7 +186,6 @@ public class OrderService implements IOrderService {
 
   @Override
   public List<Order> getStaffPage(LocalDateTime startTime, LocalDateTime endTime) {
-    AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
 
     final var startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
     final var endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -178,17 +193,11 @@ public class OrderService implements IOrderService {
     var pageOrderReport = orderReportRepository
         .getOrdersForStaff(startDate, endDate);
 
-    return pageOrderReport.stream()
-        .map(orderReport -> {
-          var order = OrderMapper.MAPPER.orderReportToOrder(orderReport);
-          order.setStt(String.valueOf(stt.getAndIncrement()));
-          return order;
-        }).toList();
+    return streamMappingOrderReportToOrder(pageOrderReport.stream());
   }
 
   @Override
   public List<Order> getAdminPage(LocalDateTime startTime, LocalDateTime endTime) {
-    AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
 
     final var startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
     final var endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -196,12 +205,7 @@ public class OrderService implements IOrderService {
     var pageOrderReport = orderReportRepository
         .getOrdersAdmin(startDate, endDate);
 
-    return pageOrderReport.stream()
-        .map(orderReport -> {
-          var order = OrderMapper.MAPPER.orderReportToOrder(orderReport);
-          order.setStt(String.valueOf(stt.getAndIncrement()));
-          return order;
-        }).toList();
+    return streamMappingOrderReportToOrder(pageOrderReport.stream());
   }
 
   @Override
@@ -218,7 +222,7 @@ public class OrderService implements IOrderService {
         || ObjectUtils.isEmpty(orderInfo.getRemain())
         || ObjectUtils.isEmpty(orderInfo.getSalePrice())
         || ObjectUtils.isEmpty(orderInfo.getTotal())) {
-      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
+      publisher.publishEvent(new MessageWarning(ERR_ORDER_INFO_001));
       return Boolean.FALSE;
     }
 
@@ -230,13 +234,36 @@ public class OrderService implements IOrderService {
       return Boolean.FALSE;
     }
 
-    if(!isDate(orderInfo.getDeliveryDate())){
+    if (!isDate(orderInfo.getDeliveryDate())) {
       return Boolean.FALSE;
     }
 
     return Boolean.TRUE;
   }
 
+  @Override
+  public List<Order> searchUserByConditionForStaff(String condition) {
+
+    return streamMappingOrderReportToOrder(
+        orderReportRepository.searchOrderReportByConditionForStaff(condition)
+            .stream());
+  }
+
+  @Override
+  public List<Order> searchUserByConditionForAdmin(String condition) {
+    return streamMappingOrderReportToOrder(
+        orderReportRepository.searchOrderReportByConditionForAdmin(condition)
+            .stream());
+  }
+
+  private List<Order> streamMappingOrderReportToOrder(Stream<OrderReport> stream) {
+    AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
+    return stream.map(orderReport -> {
+      var order = OrderMapper.MAPPER.orderReportToOrder(orderReport);
+      order.setStt(String.valueOf(stt.getAndIncrement()));
+      return order;
+    }).toList();
+  }
 
   private static String getOrderCode() {
     return String.format("%s%d", Constants.ORDER_CODER_PRE_FIX, System.nanoTime());
@@ -257,7 +284,6 @@ public class OrderService implements IOrderService {
       var rawFile = new java.io.File(orderReport.getSamplePictureLink());
       FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
 
-
       final File googleFile = googleDrive.files().create(fileMetadata, mediaContent)
           .setFields(String.join(",", ID, WEB_VIEW_LINK))
           .execute();
@@ -273,10 +299,18 @@ public class OrderService implements IOrderService {
       customerOrder.setImagePath(orderReport.getSamplePictureLink());
       customerOrder.setIsSelected(Boolean.FALSE);
     } catch (Exception ex) {
-      ex.printStackTrace();
       return Optional.empty();
     }
     return Optional.of(Boolean.TRUE);
+  }
+
+
+  private void stopLoadingMessage() {
+    CompletableFuture.runAsync(() -> publisher.publishEvent(new MessageLoading(Boolean.FALSE)));
+  }
+
+  private void sendLoadingMessage() {
+    publisher.publishEvent(new MessageLoading(Boolean.TRUE));
   }
 
 
@@ -334,4 +368,5 @@ public class OrderService implements IOrderService {
       }
     });
   }
+
 }
