@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,12 +61,18 @@ public class GoogleConfiguration {
         httpTransport, GsonFactory.getDefaultInstance(), googleClientSecrets, SCOPES)
         .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(APPDATA)))
         .setAccessType(OFFLINE)
+        .setApprovalPrompt("force")
         .build();
 
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(PORT).build();
 
     Credential credential = new AuthorizationCodeInstalledApp(flow, receiver)
         .authorize(userName);
+
+    if(Objects.isNull(credential.getExpiresInSeconds()) ||
+        credential.getExpiresInSeconds() < 200){
+      credential.refreshToken();
+    }
 
     return credential;
   }
