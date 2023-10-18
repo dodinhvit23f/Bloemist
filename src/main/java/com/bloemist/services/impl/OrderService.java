@@ -20,7 +20,6 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.utils.Utils;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -32,12 +31,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -106,6 +105,7 @@ public class OrderService implements IOrderService {
     if (optionalOrderReport.isPresent()) {
       try {
         updateFieldsCanChange(order, optionalOrderReport.get());
+        order.setImagePath(optionalOrderReport.get().getSamplePictureLink());
       } catch (Exception exception) {
         publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_004));
       }
@@ -128,7 +128,6 @@ public class OrderService implements IOrderService {
       return;
     }
 
-
     Map<String, Order> orderMap = orders.stream()
         .collect(Collectors.toMap(Order::getCode, Function.identity()));
 
@@ -141,13 +140,17 @@ public class OrderService implements IOrderService {
 
     codes.forEach(code -> {
       if (orderReports.containsKey(code)) {
-        updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
+        try {
+          updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
+        } catch (IOException e) {
+          publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL, code));
+          codes.remove(code);
+        }
       }
     });
 
     try {
       orderReportRepository.saveAll(orderReports.values());
-
       publisher.publishEvent(new MessageSuccess(Constants.SUSS_ORDER_INFO_002));
     } catch (Exception e) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_009));
@@ -281,14 +284,7 @@ public class OrderService implements IOrderService {
       fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
       fileMetadata.setMimeType(MEDIA);
 
-      var rawFile = new java.io.File(orderReport.getSamplePictureLink());
-      FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
-
-      final File googleFile = googleDrive.files().create(fileMetadata, mediaContent)
-          .setFields(String.join(",", ID, WEB_VIEW_LINK))
-          .execute();
-
-      moveFileToTrashAsync(googleFile);
+      final File googleFile = uploadFile(orderReport, fileMetadata);
 
       orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.getId()));
 
@@ -304,6 +300,18 @@ public class OrderService implements IOrderService {
     return Optional.of(Boolean.TRUE);
   }
 
+  private File uploadFile(OrderReport orderReport, File fileMetadata) throws IOException {
+    var rawFile = new java.io.File(orderReport.getSamplePictureLink());
+    FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
+
+    final File googleFile = googleDrive.files().create(fileMetadata, mediaContent)
+        .setFields(String.join(",", ID, WEB_VIEW_LINK))
+        .execute();
+
+    moveFileToTrashAsync(googleFile);
+    return googleFile;
+  }
+
 
   private void stopLoadingMessage() {
     CompletableFuture.runAsync(() -> publisher.publishEvent(new MessageLoading(Boolean.FALSE)));
@@ -314,7 +322,7 @@ public class OrderService implements IOrderService {
   }
 
 
-  private static void updateFieldsCanChange(Order order, OrderReport orderReport) {
+  private void updateFieldsCanChange(Order order, OrderReport orderReport) throws IOException {
     var deposit = NumberUtils.parseNumber(currencyToStringNumber(order.getDeposit()),
         BigDecimal.class);
     var remain = NumberUtils.parseNumber(currencyToStringNumber(order.getRemain()),
@@ -355,6 +363,20 @@ public class OrderService implements IOrderService {
     orderReport.setBannerContent(order.getBanner());
     orderReport.setRemark(order.getCustomerNote());
     orderReport.setOrderStatus(OrderState.getState(order.getStatus()));
+    orderReport.setSamplePictureLink(order.getImagePath());
+    // update file
+    if(!orderReport.getSamplePictureLink().contains("http")){
+      File fileMetadata = new File();
+      fileMetadata.setName(String.format("%s.jpg", UUID.randomUUID().toString()));
+      fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
+      fileMetadata.setMimeType(MEDIA);
+
+      final File googleFile = uploadFile(orderReport, fileMetadata);
+
+      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.getId()));
+    }
+
+
   }
 
   private void moveFileToTrashAsync(File googleFile) {
