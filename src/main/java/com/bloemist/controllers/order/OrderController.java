@@ -154,7 +154,16 @@ public abstract class OrderController extends BaseController {
             return Collections.emptyList();
           }
 
-          return consumer.apply(Pair.of(startTime, endTime));
+          try {
+            return consumer.apply(Pair.of(startTime, endTime));
+          }catch (Exception ex){
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setContentText("Vui lòng kiểm tra đường truyền");
+            alert.showAndWait();
+            isLoadingPage.set(Boolean.FALSE);
+            return Collections.emptyList();
+          }
+
         });
 
     try {
