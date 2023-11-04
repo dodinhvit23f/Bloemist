@@ -18,6 +18,7 @@ public interface IOrderService {
   @Transactional
   Optional<Boolean> updateOrder(Order order);
 
+  @Transactional
   void updateOrders(List<Order> orders);
 
   @Transactional

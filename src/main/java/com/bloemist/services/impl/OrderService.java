@@ -339,6 +339,15 @@ public class OrderService implements IOrderService {
     var discount = NumberUtils.parseNumber(currencyToStringNumber(order.getDiscount()),
         BigDecimal.class);
 
+    var materialFee = NumberUtils.parseNumber(currencyToStringNumber(order.getMaterialsFee()),
+        BigDecimal.class);
+
+    var actualDeliveryFee = NumberUtils.parseNumber(currencyToStringNumber(order.getActualDeliveryFee()),
+        BigDecimal.class);
+
+    var actualVatFee = NumberUtils.parseNumber(currencyToStringNumber(order.getActualVatFee()),
+        BigDecimal.class);
+
     orderReport.setDepositAmount(deposit);
     orderReport.setRemainingAmount(remain);
     orderReport.setTotalAmount(total);
@@ -376,6 +385,9 @@ public class OrderService implements IOrderService {
       orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.getId()));
     }
 
+    orderReport.setMaterialsFee(materialFee);
+    orderReport.setActualDeliveryFee(actualDeliveryFee);
+    orderReport.setActualVatFee(actualVatFee);
 
   }
 

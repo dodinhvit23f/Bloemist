@@ -84,6 +84,7 @@ public interface OrderMapper {
         .deposit(Utils.currencyFormat(orderReport.getDepositAmount().doubleValue()))
         .total(Utils.currencyFormat(orderReport.getTotalAmount().doubleValue()))
         .status(status)
+        .materialsFee(Utils.currencyFormat(orderReport.getMaterialsFee().doubleValue()))
         .code(orderReport.getOrderCode())
         .customerSource(orderReport.getClientSource())
         .actualDeliveryFee(Utils.currencyFormat(orderReport.getActualDeliveryFee().doubleValue()))

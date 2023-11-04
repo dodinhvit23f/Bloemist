@@ -463,8 +463,8 @@ public class TotalReportController extends OrderController {
 
     orderDate.setCellValueFactory(new PropertyValueFactory<>(Order.ORDER_DATE));
     categoryFee.setCellValueFactory(new PropertyValueFactory<>(Order.MATERIALS_FEE));
-    actualDeliveryFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_VAT_FEE));
-    actualVatFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_DELIVERY_FEE));
+    actualDeliveryFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_DELIVERY_FEE));
+    actualVatFee.setCellValueFactory(new PropertyValueFactory<>(Order.ACTUAL_VAT_FEE));
 
     checkAll.setCellValueFactory(param -> {
       Order order = param.getValue();
@@ -701,6 +701,19 @@ public class TotalReportController extends OrderController {
     if (orderDate.equals(tableColumn)) {
       order.setOrderDate(value);
     }
+
+    if (categoryFee.equals(tableColumn)) {
+      order.setMaterialsFee(value);
+    }
+
+    if (actualDeliveryFee.equals(tableColumn)) {
+      order.setActualDeliveryFee(value);
+    }
+
+    if (actualVatFee.equals(tableColumn)) {
+      order.setActualVatFee(value);
+    }
+
   }
 
   private void addTableViewListener() {
