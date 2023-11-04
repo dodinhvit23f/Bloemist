@@ -12,7 +12,7 @@
 
 	<groupId>com.bloemist</groupId>
 	<artifactId>bloemist</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<name>BloemistSpring</name>
 	<description>Bloemist</description>
 

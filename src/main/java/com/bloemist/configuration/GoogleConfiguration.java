@@ -1,6 +1,7 @@
 package com.bloemist.configuration;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -11,6 +12,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
@@ -57,21 +59,23 @@ public class GoogleConfiguration {
   Credential getGoogleCredential(final NetHttpTransport httpTransport,
                                  GoogleClientSecrets googleClientSecrets) throws IOException {
 
-    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-        httpTransport, GsonFactory.getDefaultInstance(), googleClientSecrets, SCOPES)
-        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(APPDATA)))
-        .setAccessType(OFFLINE)
-        .setApprovalPrompt("force")
-        .build();
+    GoogleAuthorizationCodeFlow flow = getGoogleAuthorizationCodeFlow(
+        httpTransport, googleClientSecrets);
 
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(PORT).build();
 
-    Credential credential = new AuthorizationCodeInstalledApp(flow, receiver)
-        .authorize(userName);
+    Credential credential = getAuthorize(flow, receiver);
 
     if(Objects.isNull(credential.getExpiresInSeconds()) ||
         credential.getExpiresInSeconds() < 200){
-      credential.refreshToken();
+      try {
+        credential.refreshToken();
+      } catch (TokenResponseException ex){
+        new File(String.join("/", APPDATA, "StoredCredential")).delete();
+        flow = getGoogleAuthorizationCodeFlow(
+            httpTransport, googleClientSecrets);
+        credential = getAuthorize(flow, receiver);
+      }
     }
 
     return credential;
@@ -82,5 +86,22 @@ public class GoogleConfiguration {
     return new Drive.Builder(httpTransport, GsonFactory.getDefaultInstance(), googleCredential)
         .setApplicationName(BLOEMIST)
         .build();
+  }
+
+  private Credential getAuthorize(GoogleAuthorizationCodeFlow flow, LocalServerReceiver receiver)
+      throws IOException {
+    return new AuthorizationCodeInstalledApp(flow, receiver)
+        .authorize(userName);
+  }
+
+  private static GoogleAuthorizationCodeFlow getGoogleAuthorizationCodeFlow(
+      NetHttpTransport httpTransport, GoogleClientSecrets googleClientSecrets) throws IOException {
+    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+        httpTransport, GsonFactory.getDefaultInstance(), googleClientSecrets, SCOPES)
+        .setDataStoreFactory(new FileDataStoreFactory(new File(APPDATA)))
+        .setAccessType(OFFLINE)
+        .setApprovalPrompt("force")
+        .build();
+    return flow;
   }
 }
