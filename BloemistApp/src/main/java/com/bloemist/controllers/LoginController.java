@@ -1,0 +1,108 @@
+package com.bloemist.controllers;
+
+import com.bloemist.dto.AccountDetail;
+import com.bloemist.events.MessageWarning;
+import com.bloemist.services.IUserService;
+import com.bloemist.constant.ApplicationVariable;
+import com.bloemist.constant.ApplicationView;
+import com.bloemist.constant.Constants;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+
+@Component
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = false)
+public final class LoginController extends BaseController {
+
+  IUserService userService;
+
+  @FXML
+  TextField userIdentify;
+  @FXML
+  TextField userPassword;
+  @FXML
+  CheckBox saveId;
+  @FXML
+  Button loginButton;
+
+  @Autowired
+  public LoginController(ApplicationEventPublisher publisher,
+      IUserService userService) {
+    super(publisher);
+    this.userService = userService;
+  }
+
+  @FXML
+  public void login() {
+
+    String username = userIdentify.getText();
+    String password = userPassword.getText();
+    userPassword.setText("");
+
+    if (ObjectUtils.isEmpty(username) || ObjectUtils.isEmpty(password)) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_LOGIN_002));
+      return;
+    }
+
+    AccountDetail account = userService.login(username, password);
+    account.setCanAccess(Boolean.TRUE);
+
+    ApplicationVariable.setUser(account);
+
+    if (ObjectUtils.isEmpty(account.getUsername())) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_LOGIN_001));
+      userPassword.setText("");
+      return;
+    }
+
+    if (ObjectUtils.isEmpty(account.getRole())) {
+      publisher.publishEvent(new MessageWarning(Constants.ERR_LOGIN_003));
+      userPassword.setText("");
+      return;
+    }
+
+    switchScene(ApplicationView.HOME);
+  }
+
+  @FXML
+  public void registerAccount() {
+    switchScene(ApplicationView.REGISTRATOR);
+  }
+
+  @FXML
+  public void restoreAccount() {
+    switchScene(ApplicationView.RECOVER_PASSWORD);
+  }
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    super.initialize(location, resources);
+    loginButton.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode().equals(KeyCode.ENTER)) {
+        login();
+      }
+    });
+
+    userPassword.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER) {
+        login();
+        event.consume();
+      }
+    });
+
+    if (!ObjectUtils.isEmpty(ApplicationVariable.getUser())) {
+      userIdentify.setText(ApplicationVariable.getUser().getUsername());
+    }
+  }
+}
