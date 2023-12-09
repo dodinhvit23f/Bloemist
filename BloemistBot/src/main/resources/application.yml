@@ -1,0 +1,35 @@
+
+spring:
+  main:
+    web-application-type: none
+  datasource:
+    username: ${USER_NAME}
+    password: ${PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${HOST}:${PORT}/${DATABASE_NAME}
+    hikari:
+      minimum-idle: 1
+      max-lifetime: 60000
+      maximum-pool-size: 3
+      idle-timeout: 40000
+      connection-timeout: 1000
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        default_schema: ${SCHEMA}
+
+  task:
+    execution:
+      pool:
+        core-size: 1
+        max-size: 2
+      thread-name-prefix: Bloemist-
+
+application:
+  bot:
+    username: ${BOT_USERNAME}
+    token: ${BOT_TOKEN}
+
+server:
+  port: 8889
