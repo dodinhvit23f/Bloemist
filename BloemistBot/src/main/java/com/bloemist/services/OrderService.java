@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -28,8 +29,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderService {
 
-  static final String NEXT_THREE_DAY_ORDER = "/NextThreeDaysOrder";
-  static final String SEARCH_BY_PHONE_OR_NAME = "/SearchByPhoneOrName";
+  static final String NEXT_THREE_DAY_ORDER = "/next_three_days_order";
+  static final String SEARCH_BY_PHONE_OR_NAME = "/search_by_phone_or_name";
 
   final OrderReportRepository orderReportRepository;
 
@@ -89,8 +90,8 @@ public class OrderService {
     LocalDateTime startTime = LocalDate.now().minusYears(1).atStartOfDay();
 
     List<OrderReport> ordersReport = orderReportRepository.searchOrderByPhoneOrNameInDateRange(
-        query, Date.from(startTime.atZone(ZoneOffset.systemDefault()).toInstant())
-    );
+        query, Date.from(startTime.atZone(ZoneOffset.systemDefault()).toInstant()),
+        Pageable.ofSize(1));
 
     if (ObjectUtils.isEmpty(ordersReport)) {
       return Optional.empty();
@@ -98,7 +99,10 @@ public class OrderService {
 
     ordersReport.forEach(orderReport -> {
       SendMessage orderMessage = getSendMessage(update);
-      orderMessage.setText(String.format("%s - %s", query, orderReport.getDeliveryAddress()));
+      orderMessage.setText(String.format("%s - %s - %s - %s", orderReport.getClientName(),
+          orderReport.getClientPhone(),
+          orderReport.getClientSocialLink(),
+          orderReport.getDeliveryAddress()));
       messages.add(orderMessage);
     });
 
