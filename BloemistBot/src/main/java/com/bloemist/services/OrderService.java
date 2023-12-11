@@ -31,12 +31,13 @@ public class OrderService {
 
   static final String NEXT_THREE_DAY_ORDER = "/next_three_days_order";
   static final String SEARCH_BY_PHONE_OR_NAME = "/search_by_phone_or_name";
+  public static final String END_LINE = "====================================================";
 
   final OrderReportRepository orderReportRepository;
 
   public Optional<List<SendMessage>> runCommand(Update update) {
 
-    String[] command = update.getMessage().getText().split(" ");
+    String[] command = update.getMessage().getText().split(" ", 3);
 
     if (ObjectUtils.isEmpty(command)) {
       return Optional.empty();
@@ -152,16 +153,7 @@ public class OrderService {
 
     StringBuilder content = new StringBuilder();
     content.append("Đơn cần ship trong 1h tới:\n");
-
-    orderReports.stream()
-        .map(orderReport -> String.format("%s - %s - Giờ giao %s - %s\n",
-            orderReport.getReceiver(),
-            orderReport.getReceiverPhone(),
-            orderReport.getDeliveryTime(),
-            orderReport.getDeliveryAddress()))
-        .forEach(content::append);
-
-    title.setText(content.toString());
+    remindContent(content, orderReports, title);
 
     return Optional.of(title);
   }
@@ -198,19 +190,33 @@ public class OrderService {
 
     SendMessage title = new SendMessage();
     StringBuilder content = new StringBuilder();
-
     content.append("Đơn cần làm gấp hoàng thượng ơi:\n ");
 
-    orderReports.stream()
-        .map(orderReport -> String.format("%s - %s - Giờ giao %s - %s\n",
-            orderReport.getReceiver(),
-            orderReport.getReceiverPhone(),
-            orderReport.getDeliveryTime(),
-            orderReport.getDeliveryAddress()))
-        .forEach(content::append);
+    remindContent(content, orderReports, title);
 
     title.setText(content.toString());
 
     return Optional.of(title);
+  }
+
+  private  void remindContent(StringBuilder content, Set<OrderReport> orderReports,
+                              SendMessage title) {
+    content.append("Giờ giao - giá niêm yết - người đặt - mô tả đơn - banner - ghi chú - người nhận - sdt - địa chỉ: \n");
+    orderReports
+        .forEach(orderReport -> {
+          content.append(String.format("%s - %s - %s - %s - %s - %s - %s - %s - %s\n",
+              orderReport.getDeliveryTime(),
+              orderReport.getSalePrice(),
+              orderReport.getClientName(),
+              orderReport.getOrderDescription(),
+              orderReport.getBannerContent(),
+              orderReport.getRemark(),
+              orderReport.getReceiver(),
+              orderReport.getReceiverPhone(),
+              orderReport.getDeliveryAddress()));
+          content.append(END_LINE);
+        });
+
+    title.setText(content.toString());
   }
 }
