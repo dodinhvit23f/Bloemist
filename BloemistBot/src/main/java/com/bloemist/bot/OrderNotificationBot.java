@@ -7,6 +7,7 @@ import com.bloemist.services.OrderService;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
@@ -19,6 +20,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -27,11 +30,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderNotificationBot extends TelegramLongPollingBot {
 
+  public static final String MENTION = "mention";
+  public static final String BOT_COMMAND = "bot_command";
   @Value("${application.bot.username}")
   String username;
 
   @Value("${application.bot.token}")
   String token;
+  final String botName = "@bloemist_bot";
 
   final OrderService orderService;
 
@@ -42,14 +48,33 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
   public void onUpdateReceived(Update update) {
 
     if (update.hasMessage() && update.getMessage().hasText() &&
-        chatGroup.contains(update.getMessage().getChatId())) {
+        chatGroup.contains(update.getMessage().getChatId()) &&
+        !update.getMessage().getEntities().isEmpty()) {
 
-      SendMessage message = getSendMessage(update, REPOSE_MESSAGE);
-      sendMessage(message);
+      Optional<MessageEntity> messageEntity = update.getMessage().getEntities()
+          .stream()
+          .filter(entity -> entity.getType().equals(MENTION) &&
+              entity.getText().equals(botName))
+          .findFirst();
 
-      Optional<List<SendMessage>> optional =  orderService.runCommand(update);
-      optional.ifPresentOrElse(sendMessages -> sendMessages.forEach(this::sendMessage),
-          () -> sendMessage(getSendMessage(update, FAIL_MESSAGE)));
+      messageEntity.ifPresent( m -> {
+
+        Optional<MessageEntity> messageCommand = update.getMessage().getEntities()
+            .stream()
+            .filter(entity -> entity.getType().equals(BOT_COMMAND))
+            .findFirst();
+
+        messageCommand.ifPresent(command -> {
+          SendMessage message = getSendMessage(update, REPOSE_MESSAGE);
+          sendMessage(message);
+
+          Optional<List<SendMessage>> optional =  orderService.runCommand(update, command.getText());
+          optional.ifPresentOrElse(sendMessages -> sendMessages.forEach(this::sendMessage),
+              () -> sendMessage(getSendMessage(update, FAIL_MESSAGE)));
+        });
+      });
+
+
     }
   }
 

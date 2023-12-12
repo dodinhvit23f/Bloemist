@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.AccessLevel;
@@ -31,23 +32,24 @@ public class OrderService {
 
   static final String NEXT_THREE_DAY_ORDER = "/next_three_days_order";
   static final String SEARCH_BY_PHONE_OR_NAME = "/search_by_phone_or_name";
-  public static final String END_LINE = "====================================================";
+  public static final String END_LINE = "====================================================\n";
 
   final OrderReportRepository orderReportRepository;
 
-  public Optional<List<SendMessage>> runCommand(Update update) {
+  public Optional<List<SendMessage>> runCommand(Update update, String inputCommand) {
 
-    String[] command = update.getMessage().getText().split(" ", 3);
+    String[] commands = update.getMessage().getText().split(inputCommand, 2);
 
-    if (ObjectUtils.isEmpty(command)) {
+    if (ObjectUtils.isEmpty(inputCommand)) {
       return Optional.empty();
     }
 
-    switch (command[0]) {
+    switch (inputCommand) {
       case NEXT_THREE_DAY_ORDER:
         return findNextThreeDaysOrders(update);
       case SEARCH_BY_PHONE_OR_NAME:
-        return findOrderByClientNameOrPhoneNumber(update, command[1]);
+        return findOrderByClientNameOrPhoneNumber(update, commands[1].strip())
+            ;
     }
 
     return Optional.empty();
@@ -56,8 +58,10 @@ public class OrderService {
   private Optional<List<SendMessage>> findNextThreeDaysOrders(Update update) {
     List<SendMessage> messages = new LinkedList<>();
     SendMessage title = getSendMessage(update);
-    title.setText("Thần xin gửi mẫu: \nTên khách - Trạng Thái - SĐT - Thời gian - Địa chỉ");
     messages.add(title);
+
+    StringBuilder content = new StringBuilder();
+    content.append("Thần xin gửi mẫu: \nTên khách - Trạng Thái - SĐT - Thời gian - Địa chỉ\n");
 
     LocalDateTime endDate = LocalDate.now().atStartOfDay().plusDays(3);
     LocalDateTime today = LocalDate.now().atStartOfDay();
@@ -71,41 +75,21 @@ public class OrderService {
       return Optional.empty();
     }
 
+    AtomicInteger integer = new AtomicInteger(1);
+
     ordersReport.forEach(orderReport -> {
-      SendMessage orderMessage = getSendMessage(update);
-      orderMessage.setText(String.format("%s - %s - %s - %s:%s - %s", orderReport.getReceiver(),
+      content.append(String.format("%d. %s - %s - %s - %s:%s - %s\n",
+          integer.getAndIncrement(),
+          orderReport.getReceiver(),
           OrderState.values()[orderReport.getOrderStatus()].getStateText(),
           orderReport.getReceiverPhone(),
           formatDate(orderReport.getDeliveryDate()),
           orderReport.getDeliveryTime(),
           orderReport.getDeliveryAddress()));
-      messages.add(orderMessage);
+      content.append(END_LINE);
     });
 
-    return Optional.of(messages);
-  }
-
-  private Optional<List<SendMessage>> findOrderByClientNameOrPhoneNumber(Update update,
-      String query) {
-    List<SendMessage> messages = new LinkedList<>();
-    LocalDateTime startTime = LocalDate.now().minusYears(1).atStartOfDay();
-
-    List<OrderReport> ordersReport = orderReportRepository.searchOrderByPhoneOrNameInDateRange(
-        query, Date.from(startTime.atZone(ZoneOffset.systemDefault()).toInstant()),
-        Pageable.ofSize(1));
-
-    if (ObjectUtils.isEmpty(ordersReport)) {
-      return Optional.empty();
-    }
-
-    ordersReport.forEach(orderReport -> {
-      SendMessage orderMessage = getSendMessage(update);
-      orderMessage.setText(String.format("%s - %s - %s - %s", orderReport.getClientName(),
-          orderReport.getClientPhone(),
-          orderReport.getClientSocialLink(),
-          orderReport.getDeliveryAddress()));
-      messages.add(orderMessage);
-    });
+    title.setText(content.toString());
 
     return Optional.of(messages);
   }
@@ -123,7 +107,7 @@ public class OrderService {
     LocalDateTime start = LocalDate.now().atStartOfDay();
 
     String hour = String.valueOf(LocalDateTime.now().getHour());
-    String nextHour = String.valueOf(LocalDateTime.now().getHour()+ 1);
+    String nextHour = String.valueOf(LocalDateTime.now().getHour() + 1);
 
     Set<OrderReport> orderReports = orderReportRepository
         .getOrderNeedToShipInDateRange(
@@ -134,10 +118,10 @@ public class OrderService {
             Date.from(start.atZone(ZoneOffset.systemDefault()).toInstant()), nextHour));
 
     orderReports = orderReports.stream()
-        .filter( orderReport -> {
+        .filter(orderReport -> {
           String deliveryTime = orderReport.getDeliveryTime();
 
-          if(deliveryTime.contains("-")){
+          if (deliveryTime.contains("-")) {
             String startTime = deliveryTime.split("")[0];
             return startTime.startsWith(hour) ||
                 startTime.startsWith(nextHour);
@@ -159,24 +143,25 @@ public class OrderService {
   }
 
   public Optional<SendMessage> getUnDoneOrder() {
-    Date start = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant());
+    Date start = Date.from(
+        LocalDate.now().atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant());
 
     List<Integer> hours =
         IntStream.range(LocalDateTime.now().getHour(), LocalDateTime.now().getHour() + 2)
-        .boxed()
-        .toList();
+            .boxed()
+            .toList();
 
     Set<OrderReport> orderReports = hours.stream()
-        .map( hour -> orderReportRepository.getOrderNeedToDoneInDateRange(start,
+        .map(hour -> orderReportRepository.getOrderNeedToDoneInDateRange(start,
             String.valueOf(hour)))
         .flatMap(Set::stream)
         .collect(Collectors.toSet());
 
     orderReports = orderReports.stream()
-        .filter( orderReport -> {
+        .filter(orderReport -> {
           String deliveryTime = orderReport.getDeliveryTime();
 
-          if(deliveryTime.contains("-")){
+          if (deliveryTime.contains("-")) {
             String startTime = deliveryTime.split("-")[0];
             return hours.stream().anyMatch(hour -> startTime.startsWith(String.valueOf(hour)));
           }
@@ -199,9 +184,10 @@ public class OrderService {
     return Optional.of(title);
   }
 
-  private  void remindContent(StringBuilder content, Set<OrderReport> orderReports,
-                              SendMessage title) {
-    content.append("Giờ giao - giá niêm yết - người đặt - mô tả đơn - banner - ghi chú - người nhận - sdt - địa chỉ: \n");
+  private void remindContent(StringBuilder content, Set<OrderReport> orderReports,
+      SendMessage title) {
+    content.append(
+        "Giờ giao - giá niêm yết - người đặt - mô tả đơn - banner - ghi chú - người nhận - sdt - địa chỉ: \n");
     orderReports
         .forEach(orderReport -> {
           content.append(String.format("%s - %s - %s - %s - %s - %s - %s - %s - %s\n",
@@ -219,4 +205,40 @@ public class OrderService {
 
     title.setText(content.toString());
   }
+
+
+   private Optional<List<SendMessage>> findOrderByClientNameOrPhoneNumber(Update update,
+      String query) {
+    List<SendMessage> messages = new LinkedList<>();
+    LocalDateTime startTime = LocalDate.now().minusYears(1).atStartOfDay();
+
+    List<OrderReport> ordersReport = orderReportRepository.searchOrderByPhoneOrNameInDateRange(
+        query, Date.from(startTime.atZone(ZoneOffset.systemDefault()).toInstant()),
+        Pageable.ofSize(10));
+
+    if (ObjectUtils.isEmpty(ordersReport)) {
+      return Optional.empty();
+    }
+    StringBuilder content = new StringBuilder();
+
+    AtomicInteger integer = new AtomicInteger(1);
+
+    ordersReport.forEach(orderReport -> {
+      content.append(String.format("%d %s - %s - %s - %s\n",
+          integer.getAndIncrement(),
+          orderReport.getClientName(),
+          orderReport.getClientPhone(),
+          orderReport.getClientSocialLink(),
+          orderReport.getDeliveryAddress()));
+      content.append(END_LINE);
+    });
+
+    SendMessage sendMessage = getSendMessage(update);
+    sendMessage.setText(content.toString());
+
+    messages.add(sendMessage);
+
+    return Optional.of(messages);
+  }
+
 }
