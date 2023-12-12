@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -49,7 +50,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
 
     if (update.hasMessage() && update.getMessage().hasText() &&
         chatGroup.contains(update.getMessage().getChatId()) &&
-        !update.getMessage().getEntities().isEmpty()) {
+        !ObjectUtils.isEmpty(update.getMessage().getEntities())) {
 
       Optional<MessageEntity> messageEntity = update.getMessage().getEntities()
           .stream()

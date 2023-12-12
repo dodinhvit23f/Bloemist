@@ -109,6 +109,7 @@ public class OrderService {
     String hour = String.valueOf(LocalDateTime.now().getHour());
     String nextHour = String.valueOf(LocalDateTime.now().getHour() + 1);
 
+
     Set<OrderReport> orderReports = orderReportRepository
         .getOrderNeedToShipInDateRange(
             Date.from(start.atZone(ZoneOffset.systemDefault()).toInstant()), hour);
