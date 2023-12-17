@@ -5,8 +5,10 @@ import static com.utils.Utils.formatDate;
 import com.bloemist.constant.OrderState;
 import com.bloemist.entity.OrderReport;
 import com.bloemist.repositories.OrderReportRepository;
+import com.utils.Utils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.LinkedList;
@@ -19,10 +21,13 @@ import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
@@ -32,7 +37,12 @@ public class OrderService {
 
   static final String NEXT_THREE_DAY_ORDER = "/next_three_days_order";
   static final String SEARCH_BY_PHONE_OR_NAME = "/search_by_phone_or_name";
+  static final String SEARCH_BY_DATE = "/search_by_date";
+  static final String SEARCH_ON_DEBIT = "/pursuing_overdue_payments";
+  static final String HELP = "/help";
+
   public static final String END_LINE = "====================================================\n";
+  public static final String searchTitle = "Thần xin gửi mẫu: \nTên khách - Trạng Thái - SĐT - Thời gian - Địa chỉ\n";
 
   final OrderReportRepository orderReportRepository;
 
@@ -48,11 +58,92 @@ public class OrderService {
       case NEXT_THREE_DAY_ORDER:
         return findNextThreeDaysOrders(update);
       case SEARCH_BY_PHONE_OR_NAME:
-        return findOrderByClientNameOrPhoneNumber(update, commands[1].strip())
-            ;
+        return findOrderByClientNameOrPhoneNumber(update, commands[1].strip());
+      case SEARCH_BY_DATE:
+        return findOrderByDate(update, commands[1].strip());
+      case SEARCH_ON_DEBIT:
+        return findOrdersOnDebit(update);
+      case HELP:
+        return help(update);
     }
 
     return Optional.empty();
+  }
+
+  public Optional<List<SendMessage>> help(Update update) {
+    List<SendMessage> messages = new LinkedList<>();
+
+    SendMessage title = getSendMessage(update);
+    messages.add(title);
+
+    AtomicInteger integer = new AtomicInteger(1);
+
+    StringBuilder content = new StringBuilder();
+    content.append("Ngài ơi chú ý!!!!! Những câu lệnh hỗ trợ:\n");
+
+    content.append(String.format("%d. %s - Tìm kiếm các đơn trong hôm nay, 2 ngày tiếp theo\n"
+        , integer.getAndIncrement(), NEXT_THREE_DAY_ORDER));
+    content.append(
+        String.format("%d.%s - Tìm kiếm các đơn theo tên hoặc số diện thoại khách hàng\n"
+            , integer.getAndIncrement(), SEARCH_BY_PHONE_OR_NAME));
+    content.append(String.format("%d.%s - Tìm kiếm các đơn theo ngày như là 20-10-2023\n"
+        , integer.getAndIncrement(), SEARCH_BY_DATE));
+    content.append(String.format("%d.%s - Tìm kiếm các đơn đang nợ\n"
+        , integer.getAndIncrement(), SEARCH_ON_DEBIT));
+
+    title.setText(content.toString());
+
+    return Optional.of(messages);
+  }
+
+  public Optional<List<SendMessage>> findOrdersOnDebit(Update update) {
+
+    List<SendMessage> messages = new LinkedList<>();
+
+    Page<OrderReport> ordersReport = orderReportRepository.findOrdersInDebit(Pageable.ofSize(30));
+
+    if (ObjectUtils.isEmpty(ordersReport.getContent())) {
+      Optional.of(messages);
+    }
+
+    fillDataOnDebit(update, ordersReport, messages);
+
+    return Optional.of(messages);
+  }
+
+  private Optional<List<SendMessage>> findOrderByDate(Update update, String strip) {
+
+    List<SendMessage> messages = new LinkedList<>();
+    SendMessage title = getSendMessage(update);
+    messages.add(title);
+
+    if (ObjectUtils.isEmpty(strip)) {
+      title.setText("Ngày không được để trống đâu hoàng thượng, ngài điền như này nhé 20-10-2023");
+      return Optional.of(messages);
+    }
+
+    LocalDateTime searchDay = LocalDateTime.ofInstant(Utils.toDate(strip).toInstant(),
+            ZoneId.systemDefault())
+        .toLocalDate().atStartOfDay();
+    LocalDateTime nextDay = searchDay.plusDays(1);
+
+    List<OrderReport> ordersReport = orderReportRepository.getOrderInDateRangeRoleAdmin(
+        Date.from(searchDay.atZone(ZoneOffset.systemDefault()).toInstant())
+        , Date.from(nextDay.atZone(ZoneOffset.systemDefault()).toInstant())
+    );
+
+    AtomicInteger integer = new AtomicInteger(1);
+
+    if (ObjectUtils.isEmpty(ordersReport)) {
+      return Optional.empty();
+    }
+
+    StringBuilder content = new StringBuilder();
+    content.append(searchTitle);
+
+    fillData(title, content, ordersReport, integer);
+
+    return Optional.of(messages);
   }
 
   private Optional<List<SendMessage>> findNextThreeDaysOrders(Update update) {
@@ -77,19 +168,7 @@ public class OrderService {
 
     AtomicInteger integer = new AtomicInteger(1);
 
-    ordersReport.forEach(orderReport -> {
-      content.append(String.format("%d. %s - %s - %s - %s:%s - %s\n",
-          integer.getAndIncrement(),
-          orderReport.getReceiver(),
-          OrderState.values()[orderReport.getOrderStatus()].getStateText(),
-          orderReport.getReceiverPhone(),
-          formatDate(orderReport.getDeliveryDate()),
-          orderReport.getDeliveryTime(),
-          orderReport.getDeliveryAddress()));
-      content.append(END_LINE);
-    });
-
-    title.setText(content.toString());
+    fillData(title, content, ordersReport, integer);
 
     return Optional.of(messages);
   }
@@ -108,7 +187,6 @@ public class OrderService {
 
     String hour = String.valueOf(LocalDateTime.now().getHour());
     String nextHour = String.valueOf(LocalDateTime.now().getHour() + 1);
-
 
     Set<OrderReport> orderReports = orderReportRepository
         .getOrderNeedToShipInDateRange(
@@ -208,7 +286,7 @@ public class OrderService {
   }
 
 
-   private Optional<List<SendMessage>> findOrderByClientNameOrPhoneNumber(Update update,
+  private Optional<List<SendMessage>> findOrderByClientNameOrPhoneNumber(Update update,
       String query) {
     List<SendMessage> messages = new LinkedList<>();
     LocalDateTime startTime = LocalDate.now().minusYears(1).atStartOfDay();
@@ -242,4 +320,52 @@ public class OrderService {
     return Optional.of(messages);
   }
 
+
+  private void fillData(SendMessage title, StringBuilder content,
+      List<OrderReport> ordersReport, AtomicInteger integer) {
+    ordersReport.forEach(orderReport -> {
+      content.append(String.format("%d. %s - %s - %s - %s:%s - %s\n",
+          integer.getAndIncrement(),
+          orderReport.getReceiver(),
+          OrderState.values()[orderReport.getOrderStatus()].getStateText(),
+          orderReport.getReceiverPhone(),
+          formatDate(orderReport.getDeliveryDate()),
+          orderReport.getDeliveryTime(),
+          orderReport.getDeliveryAddress()));
+      content.append(END_LINE);
+    });
+
+    title.setText(content.toString());
+  }
+
+  private void fillDataOnDebit(Update update, Page<OrderReport> ordersReport,
+      List<SendMessage> messages) {
+    AtomicInteger integer = new AtomicInteger(1);
+    StringBuilder content = new StringBuilder();
+    content.append("Thần xin gửi mẫu: \nTên khách - Trạng Thái - SĐT - Thời gian đặt \n");
+
+    while (Boolean.TRUE){
+      SendMessage title = getSendMessage(update);
+      messages.add(title);
+
+      ordersReport.forEach(orderReport -> {
+        content.append(String.format("%d. %s - %s - %s - %s\n",
+            integer.getAndIncrement(),
+            orderReport.getClientName(),
+            OrderState.values()[orderReport.getOrderStatus()].getStateText(),
+            orderReport.getClientPhone(),
+            formatDate(orderReport.getOrderDate())));
+        content.append(END_LINE);
+      });
+
+      title.setText(content.toString());
+
+      content.delete(0, title.getText().length());
+
+      if(!ordersReport.hasNext()){
+        return;
+      }
+      ordersReport = orderReportRepository.findOrdersInDebit(PageRequest.of(ordersReport.getNumber() + 1, 30));
+    }
+  }
 }

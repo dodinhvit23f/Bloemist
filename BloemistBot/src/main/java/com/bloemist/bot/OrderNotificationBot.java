@@ -107,7 +107,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
   }
 
   // Run every hour
-  @Scheduled(cron = "0 0 * * * *")
+/*  @Scheduled(cron = "0 0 * * * *")
   public void shippingNotification(){
     Optional<SendMessage> optional =  orderService.findOrderNeedToShip();
     optional.ifPresent(message -> {
@@ -123,7 +123,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
       chatGroup.stream().findFirst().ifPresent(id -> message.setChatId(id));
       sendMessage(message);
     });
-  }
+  }*/
 
 
 }

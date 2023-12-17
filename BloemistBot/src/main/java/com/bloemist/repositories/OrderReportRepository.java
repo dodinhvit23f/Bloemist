@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,16 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "orders.deliveryDate DESC,"
       + "orders.deliveryTime DESC")
   List<OrderReport> getOrderInDateRange(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+
+  @Query("SELECT orders "
+      + "FROM OrderReport orders "
+      + "WHERE  orders.orderStatus NOT IN (6, 7) AND "
+      + "orders.deliveryDate >= :startTime AND "
+      + "orders.deliveryDate < :endTime "
+      + "ORDER BY orders.orderStatus ASC,"
+      + "orders.deliveryDate DESC,"
+      + "orders.deliveryTime DESC")
+  List<OrderReport> getOrderInDateRangeRoleAdmin(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
 
   @Query( value = "SELECT orders "
@@ -57,5 +68,9 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "orders.deliveryTime DESC")
   Set<OrderReport> getOrderNeedToDoneInDateRange(@Param("startTime") Date startTime, @Param("condition") String condition);
 
-
+  @Query("SELECT orders "
+      + "FROM OrderReport orders "
+      + "WHERE  orders.orderStatus = 5 "
+      + "ORDER BY orders.orderDate ASC")
+  Page<OrderReport> findOrdersInDebit(Pageable pageable);
 }
