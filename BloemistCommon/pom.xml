@@ -19,6 +19,7 @@
     <javafx-media.version>19</javafx-media.version>
     <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
     <poi.version>5.2.0</poi.version>
+    <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -114,6 +115,7 @@
         </configuration>
       </plugin>
     </plugins>
+
   </build>
 
 </project>
