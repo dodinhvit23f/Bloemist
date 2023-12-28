@@ -5,23 +5,17 @@ import static com.bloemist.BotConstant.REPOSE_MESSAGE;
 
 import com.bloemist.services.OrderService;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -38,7 +32,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
 
   @Value("${application.bot.token}")
   String token;
-  final String botName = "@bloemist_bot";
+  public static final String BOT_NAME = "@bloemist_bot";
 
   final OrderService orderService;
 
@@ -55,7 +49,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
       Optional<MessageEntity> messageEntity = update.getMessage().getEntities()
           .stream()
           .filter(entity -> entity.getType().equals(MENTION) &&
-              entity.getText().equals(botName))
+              entity.getText().equals(BOT_NAME))
           .findFirst();
 
       messageEntity.ifPresent( m -> {

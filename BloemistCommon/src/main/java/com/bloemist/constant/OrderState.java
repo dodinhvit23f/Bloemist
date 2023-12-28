@@ -11,14 +11,15 @@ public enum OrderState {
   DONE(6),
   CANCEL(7);
 
-  public static final String PENDING_TEXT = "1. Chưa giải quyết";
-  public static final String IN_PROCESS_TEXT = "2. Đang xử lý";
-  public static final String DONE_PROCESS_TEXT = "3. Đã xử lý";
-  public static final String IN_DELIVERY_TEXT = "4. Đang giao";
-  public static final String DONE_DELIVERY_TEXT = "5. Đã giao";
-  public static final String IN_DEBIT_TEXT = "6. Nợ";
-  public static final String DONE_TEXT = "7. Hoàn Thành";
-  public static final String CANCEL_TEXT = "8. Hủy";
+  public static final String PENDING_TEXT = "Chưa giải quyết";
+  public static final String IN_PROCESS_TEXT = "Đang xử lý";
+  public static final String DONE_PROCESS_TEXT = "Đã xử lý";
+  public static final String IN_DELIVERY_TEXT = "Đang giao";
+  public static final String DONE_DELIVERY_TEXT = "Đã giao";
+  public static final String IN_DEBIT_TEXT = "Nợ";
+  public static final String DONE_TEXT = "Hoàn Thành";
+  public static final String CANCEL_TEXT = "Hủy";
+
   private final int number;
 
   OrderState(int number) {
@@ -26,6 +27,29 @@ public enum OrderState {
   }
 
   public String getStateText() {
+
+    switch (this) {
+      case PENDING:
+        return "1. " + PENDING_TEXT;
+      case IN_PROCESS:
+        return "2. " + IN_PROCESS_TEXT;
+      case DONE_PROCESS:
+        return "3. " + DONE_PROCESS_TEXT;
+      case IN_DELIVERY:
+        return "4. " + IN_DELIVERY_TEXT;
+      case DONE_DELIVERY:
+        return "5. " + DONE_DELIVERY_TEXT;
+      case IN_DEBIT:
+        return "6. " + IN_DEBIT_TEXT;
+      case DONE:
+        return "7. " + DONE_TEXT;
+      case CANCEL:
+        return "8. " + CANCEL_TEXT;
+    }
+    return PENDING_TEXT;
+  }
+
+  public String getStateTextWithoutNumber() {
 
     switch (this) {
       case PENDING:
