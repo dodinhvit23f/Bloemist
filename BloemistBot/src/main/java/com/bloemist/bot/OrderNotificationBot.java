@@ -3,7 +3,7 @@ package com.bloemist.bot;
 import static com.bloemist.BotConstant.FAIL_MESSAGE;
 import static com.bloemist.BotConstant.REPOSE_MESSAGE;
 
-import com.bloemist.services.OrderService;
+import com.bloemist.services.BotOrderService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +34,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
   String token;
   public static final String BOT_NAME = "@bloemist_bot";
 
-  final OrderService orderService;
+  final BotOrderService orderService;
 
 
   final Set<Long> chatGroup = new HashSet<>(List.of(-1001895145596L));

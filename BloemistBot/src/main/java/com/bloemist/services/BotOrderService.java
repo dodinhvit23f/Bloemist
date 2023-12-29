@@ -1,13 +1,5 @@
 package com.bloemist.services;
 
-import static com.bloemist.bot.OrderNotificationBot.BOT_NAME;
-import static com.utils.Utils.formatDate;
-
-import com.bloemist.constant.OrderState;
-import com.bloemist.entity.OrderReport;
-import com.bloemist.repositories.OrderReportRepository;
-import com.utils.Utils;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,13 +23,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.bloemist.constant.OrderState;
+import com.bloemist.entity.OrderReport;
+import com.bloemist.repositories.OrderReportRepository;
+import com.utils.Utils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import static com.bloemist.bot.OrderNotificationBot.BOT_NAME;
+import static com.utils.Utils.formatDate;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderService {
+public class BotOrderService {
 
   static final String TODAY_ORDER = "/order_1";
   static final String NEXT_THREE_DAY_ORDER = "/order_3";
@@ -104,7 +103,7 @@ public class OrderService {
 
     content.append(String.format("%d.%s - Tìm kiếm các đơn đang nợ\n"
         , integer.getAndIncrement(), SEARCH_ON_DEBIT));
-    
+
 
     title.setText(content.toString());
 

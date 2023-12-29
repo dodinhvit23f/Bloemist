@@ -262,7 +262,7 @@ public class OrderService implements IOrderService {
   private List<Order> streamMappingOrderReportToOrder(Stream<OrderReport> stream) {
     AtomicInteger stt = new AtomicInteger(BigInteger.ONE.intValue());
     return stream.map(orderReport -> {
-      var order = OrderMapper.MAPPER.orderReportToOrder(orderReport);
+      var order = orderMapper.orderReportToOrder(orderReport);
       order.setStt(String.valueOf(stt.getAndIncrement()));
       return order;
     }).toList();
