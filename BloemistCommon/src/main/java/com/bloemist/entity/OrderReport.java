@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
@@ -118,6 +119,12 @@ public class OrderReport extends BaseEntity {
 
   @Column(name = "total_amount")
   private BigDecimal totalAmount;
+
+  @Column(name = "delivery_start_range")
+  private LocalDateTime deliveryStartRange;
+
+  @Column(name = "delivery_end_range")
+  private LocalDateTime deliveryEndRange;
 
   @Override
   public boolean equals(Object o) {

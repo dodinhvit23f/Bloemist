@@ -13,7 +13,6 @@ import com.bloemist.events.MessageSuccess;
 import com.bloemist.events.MessageWarning;
 import com.bloemist.repositories.OrderReportRepository;
 import com.bloemist.services.IOrderService;
-import com.bloemist.services.ITimeService;
 import com.bloemist.constant.Constants;
 import com.bloemist.constant.OrderState;
 import com.google.api.client.http.FileContent;
@@ -23,8 +22,12 @@ import com.utils.Utils;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -35,6 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
@@ -59,7 +63,6 @@ public class OrderService implements IOrderService {
   public static final String GOOGLE_IMAGE_LINK = "https://drive.google.com/uc?id=%s";
 
   OrderReportRepository orderReportRepository;
-  ITimeService timeService;
   ApplicationEventPublisher publisher;
   OrderMapper orderMapper;
   Drive googleDrive;
@@ -241,6 +244,12 @@ public class OrderService implements IOrderService {
       return Boolean.FALSE;
     }
 
+    Pattern pattern = Pattern.compile("\\d{2}:\\d{2} - \\d{2}:\\d{2}");
+    if(!pattern.matcher(orderInfo.getDeliveryHour()).matches()){
+      publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
+      return Boolean.FALSE;
+    }
+
     return Boolean.TRUE;
   }
 
@@ -277,6 +286,31 @@ public class OrderService implements IOrderService {
     orderMapper.mapOrderToOrderReport(orderReport, customerOrder);
     orderReport.setOrderCode(getOrderCode());
     orderReport.setOrderStatus(status);
+
+    String[] deliveryRange = orderReport.getDeliveryTime().split("-");
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    try {
+      Time startTime = new Time(sdf.parse(deliveryRange[0].strip()).getTime());
+      Time endTime = new Time(sdf.parse(deliveryRange[1].strip()).getTime());
+
+      LocalDateTime startDelivery = LocalDateTime.ofInstant(orderReport.getOrderDate().toInstant(),
+          ZoneOffset.systemDefault())
+          .plusMinutes(startTime.getMinutes())
+          .plusHours(startTime.getHours());
+
+      LocalDateTime endDelivery = LocalDateTime.ofInstant(orderReport.getOrderDate().toInstant(),
+          ZoneOffset.systemDefault())
+          .plusMinutes(endTime.getMinutes())
+          .plusHours(endTime.getHours());;
+
+      orderReport.setDeliveryStartRange(startDelivery);
+      orderReport.setDeliveryEndRange(endDelivery);
+
+    } catch (ParseException e) {
+
+    }
+
+
 
     try {
       File fileMetadata = new File();
