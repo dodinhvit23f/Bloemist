@@ -77,22 +77,23 @@ public enum OrderState {
   }
 
   public static int getState(String text) {
+
     switch (text) {
-      case PENDING_TEXT:
+      case "1. " + PENDING_TEXT:
         return PENDING.getState();
-      case IN_PROCESS_TEXT:
+      case "2. " + IN_PROCESS_TEXT:
         return IN_PROCESS.getState();
-      case DONE_PROCESS_TEXT:
+      case "3. " + DONE_PROCESS_TEXT:
         return DONE_PROCESS.getState();
-      case IN_DELIVERY_TEXT:
+      case "4. " + IN_DELIVERY_TEXT:
         return IN_DELIVERY.getState();
-      case DONE_DELIVERY_TEXT:
+      case "5. " + DONE_DELIVERY_TEXT:
         return DONE_DELIVERY.getState();
-      case IN_DEBIT_TEXT:
+      case "6. " + IN_DEBIT_TEXT:
         return IN_DEBIT.getState();
-      case DONE_TEXT:
+      case "7. " + DONE_TEXT:
         return DONE.getState();
-      case CANCEL_TEXT:
+      case "8. " + CANCEL_TEXT:
         return CANCEL.getState();
     }
     return PENDING.getState();
