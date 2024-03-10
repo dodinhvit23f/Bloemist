@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -63,7 +64,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
           SendMessage message = getSendMessage(update, REPOSE_MESSAGE);
           sendMessage(message);
 
-          Optional<List<SendMessage>> optional =  orderService.runCommand(update, command.getText());
+          Optional<List<SendMessage>> optional =  orderService.runCommand(update, command.getText(), this);
           optional.ifPresentOrElse(sendMessages -> sendMessages.forEach(this::sendMessage),
               () -> sendMessage(getSendMessage(update, FAIL_MESSAGE)));
         });
@@ -108,7 +109,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
       chatGroup.stream().findFirst().ifPresent(id -> message.setChatId(id));
       sendMessage(message);
     });
-  }
+  }*/
 
   @Scheduled(cron = "0 0 * * * *")
   public void notifyUnDoneOrder(){
@@ -117,7 +118,7 @@ public class OrderNotificationBot extends TelegramLongPollingBot {
       chatGroup.stream().findFirst().ifPresent(id -> message.setChatId(id));
       sendMessage(message);
     });
-  }*/
+  }
 
 
 }

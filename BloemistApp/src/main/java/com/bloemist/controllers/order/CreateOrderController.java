@@ -1,5 +1,6 @@
 package com.bloemist.controllers.order;
 
+import static com.bloemist.utils.Utils.currencyToStringNumber;
 import static com.utils.Utils.openDialogChoiceImage;
 
 import com.bloemist.dto.Order;
@@ -141,15 +142,14 @@ public class CreateOrderController extends OrderController {
     var orderDescription = this.orderDescription.getText().strip();//NOSONAR
     var orderNote = this.customerRemark.getText().strip(); //NOSONAR
     var banner = this.bannerContent.getText().strip(); //NOSONAR
-    var truePrice = this.actualPrice.getText().strip(); //NOSONAR
-    var deliveryFee = this.deliveryFee.getText().strip(); //NOSONAR
-    var vatFee = this.vatFee.getText().strip(); //NOSONAR
-    var salePrice = Utils.currencyToStringNumber(this.salePriceValue.getText());//NOSONAR
-    var depositAmount = this.depositAmount.getText().strip();//NOSONAR
-    var remainAmount = Utils.currencyToStringNumber(
-        this.outstandingBalanceValue.getText()); //NOSONAR
-    var totalAmount = Utils.currencyToStringNumber(this.totalAmountValue.getText());//NOSONAR
-    var discountAmount = Utils.currencyToStringNumber(this.discountAmount.getText());//NOSONAR
+    var truePrice = currencyToStringNumber(this.actualPrice.getText().strip()); //NOSONAR
+    var deliveryFee = currencyToStringNumber(this.deliveryFee.getText().strip()); //NOSONAR
+    var vatFee = currencyToStringNumber(this.vatFee.getText().strip()); //NOSONAR
+    var salePrice = currencyToStringNumber(Utils.currencyToStringNumber(this.salePriceValue.getText()));//NOSONAR
+    var depositAmount = currencyToStringNumber(this.depositAmount.getText().strip());//NOSONAR
+    var remainAmount = currencyToStringNumber(this.outstandingBalanceValue.getText()); //NOSONAR
+    var totalAmount = currencyToStringNumber(this.totalAmountValue.getText());//NOSONAR
+    var discountAmount = currencyToStringNumber(this.discountAmount.getText());//NOSONAR
 
     if (Objects.isNull(imageFile)) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_001));
@@ -252,18 +252,19 @@ public class CreateOrderController extends OrderController {
 
   @FXML
   public void calculateTotalPrice() {
-    if (!Utils.isNumber(this.actualPrice.getText().strip())
-        || !Utils.isNumber(this.deliveryFee.getText().strip())
-        || !Utils.isNumber(this.vatFee.getText().strip())
-        || !Utils.isNumber(this.depositAmount.getText().strip())) {
+    if (!Utils.isNumber(currencyToStringNumber(this.actualPrice.getText()).strip())
+        || !Utils.isNumber(currencyToStringNumber(this.deliveryFee.getText().strip()))
+        || !Utils.isNumber(currencyToStringNumber(this.vatFee.getText().strip()))
+        || !Utils.isNumber(currencyToStringNumber(this.depositAmount.getText().strip()))) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
       return;
     }
-    var discount = NumberUtils.parseNumber(this.discountAmount.getText(), Double.class);
-    var truePrice = NumberUtils.parseNumber(this.actualPrice.getText(), Double.class);
-    var deliveryFeeAmount = NumberUtils.parseNumber(this.deliveryFee.getText(), Double.class);
-    var vatFeeAmount = NumberUtils.parseNumber(this.vatFee.getText(), Double.class);
-    var deposit = NumberUtils.parseNumber(this.depositAmount.getText(), Double.class);
+
+    var discount = NumberUtils.parseNumber(currencyToStringNumber(this.discountAmount.getText()), Double.class);
+    var truePrice = NumberUtils.parseNumber(currencyToStringNumber(this.actualPrice.getText()), Double.class);
+    var deliveryFeeAmount = NumberUtils.parseNumber(currencyToStringNumber(this.deliveryFee.getText()), Double.class);
+    var vatFeeAmount = NumberUtils.parseNumber(currencyToStringNumber(this.vatFee.getText()), Double.class);
+    var deposit = NumberUtils.parseNumber(currencyToStringNumber(this.depositAmount.getText()), Double.class);
 
     var salePrice = getSalePrice(truePrice, discount);
     var totalSaleAmount = getTotalPrice(salePrice, deliveryFeeAmount, vatFeeAmount);

@@ -1,6 +1,7 @@
 package com.bloemist.repositories;
 
 import com.bloemist.entity.OrderReport;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,8 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "ORDER BY orders.orderStatus ASC,"
       + "orders.deliveryDate DESC,"
       + "orders.deliveryTime DESC")
-  List<OrderReport> getOrderInDateRange(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+  List<OrderReport> getOrderInDateRange(@Param("startTime") Date startTime,
+      @Param("endTime") Date endTime);
 
   @Query("SELECT orders "
       + "FROM OrderReport orders "
@@ -35,10 +37,11 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "ORDER BY orders.orderStatus ASC,"
       + "orders.deliveryDate DESC,"
       + "orders.deliveryTime DESC")
-  List<OrderReport> getOrderInDateRangeRoleAdmin(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+  List<OrderReport> getOrderInDateRangeRoleAdmin(@Param("startTime") Date startTime,
+      @Param("endTime") Date endTime);
 
 
-  @Query( value = "SELECT orders "
+  @Query(value = "SELECT orders "
       + "FROM OrderReport orders "
       + "WHERE  (orders.clientPhone = :condition OR "
       + "orders.clientName ILIKE :condition%) AND "
@@ -46,7 +49,8 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "ORDER BY orders.orderStatus ASC,"
       + "orders.deliveryDate DESC,"
       + "orders.deliveryTime DESC")
-  List<OrderReport> searchOrderByPhoneOrNameInDateRange(@Param("condition") String condition, @Param("startTime") Date startTime, Pageable pageable);
+  List<OrderReport> searchOrderByPhoneOrNameInDateRange(@Param("condition") String condition,
+      @Param("startTime") Date startTime, Pageable pageable);
 
   @Query("SELECT orders "
       + "FROM OrderReport orders "
@@ -56,17 +60,17 @@ public interface OrderReportRepository extends JpaRepository<OrderReport, Long> 
       + "ORDER BY orders.orderStatus ASC,"
       + "orders.deliveryDate DESC,"
       + "orders.deliveryTime DESC")
-  Set<OrderReport> getOrderNeedToShipInDateRange(@Param("startTime") Date startTime, @Param("condition") String condition);
+  Set<OrderReport> getOrderNeedToShipInDateRange(@Param("startTime") Date startTime,
+      @Param("condition") String condition);
 
   @Query("SELECT orders "
       + "FROM OrderReport orders "
       + "WHERE  orders.orderStatus < 2 AND "
-      + "orders.deliveryDate = :startTime  AND "
-      + "orders.deliveryTime ILIKE %:condition%"
-      + "ORDER BY orders.orderStatus ASC,"
-      + "orders.deliveryDate DESC,"
-      + "orders.deliveryTime DESC")
-  Set<OrderReport> getOrderNeedToDoneInDateRange(@Param("startTime") Date startTime, @Param("condition") String condition);
+      + "orders.deliveryStartRange >= :startTime  AND "
+      + "orders.deliveryEndRange <= :endTime "
+      + "ORDER BY orders.deliveryTime DESC")
+  Set<OrderReport> getOrderNeedToDoneInDateRange(@Param("startTime") LocalDateTime startTime,
+      @Param("endTime") LocalDateTime endTime);
 
   @Query("SELECT orders "
       + "FROM OrderReport orders "

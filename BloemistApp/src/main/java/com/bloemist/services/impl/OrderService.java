@@ -145,6 +145,9 @@ public class OrderService implements IOrderService {
       if (orderReports.containsKey(code)) {
         try {
           updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
+        } catch ( ParseException e){
+          publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003, code));
+          codes.remove(code);
         } catch (IOException e) {
           publisher.publishEvent(new MessageWarning(Constants.CONNECTION_FAIL, code));
           codes.remove(code);
@@ -158,7 +161,6 @@ public class OrderService implements IOrderService {
     } catch (Exception e) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_009));
     }
-
 
   }
 
@@ -245,7 +247,7 @@ public class OrderService implements IOrderService {
     }
 
     Pattern pattern = Pattern.compile("\\d{2}:\\d{2} - \\d{2}:\\d{2}");
-    if(!pattern.matcher(orderInfo.getDeliveryHour()).matches()){
+    if (!pattern.matcher(orderInfo.getDeliveryHour()).matches()) {
       publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003));
       return Boolean.FALSE;
     }
@@ -287,65 +289,49 @@ public class OrderService implements IOrderService {
     orderReport.setOrderCode(getOrderCode());
     orderReport.setOrderStatus(status);
 
-    String[] deliveryRange = orderReport.getDeliveryTime().split("-");
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     try {
-      Time startTime = new Time(sdf.parse(deliveryRange[0].strip()).getTime());
-      Time endTime = new Time(sdf.parse(deliveryRange[1].strip()).getTime());
+      final CompletableFuture<File> googleFile = uploadFile(orderReport);
 
-      LocalDateTime startDelivery = LocalDateTime.ofInstant(orderReport.getOrderDate().toInstant(),
-          ZoneOffset.systemDefault())
-          .plusMinutes(startTime.getMinutes())
-          .plusHours(startTime.getHours());
+      setupDeliveryDateTime(orderReport);
+      updateOrderDTO(customerOrder, orderReport);
 
-      LocalDateTime endDelivery = LocalDateTime.ofInstant(orderReport.getOrderDate().toInstant(),
-          ZoneOffset.systemDefault())
-          .plusMinutes(endTime.getMinutes())
-          .plusHours(endTime.getHours());;
-
-      orderReport.setDeliveryStartRange(startDelivery);
-      orderReport.setDeliveryEndRange(endDelivery);
-
-    } catch (ParseException e) {
-
-    }
-
-
-
-    try {
-      File fileMetadata = new File();
-      fileMetadata.setName(String.format("%s.jpg", orderReport.getOrderCode()));
-      fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
-      fileMetadata.setMimeType(MEDIA);
-
-      final File googleFile = uploadFile(orderReport, fileMetadata);
-
-      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.getId()));
-
+      orderReport.setSamplePictureLink(
+          String.format(GOOGLE_IMAGE_LINK, googleFile.join().getId()));
       orderReportRepository.save(orderReport);
 
-      customerOrder.setCode(orderReport.getOrderCode());
-      customerOrder.setPriority(orderReport.getOrderStatus());
-      customerOrder.setImagePath(orderReport.getSamplePictureLink());
-      customerOrder.setIsSelected(Boolean.FALSE);
+    } catch (ParseException e) {
+      return Optional.empty();
     } catch (Exception ex) {
       return Optional.empty();
     }
     return Optional.of(Boolean.TRUE);
   }
 
-  private File uploadFile(OrderReport orderReport, File fileMetadata) throws IOException {
+  private CompletableFuture<File> uploadFile(OrderReport orderReport) {
+
+    File fileMetadata = new File();
+    fileMetadata.setName(String.format("%s.jpg", UUID.randomUUID()));
+    fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
+    fileMetadata.setMimeType(MEDIA);
+
     var rawFile = new java.io.File(orderReport.getSamplePictureLink());
-    FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
 
-    final File googleFile = googleDrive.files().create(fileMetadata, mediaContent)
-        .setFields(String.join(",", ID, WEB_VIEW_LINK))
-        .execute();
+    return CompletableFuture.supplyAsync(() -> {
+      FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
 
-    moveFileToTrashAsync(googleFile);
-    return googleFile;
+      final File googleFile;
+      try {
+        googleFile = googleDrive.files().create(fileMetadata, mediaContent)
+            .setFields(String.join(",", ID, WEB_VIEW_LINK))
+            .execute();
+
+        moveFileToTrash(googleFile);
+      } catch (Exception e) {
+        return null;
+      }
+      return googleFile;
+    });
   }
-
 
   private void stopLoadingMessage() {
     CompletableFuture.runAsync(() -> publisher.publishEvent(new MessageLoading(Boolean.FALSE)));
@@ -355,8 +341,8 @@ public class OrderService implements IOrderService {
     publisher.publishEvent(new MessageLoading(Boolean.TRUE));
   }
 
-
-  private void updateFieldsCanChange(Order order, OrderReport orderReport) throws IOException {
+  private void updateFieldsCanChange(Order order, OrderReport orderReport)
+      throws IOException, ParseException {
     var deposit = NumberUtils.parseNumber(currencyToStringNumber(order.getDeposit()),
         BigDecimal.class);
     var remain = NumberUtils.parseNumber(currencyToStringNumber(order.getRemain()),
@@ -376,7 +362,8 @@ public class OrderService implements IOrderService {
     var materialFee = NumberUtils.parseNumber(currencyToStringNumber(order.getMaterialsFee()),
         BigDecimal.class);
 
-    var actualDeliveryFee = NumberUtils.parseNumber(currencyToStringNumber(order.getActualDeliveryFee()),
+    var actualDeliveryFee = NumberUtils.parseNumber(
+        currencyToStringNumber(order.getActualDeliveryFee()),
         BigDecimal.class);
 
     var actualVatFee = NumberUtils.parseNumber(currencyToStringNumber(order.getActualVatFee()),
@@ -408,33 +395,50 @@ public class OrderService implements IOrderService {
     orderReport.setOrderStatus(OrderState.getState(order.getStatus()));
     orderReport.setSamplePictureLink(order.getImagePath());
     // update file
-    if(!orderReport.getSamplePictureLink().contains("http")){
-      File fileMetadata = new File();
-      fileMetadata.setName(String.format("%s.jpg", UUID.randomUUID().toString()));
-      fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
-      fileMetadata.setMimeType(MEDIA);
-
-      final File googleFile = uploadFile(orderReport, fileMetadata);
-
-      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.getId()));
+    if (!orderReport.getSamplePictureLink().contains("http")) {
+      final CompletableFuture<File> googleFile = uploadFile(orderReport);
+      orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.join().getId()));
     }
 
     orderReport.setMaterialsFee(materialFee);
     orderReport.setActualDeliveryFee(actualDeliveryFee);
     orderReport.setActualVatFee(actualVatFee);
 
+    setupDeliveryDateTime(orderReport);
   }
 
-  private void moveFileToTrashAsync(File googleFile) {
-    CompletableFuture.runAsync(() -> {
-      File trash = new File();
-      trash.setTrashed(Boolean.TRUE);
-      try {
-        googleDrive.files().update(googleFile.getId(), trash).execute();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
+  private void moveFileToTrash(File googleFile) throws IOException {
+    File trash = new File();
+    trash.setTrashed(Boolean.TRUE);
+    googleDrive.files().update(googleFile.getId(), trash).execute();
   }
 
+  private void updateOrderDTO(Order customerOrder, OrderReport orderReport) {
+    customerOrder.setCode(orderReport.getOrderCode());
+    customerOrder.setPriority(orderReport.getOrderStatus());
+    customerOrder.setImagePath(orderReport.getSamplePictureLink());
+    customerOrder.setIsSelected(Boolean.FALSE);
+  }
+
+  private void setupDeliveryDateTime(OrderReport orderReport) throws ParseException {
+
+    String[] deliveryRange = orderReport.getDeliveryTime().split("-");
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+    Time startTime = new Time(sdf.parse(deliveryRange[0].strip()).getTime());
+    Time endTime = new Time(sdf.parse(deliveryRange[1].strip()).getTime());
+
+    LocalDateTime startDelivery = LocalDateTime.ofInstant(orderReport.getDeliveryDate().toInstant(),
+            ZoneOffset.systemDefault())
+        .plusMinutes(startTime.getMinutes())
+        .plusHours(startTime.getHours());
+
+    LocalDateTime endDelivery = LocalDateTime.ofInstant(orderReport.getDeliveryDate().toInstant(),
+            ZoneOffset.systemDefault())
+        .plusMinutes(endTime.getMinutes())
+        .plusHours(endTime.getHours());
+
+    orderReport.setDeliveryStartRange(startDelivery);
+    orderReport.setDeliveryEndRange(endDelivery);
+  }
 }

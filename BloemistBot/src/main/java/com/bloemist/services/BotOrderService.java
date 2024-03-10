@@ -1,5 +1,14 @@
 package com.bloemist.services;
 
+import static com.bloemist.bot.OrderNotificationBot.BOT_NAME;
+import static com.utils.Utils.currencyFormat;
+import static com.utils.Utils.formatDate;
+
+import com.bloemist.bot.OrderNotificationBot;
+import com.bloemist.constant.OrderState;
+import com.bloemist.entity.OrderReport;
+import com.bloemist.repositories.OrderReportRepository;
+import com.utils.Utils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,27 +20,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
-import com.bloemist.constant.OrderState;
-import com.bloemist.entity.OrderReport;
-import com.bloemist.repositories.OrderReportRepository;
-import com.utils.Utils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import static com.bloemist.bot.OrderNotificationBot.BOT_NAME;
-import static com.utils.Utils.formatDate;
 
 @Service
 @RequiredArgsConstructor
@@ -40,17 +38,23 @@ public class BotOrderService {
 
   static final String TODAY_ORDER = "/order_1";
   static final String NEXT_THREE_DAY_ORDER = "/order_3";
-  static final String SEARCH_BY_PHONE_OR_NAME = "/search_by_phone_or_name";
-  static final String SEARCH_BY_DATE = "/search_by_date";
-  static final String SEARCH_ON_DEBIT = "/pursuing_overdue_payments";
+  static final String SEARCH_BY_PHONE_OR_NAME = "/customers";
+  static final String SEARCH_BY_DATE = "/date";
+  static final String SEARCH_ON_DEBIT = "/debts";
+  static final String DELETE = "/clear";
   static final String HELP = "/help";
-
   public static final String END_LINE = "====================================================\n";
-  public static final String searchTitle = "Thần xin gửi mẫu: \nTên khách - Trạng Thái - SĐT - Thời gian - Địa chỉ\n";
 
+  private static final String COMMON_MESSAGE =
+      "%d - [Trạng thái đơn]: %s\n[Giá niêm yết]: %s\n[Giờ giao]: %s\n[Ngày giao]: %s\n"
+          + "[Tên người đặt]: %s\n[SĐT]: %s\n[Chi tiết đơn hàng]: %s\n"
+          + "[Nội dung banner]: %s \n[Ghi chú]: %s \n[Địa chỉ giao]: %s\n"
+          + "[Người nhận]: %s \n[SĐT người nhận]: %s \n[Link ảnh mẫu]: %s \n"
+          + "[Link FB người đặt]: %s";
   final OrderReportRepository orderReportRepository;
 
-  public Optional<List<SendMessage>> runCommand(Update update, String inputCommand) {
+  public Optional<List<SendMessage>> runCommand(Update update, String inputCommand,
+      OrderNotificationBot orderNotificationBot) {
 
     String[] commands = update.getMessage().getText().split(BOT_NAME, 2);
 
@@ -72,9 +76,38 @@ public class BotOrderService {
         return findOrdersOnDebit(update);
       case HELP:
         return help(update);
+      case DELETE:
+         clearAllMessage(update, orderNotificationBot);
     }
 
     return Optional.empty();
+  }
+
+  private void clearAllMessage(Update update, OrderNotificationBot bot){
+   /* GetUpdates getUpdates =  GetUpdates.builder()
+        .offset(0)
+        .allowedUpdates(List.of(""))
+        .timeout(0)
+        .limit(100).build();
+
+    List<ChatMember> administrators = null;
+    try {
+       bot.execute(getUpdates);
+
+    *//*  bot.execute(getChatAdministrators)
+          .stream().filter( administrator -> administrator.getUser().getId().equals(6334256549L))
+          .findFirst()
+          .ifPresent(administrator ->{
+            administrator.getStatus();
+          });*//*
+      System.out.println();
+
+    } catch (TelegramApiException e) {
+      throw new RuntimeException(e);
+    }*/
+
+    // Process the list of administrators or chats
+
   }
 
   public Optional<List<SendMessage>> help(Update update) {
@@ -153,13 +186,10 @@ public class BotOrderService {
     }
 
     StringBuilder content = new StringBuilder();
-    content.append(searchTitle);
-
     fillData(title, content, ordersReport, integer);
 
     return Optional.of(messages);
   }
-
   private Optional<List<SendMessage>> findOrdersByDateRange(Update update, LocalDateTime today,
                                                             LocalDateTime endDate) {
     List<SendMessage> messages = new LinkedList<>();
@@ -168,11 +198,6 @@ public class BotOrderService {
 
     StringBuilder content = new StringBuilder();
     content.append("Thần xin gửi mẫu:");
-    content.append(
-        "[Trạng thái đơn] - [Giá niêm yết] - [Giờ giao] - [Ngày giao] -  [Tên người đặt] - ");
-    content.append(
-        "[SĐT] - [Chi tiết đơn hàng] - [Nội dung banner] - [Ghi chú] - [Địa chỉ giao] - ");
-    content.append("[Người nhận] - [SĐT người nhận] - [Link ảnh mẫu] - [Link FB người đặt]");
 
     title.setText(content.toString());
 
@@ -187,9 +212,10 @@ public class BotOrderService {
 
     for (int i = 0; i < ordersReport.size(); i++) {
       OrderReport orderReport = ordersReport.get(i);
-      String orderMessage = String.format("%d %s %s %s %s %s %s %s %s %s %s %s %s %s ",
+      String orderMessage = String.format(COMMON_MESSAGE,
           i + 1,
-          orderReport.getSalePrice(),
+          OrderState.values()[orderReport.getOrderStatus()].getStateTextWithoutNumber(),
+          currencyFormat(orderReport.getSalePrice().doubleValue()),
           orderReport.getDeliveryTime(),
           formatDate(orderReport.getDeliveryDate()),
           orderReport.getClientName(),
@@ -210,7 +236,6 @@ public class BotOrderService {
 
     return Optional.of(messages);
   }
-
   private SendMessage getSendMessage(Update update) {
     SendMessage message = new SendMessage(); // Create a SendMessage object with mandatory fields
     message.setChatId(update.getMessage().getChatId());
@@ -260,31 +285,12 @@ public class BotOrderService {
   }
 
   public Optional<SendMessage> getUnDoneOrder() {
-    Date start = Date.from(
-        LocalDate.now().atStartOfDay().atZone(ZoneOffset.systemDefault()).toInstant());
 
-    List<Integer> hours =
-        IntStream.range(LocalDateTime.now().getHour(), LocalDateTime.now().getHour() + 2)
-            .boxed()
-            .toList();
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime start =  LocalDateTime.now().toLocalDate().atTime(now.getHour(), now.getMinute());
+    LocalDateTime end = start.plusHours(2);
 
-    Set<OrderReport> orderReports = hours.stream()
-        .map(hour -> orderReportRepository.getOrderNeedToDoneInDateRange(start,
-            String.valueOf(hour)))
-        .flatMap(Set::stream)
-        .collect(Collectors.toSet());
-
-    orderReports = orderReports.stream()
-        .filter(orderReport -> {
-          String deliveryTime = orderReport.getDeliveryTime();
-
-          if (deliveryTime.contains("-")) {
-            String startTime = deliveryTime.split("-")[0];
-            return hours.stream().anyMatch(hour -> startTime.startsWith(String.valueOf(hour)));
-          }
-
-          return hours.stream().anyMatch(hour -> deliveryTime.startsWith(String.valueOf(hour)));
-        }).collect(Collectors.toSet());
+    Set<OrderReport> orderReports = orderReportRepository.getOrderNeedToDoneInDateRange(start,end);
 
     if (ObjectUtils.isEmpty(orderReports)) {
       return Optional.empty();
@@ -322,8 +328,6 @@ public class BotOrderService {
 
     title.setText(content.toString());
   }
-
-
   private Optional<List<SendMessage>> findOrderByClientNameOrPhoneNumber(Update update,
                                                                          String query) {
     List<SendMessage> messages = new LinkedList<>();
@@ -357,20 +361,17 @@ public class BotOrderService {
 
     return Optional.of(messages);
   }
-
-
   private void fillData(SendMessage title, StringBuilder content,
                         List<OrderReport> ordersReport, AtomicInteger integer) {
     ordersReport.forEach(orderReport -> {
-      content.append(String.format("%d. %s - %s - %s - %s:%s - %s\n",
+      content.append(String.format("%d. [Trạng Thái]: %s - [Tên khách]: %s - [SĐT]:%s - [Thời gian]: %s:%s - [Địa chỉ]: %s\n",
           integer.getAndIncrement(),
-          orderReport.getReceiver(),
           OrderState.values()[orderReport.getOrderStatus()].getStateTextWithoutNumber(),
+          orderReport.getReceiver(),
           orderReport.getReceiverPhone(),
           formatDate(orderReport.getDeliveryDate()),
           orderReport.getDeliveryTime(),
           orderReport.getDeliveryAddress()));
-      content.append(END_LINE);
     });
 
     title.setText(content.toString());
@@ -380,20 +381,19 @@ public class BotOrderService {
                                List<SendMessage> messages) {
     AtomicInteger integer = new AtomicInteger(1);
     StringBuilder content = new StringBuilder();
-    content.append("Thần xin gửi mẫu: \nTên khách - Trạng Thái - SĐT - Thời gian đặt \n");
+
 
     while (Boolean.TRUE) {
       SendMessage title = getSendMessage(update);
       messages.add(title);
 
       ordersReport.forEach(orderReport -> {
-        content.append(String.format("%d. %s - %s - %s - %s\n",
+        content.append(String.format("%d.[Trạng Thái]: %s - [Tên khách]: %s - [SĐT]: %s - [Thời gian đặt]: %s\n",
             integer.getAndIncrement(),
-            orderReport.getClientName(),
             OrderState.values()[orderReport.getOrderStatus()].getStateText(),
+            orderReport.getClientName(),
             orderReport.getClientPhone(),
             formatDate(orderReport.getOrderDate())));
-        content.append(END_LINE);
       });
 
       title.setText(content.toString());
