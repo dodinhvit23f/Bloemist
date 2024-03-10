@@ -1,4 +1,4 @@
-package com.bloemist.funcation;
+package com.bloemist.function;
 
 @FunctionalInterface
 public interface MethodParameter {

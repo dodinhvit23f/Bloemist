@@ -89,7 +89,7 @@
       <Font name="System Bold" size="12.0" />
     </font>
   </Button>
-  <Button focusTraversable="false" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" onAction="#refresh" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: LINEN;" text="Tải lại màn hình" textAlignment="CENTER" wrapText="true">
+  <Button focusTraversable="false" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" onAction="#refresh" prefHeight="69.0" prefWidth="52.0" style="-fx-background-color: LINEN;" text="Tải lại màn hình" textAlignment="CENTER" wrapText="true" fx:id="btnReload">
     <font>
       <Font name="System Bold" size="12.0" />
     </font>

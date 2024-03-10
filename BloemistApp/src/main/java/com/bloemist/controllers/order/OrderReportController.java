@@ -25,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -117,6 +118,9 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private Label orderCode;
+
+  @FXML
+  private Button btnReload;
 
   @FXML
   private Label orderDate;
@@ -292,9 +296,9 @@ public class OrderReportController extends OrderController {
 
   @FXML
   private void reload() {
-    this.orderTable.setItems(FXCollections.observableArrayList());
+    btnReload.setDisable(Boolean.TRUE);
     loadPageAsync(null, this.orderTable,
-        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
+        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()), btnReload);
   }
 
 
@@ -372,7 +376,7 @@ public class OrderReportController extends OrderController {
 
     ApplicationVariable.getOrders().clear();
     loadPageAsync(null, this.orderTable,
-        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()));
+        pair -> orderService.getStaffPage(pair.getFirst(), pair.getSecond()), btnReload);
 
     setCountDownEvent(() -> onScrollFinished(this.orderTable,
         (pair) -> orderService.getStaffPage(pair.getFirst(), pair.getSecond())), 4000);

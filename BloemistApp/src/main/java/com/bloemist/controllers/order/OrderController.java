@@ -3,7 +3,7 @@ package com.bloemist.controllers.order;
 import com.bloemist.controllers.BaseController;
 import com.bloemist.dto.Order;
 import com.bloemist.events.MessageWarning;
-import com.bloemist.funcation.MethodParameter;
+import com.bloemist.function.MethodParameter;
 import com.bloemist.services.IOrderService;
 import com.bloemist.services.IPrinterService;
 import com.bloemist.constant.ApplicationVariable;
@@ -28,9 +28,6 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -39,6 +36,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableView;
@@ -129,7 +127,7 @@ public abstract class OrderController extends BaseController {
 
 
   protected void loadPageAsync(Boolean isNew, TableView<Order> orderTable,
-      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer) {
+      Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer, Button btnReload) {
 
     if (isLoadingPage.get()) {
       Alert alert = new Alert(AlertType.INFORMATION);
@@ -138,6 +136,7 @@ public abstract class OrderController extends BaseController {
       return;
     }
 
+    orderTable.refresh();
     isLoadingPage.set(Boolean.TRUE);
 
     Order oldestOrder = getOrderRecordInApp();
@@ -152,7 +151,7 @@ public abstract class OrderController extends BaseController {
 
           try {
             return consumer.apply(Pair.of(startTime, endTime));
-          }catch (Exception ex){
+          } catch (Exception ex) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setContentText("Vui lòng kiểm tra đường truyền");
             alert.showAndWait();
@@ -162,22 +161,20 @@ public abstract class OrderController extends BaseController {
 
         });
 
-    try {
-      List<Order> orders = orderLoading.get(3, TimeUnit.SECONDS);
-      if (Objects.isNull(isNew)) {
-        ApplicationVariable.setOrders(orders);
-        setDataOrderTable(orderTable);
-      } else if (Boolean.TRUE.equals(isNew)) {
-        handleLatest(orderTable, orders);
-      } else {
-        handleOldData(orders, orderTable);
-      }
-
-    } catch (ExecutionException | InterruptedException | TimeoutException e) {
-      e.printStackTrace();
+    List<Order> orders = orderLoading.join();
+    if (Objects.isNull(isNew)) {
+      ApplicationVariable.setOrders(orders);
+      setDataOrderTable(orderTable);
+    } else if (Boolean.TRUE.equals(isNew)) {
+      handleLatest(orderTable, orders);
+    } else {
+      handleOldData(orders, orderTable);
     }
 
     setCountDownEvent(() -> {
+      if (Objects.nonNull(btnReload)) {
+        btnReload.setDisable(Boolean.FALSE);
+      }
       isLoadingPage.set(Boolean.FALSE);
       orderTable.refresh();
     }, 2000);
@@ -260,11 +257,11 @@ public abstract class OrderController extends BaseController {
     var tvScrollBar = (ScrollBar) orderTable.lookup(".scroll-bar:vertical");
     tvScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue.doubleValue() == BigInteger.ONE.doubleValue()) {
-        loadPageAsync(Boolean.FALSE, orderTable, consumer);
+        loadPageAsync(Boolean.FALSE, orderTable, consumer, null);
       }
 
       if (newValue.doubleValue() == BigInteger.ZERO.doubleValue()) {
-        loadPageAsync(Boolean.TRUE, orderTable, consumer);
+        loadPageAsync(Boolean.TRUE, orderTable, consumer, null);
       }
 
     });

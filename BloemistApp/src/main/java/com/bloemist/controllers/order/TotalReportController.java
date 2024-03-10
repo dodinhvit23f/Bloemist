@@ -34,6 +34,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -132,6 +133,9 @@ public class TotalReportController extends OrderController {
   private TableColumn<Order, Boolean> checkAll;
   @FXML
   private TableColumn<Order, String> pictureLink;
+
+  @FXML
+  private Button btnReload;
 
   @FXML
   private TextField findTextField;
@@ -256,15 +260,16 @@ public class TotalReportController extends OrderController {
 
   @FXML
   public void refresh() {
+    btnReload.setDisable(Boolean.TRUE);
     ApplicationVariable.getOrders().clear();
-    this.orderTable.setItems(FXCollections.observableArrayList());
     loadPageAsync(null, this.orderTable,
-        (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
+        (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()), btnReload);
     this.currentOrder = null;
     this.editableColumn = new AtomicReference<>();
     this.orderRow = 0;
     this.textArea.clear();
     this.findTextField.clear();
+    btnReload.setDisable(Boolean.FALSE);
   }
 
   @FXML
@@ -733,7 +738,7 @@ public class TotalReportController extends OrderController {
     ApplicationVariable.getOrders().clear();
     if (CollectionUtils.isEmpty(ApplicationVariable.getOrders())) {
       loadPageAsync(null, this.orderTable,
-          (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()));
+          (pair) -> orderService.getAdminPage(pair.getFirst(), pair.getSecond()), btnReload);
     }
 
     setCountDownEvent(() -> onScrollFinished(this.orderTable,
