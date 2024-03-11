@@ -7,6 +7,7 @@ import static com.bloemist.constant.Constants.INSTAGRAM;
 import static com.bloemist.constant.Constants.REGULAR_CUSTOMER;
 import static com.bloemist.constant.Constants.TIKTOK;
 import static com.bloemist.constant.Constants.ZALO;
+import static com.bloemist.utils.Utils.currencyToStringNumber;
 import static com.utils.Utils.openDialogChoiceImage;
 
 import com.bloemist.dto.Order;
@@ -177,22 +178,21 @@ public class TotalReportController extends OrderController {
           .stream()
           .map(order -> {
             order.setTotal(
-                getTotalPrice(Double.valueOf(Utils.currencyToStringNumber(order.getSalePrice())),
-                    Double.valueOf(Utils.currencyToStringNumber(order.getDeliveryFee())),
-                    Double.valueOf(Utils.currencyToStringNumber(order.getVatFee()))).toString());
-            order.setRemain(
-                String.valueOf(Double.parseDouble(order.getTotal()) - Double.parseDouble(
-                    Utils.currencyToStringNumber(order.getDeposit()))));
+                getTotalPrice(Double.valueOf(currencyToStringNumber(order.getSalePrice())),
+                    Double.valueOf(currencyToStringNumber(order.getDeliveryFee())),
+                    Double.valueOf(currencyToStringNumber(order.getVatFee()))).toString());
 
-            order.setActualPrice(Utils.currencyToStringNumber(order.getActualPrice()));
-            order.setActualVatFee(Utils.currencyToStringNumber(order.getActualVatFee()));
-            order.setActualDeliveryFee(Utils.currencyToStringNumber(order.getActualDeliveryFee()));
-            order.setSalePrice(Utils.currencyToStringNumber(order.getSalePrice()));
-            order.setDeliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()));
-            order.setDeposit(Utils.currencyToStringNumber(order.getDeposit()));
-            order.setDiscount(Utils.currencyToStringNumber(order.getDiscount()));
-            order.setVatFee(Utils.currencyToStringNumber(order.getVatFee()));
-            order.setMaterialsFee(Utils.currencyToStringNumber(order.getMaterialsFee()));
+            order.setActualPrice(currencyToStringNumber(order.getActualPrice()));
+            order.setActualVatFee(currencyToStringNumber(order.getActualVatFee()));
+            order.setActualDeliveryFee(currencyToStringNumber(order.getActualDeliveryFee()));
+            order.setSalePrice(currencyToStringNumber(order.getSalePrice()));
+            order.setDeliveryFee(currencyToStringNumber(order.getDeliveryFee()));
+            order.setDeposit(currencyToStringNumber(order.getDeposit()));
+            order.setDiscount(currencyToStringNumber(order.getDiscount()));
+            order.setVatFee(currencyToStringNumber(order.getVatFee()));
+            order.setMaterialsFee(currencyToStringNumber(order.getMaterialsFee()));
+            order.setRemain(String.valueOf(Double.parseDouble(order.getTotal()) -
+                Double.parseDouble(currencyToStringNumber(order.getDeposit()))));
 
             return order;
           }).toList();
@@ -206,7 +206,7 @@ public class TotalReportController extends OrderController {
                 .deliveryAddress(order.getDeliveryAddress())
                 .deliveryDate(order.getDeliveryDate())
                 .deliveryHour(order.getDeliveryHour())
-                .deliveryFee(Utils.currencyToStringNumber(order.getDeliveryFee()))
+                .deliveryFee(currencyToStringNumber(order.getDeliveryFee()))
                 .vatFee(order.getVatFee())
                 .actualPrice(order.getActualPrice())
                 .salePrice(order.getSalePrice())
@@ -269,7 +269,6 @@ public class TotalReportController extends OrderController {
     this.orderRow = 0;
     this.textArea.clear();
     this.findTextField.clear();
-    btnReload.setDisable(Boolean.FALSE);
   }
 
   @FXML

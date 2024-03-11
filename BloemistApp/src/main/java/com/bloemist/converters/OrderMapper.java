@@ -88,6 +88,8 @@ public interface OrderMapper {
         .statusProperty(new SimpleStringProperty(status))
         .customerSourceProperty(new SimpleStringProperty(orderReport.getClientSource()))
         .isSelected(Boolean.FALSE)
+        .deliveryStartRange(orderReport.getDeliveryStartRange())
+        .orderDateTime(orderReport.getOrderDate())
         .build();
   }
 }

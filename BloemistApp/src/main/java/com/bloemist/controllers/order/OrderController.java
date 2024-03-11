@@ -103,13 +103,13 @@ public abstract class OrderController extends BaseController {
   private Order getOrderRecordInApp() {
     return ApplicationVariable.getOrders()
         .stream()
-        .min(Comparator.comparing(Order::getOrderDate))
+        .min(Comparator.comparing(Order::getOrderDateTime))
         .orElse(null);
   }
 
   private LocalDateTime getPageStartTime(Boolean isNew, Order oldestOrder) {
     if (Objects.isNull(isNew)) {
-      return LocalDateTime.now().minus(1, ChronoUnit.MONTHS);
+      return LocalDateTime.now().minus(2, ChronoUnit.MONTHS);
     }
 
     if (Boolean.TRUE.equals(isNew)) {
@@ -130,13 +130,16 @@ public abstract class OrderController extends BaseController {
       Function<Pair<LocalDateTime, LocalDateTime>, List<Order>> consumer, Button btnReload) {
 
     if (isLoadingPage.get()) {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setContentText("Tải lại đang trong quá trình xử lý ");
-      alert.showAndWait();
+      try {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setContentText("Tải lại đang trong quá trình xử lý ");
+        alert.showAndWait();
+      } catch (Exception e) {
+      }
       return;
     }
+    orderTable.setItems(FXCollections.emptyObservableList());
 
-    orderTable.refresh();
     isLoadingPage.set(Boolean.TRUE);
 
     Order oldestOrder = getOrderRecordInApp();
@@ -162,78 +165,53 @@ public abstract class OrderController extends BaseController {
         });
 
     List<Order> orders = orderLoading.join();
-    if (Objects.isNull(isNew)) {
-      ApplicationVariable.setOrders(orders);
-      setDataOrderTable(orderTable);
-    } else if (Boolean.TRUE.equals(isNew)) {
-      handleLatest(orderTable, orders);
-    } else {
-      handleOldData(orders, orderTable);
+
+    if(!ObjectUtils.isEmpty(orders)){
+      if (Objects.isNull(isNew) ) {
+        ApplicationVariable.setOrders(orders);
+      } else{
+        var existCode = ApplicationVariable.getOrders().stream().map(Order::getCode)
+            .collect(Collectors.toSet());
+
+        var ordersNotDuplicate = orders.stream()
+            .filter(order -> !existCode.contains(order.getCode()))
+            .toList();
+
+        if(!ObjectUtils.isEmpty(ordersNotDuplicate)){
+          ApplicationVariable.getOrders().addAll(ordersNotDuplicate);
+          sortOrder();
+        }
+      }
     }
+
+    orderTable.setItems(FXCollections.observableList(ApplicationVariable.getOrders()));
+    orderTable.refresh();
 
     setCountDownEvent(() -> {
       if (Objects.nonNull(btnReload)) {
         btnReload.setDisable(Boolean.FALSE);
       }
       isLoadingPage.set(Boolean.FALSE);
-      orderTable.refresh();
-    }, 2000);
+    }, 3000);
 
   }
 
-  private void handleOldData(List<Order> orders, TableView<Order> orderTable) {
-    if (ObjectUtils.isEmpty(orders)) {
-      isEnd.set(Boolean.TRUE);
-      isLoadingPage.set(Boolean.FALSE);
-      return;
-    }
+  private static void sortOrder() {
 
-    var existCode = ApplicationVariable.getOrders().stream().map(Order::getCode)
-        .collect(Collectors.toSet());
+    AtomicInteger integer = new AtomicInteger(BigInteger.ONE.intValue());
 
-    var ordersNotDuplicate = orders.stream()
-        .filter(order -> !existCode.contains(order.getCode()))
-        .toList();
+    Collections.sort(ApplicationVariable.getOrders(),
+        (o1, o2) -> {
+          if(!o1.getStatus().equals(o2.getStatus())){
+            return o1.getStatus().compareTo(o2.getStatus());
+          }
 
-    if (ObjectUtils.isEmpty(ordersNotDuplicate)) {
-      isEnd.set(Boolean.TRUE);
-      isLoadingPage.set(Boolean.FALSE);
-      return;
-    }
+          return o1.getDeliveryStartRange().compareTo(o2.getDeliveryStartRange()) * -1;
+        });
 
-    ApplicationVariable.getOrders().addAll(ordersNotDuplicate);
-
-    updateApplicationData(orderTable);
-    reprintOrderStt();
-    setDataOrderTable(orderTable);
-  }
-
-  private void handleLatest(TableView<Order> orderTable, List<Order> orders) {
-    if (ObjectUtils.isEmpty(orders)) {
-      return;
-    }
-    orders = new ArrayList<>(orders);
-
-    Date now = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-    var index = Integer.parseInt(ApplicationVariable.getOrders().stream()
-        .filter(order -> Utils.toDate(order.getDeliveryDate()).compareTo(now)
-            >= BigInteger.ZERO.intValue())
-        .min(Comparator.comparing(o -> Utils.toDate(o.getDeliveryDate())))
-        .orElseThrow().getStt()) - BigInteger.ONE.intValue();
-
-    ApplicationVariable.getOrders()
-        .stream()
-        .filter(order -> Integer.parseInt(order.getStt()) > index)
-        .forEach(orders::add);
-
-    AtomicInteger integer = new AtomicInteger(BigInteger.ZERO.intValue());
-
-    orders = orders.stream().map(order -> {
-      order.setStt(String.valueOf(integer.getAndIncrement()));
-      return order;
-    }).toList();
-
-    ApplicationVariable.setOrders(orders);
+    ApplicationVariable.getOrders().forEach(order ->
+      order.setStt(String.valueOf(integer.getAndIncrement()))
+    );
   }
 
   protected void setCountDownEvent(Runnable runnable, int delayMilliseconds) {
@@ -267,10 +245,6 @@ public abstract class OrderController extends BaseController {
     });
   }
 
-  private void setDataOrderTable(TableView<Order> orderTable) {
-    orderTable.setItems(FXCollections.observableList(Collections.emptyList()));
-    orderTable.setItems(FXCollections.observableList(ApplicationVariable.getOrders()));
-  }
 
   void updateApplicationData(TableView<Order> orderTable) {
     List newOrders = ApplicationVariable.getOrders()

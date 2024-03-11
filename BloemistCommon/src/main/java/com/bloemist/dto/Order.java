@@ -1,5 +1,7 @@
 package com.bloemist.dto;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import javafx.beans.property.StringProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -48,6 +50,7 @@ public class Order {
   public static final String ACTUAL_VAT_FEE = "actualVatFee";
   public static final String MATERIALS_FEE = "materialsFee";
   public static final String STATUS_PROPERTY = "statusProperty";
+  public static final String DELIVERY_START_RANGE = "deliveryStartRange";
 
   String stt;
   String status;
@@ -63,6 +66,7 @@ public class Order {
   String customerSocialLink;
   String customerSource;
   String orderDate;
+  Date orderDateTime;
   String deliveryDate;
   String deliveryHour;
   String deliveryAddress;
@@ -81,9 +85,11 @@ public class Order {
   Integer priority;
   StringProperty statusProperty;
   StringProperty customerSourceProperty;
-
+  LocalDateTime deliveryStartRange;
 
   public boolean equals(Order obj) {
     return code.equals(obj.getCode());
   }
+
+
 }
