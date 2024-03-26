@@ -1,5 +1,6 @@
 package com.bloemist.converters;
 
+import com.bloemist.dto.DeliveryQr;
 import com.bloemist.dto.Order;
 import com.bloemist.entity.OrderReport;
 import com.bloemist.constant.OrderState;
@@ -92,4 +93,6 @@ public interface OrderMapper {
         .orderDateTime(orderReport.getOrderDate())
         .build();
   }
+
+  DeliveryQr toDeliveryQr(OrderReport orderReport);
 }

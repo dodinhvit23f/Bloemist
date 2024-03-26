@@ -15,10 +15,13 @@ import com.bloemist.repositories.OrderReportRepository;
 import com.bloemist.services.IOrderService;
 import com.bloemist.constant.Constants;
 import com.bloemist.constant.OrderState;
+import com.bloemist.services.QrServiceI;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.utils.Utils;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,9 +44,11 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
@@ -66,6 +71,8 @@ public class OrderService implements IOrderService {
   ApplicationEventPublisher publisher;
   OrderMapper orderMapper;
   Drive googleDrive;
+  QrServiceI qrService;
+  ObjectMapper objectMapper;
 
   @Override
 
@@ -145,7 +152,7 @@ public class OrderService implements IOrderService {
       if (orderReports.containsKey(code)) {
         try {
           updateFieldsCanChange(orderMap.get(code), orderReports.get(code));
-        } catch ( ParseException e){
+        } catch (ParseException e) {
           publisher.publishEvent(new MessageWarning(Constants.ERR_ORDER_INFO_003, code));
           codes.remove(code);
         } catch (IOException e) {
@@ -290,13 +297,27 @@ public class OrderService implements IOrderService {
     orderReport.setOrderStatus(status);
 
     try {
-      final CompletableFuture<File> googleFile = uploadFile(orderReport);
+      final CompletableFuture<File> googleProductFile
+          = uploadFile(new java.io.File(orderReport.getSamplePictureLink()));
+      Optional<java.io.File> qrFile
+          = qrService.generateQRCodeImage(
+          objectMapper.writeValueAsString(orderMapper.toDeliveryQr(orderReport)));
+      CompletableFuture<File> googleQrFile = null;
+
+      if (qrFile.isPresent()) {
+        googleQrFile = uploadFile(qrFile.get());
+      }
 
       setupDeliveryDateTime(orderReport);
       updateOrderDTO(customerOrder, orderReport);
 
       orderReport.setSamplePictureLink(
-          String.format(GOOGLE_IMAGE_LINK, googleFile.join().getId()));
+          String.format(GOOGLE_IMAGE_LINK, googleProductFile.join().getId()));
+
+      if (qrFile.isPresent()) {
+        orderReport.setQrLink(String.format(GOOGLE_IMAGE_LINK, googleQrFile.join().getId()));
+      }
+
       orderReportRepository.save(orderReport);
 
     } catch (ParseException e) {
@@ -307,14 +328,12 @@ public class OrderService implements IOrderService {
     return Optional.of(Boolean.TRUE);
   }
 
-  private CompletableFuture<File> uploadFile(OrderReport orderReport) {
+  private CompletableFuture<File> uploadFile(java.io.File rawFile) {
 
     File fileMetadata = new File();
     fileMetadata.setName(String.format("%s.jpg", UUID.randomUUID()));
     fileMetadata.setParents(Collections.singletonList(BLOEMIST_FOLDER_ID));
     fileMetadata.setMimeType(MEDIA);
-
-    var rawFile = new java.io.File(orderReport.getSamplePictureLink());
 
     return CompletableFuture.supplyAsync(() -> {
       FileContent mediaContent = new FileContent(IMAGE_JPEG_VALUE, rawFile);
@@ -396,7 +415,8 @@ public class OrderService implements IOrderService {
     orderReport.setSamplePictureLink(order.getImagePath());
     // update file
     if (!orderReport.getSamplePictureLink().contains("http")) {
-      final CompletableFuture<File> googleFile = uploadFile(orderReport);
+      final CompletableFuture<File> googleFile = uploadFile(
+          new java.io.File(orderReport.getSamplePictureLink()));
       orderReport.setSamplePictureLink(String.format(GOOGLE_IMAGE_LINK, googleFile.join().getId()));
     }
 

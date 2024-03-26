@@ -126,6 +126,9 @@ public class OrderReport extends BaseEntity {
   @Column(name = "delivery_end_range")
   private LocalDateTime deliveryEndRange;
 
+  @Column(name = "qr_;onl", length = 300)
+  private String qrLink;
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
